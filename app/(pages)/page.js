@@ -9,16 +9,16 @@ import { useInView } from 'react-intersection-observer'
 import BookingForm from '@/components/booking/BookingForm'
 
 // Images
-import TeslaModel3 from '../public/assets/images/tesla-model-3.png'
-import MercedesClassS from '../public/assets/images/mercedes-classe-s.png'
-import BmwSerie7 from '../public/assets/images/bmw-7-series.png'
-import MercedesVClass from '../public/assets/images/mercedes-v-class.png'
-import ExperienceVip from '../public/assets/images/experience-vip.jpg'
-import logoCannesFestival from '../public/assets/images/logo-cannes-festival.png'
-import logoRitzParis from '../public/assets/images/logo-ritz-paris.png'
-import logoLouisVuitton from '../public/assets/images/logo-louis-vuitton.png'
-import logoChanel from '../public/assets/images/logo-chanel.png'
-import logoAirFrance from '../public/assets/images/logo-air-france.png'
+import TeslaModel3 from '@/public/assets/images/tesla-model-3.png'
+import MercedesClassS from '@/public/assets/images/mercedes-classe-s.png'
+import BmwSerie7 from '@/public/assets/images/bmw-7-series.png'
+import MercedesVClass from '@/public/assets/images/mercedes-v-class.png'
+import ExperienceVip from '@/public/assets/images/experience-vip.jpg'
+import logoCannesFestival from '@/public/assets/images/logo-cannes-festival.png'
+import logoRitzParis from '@/public/assets/images/logo-ritz-paris.png'
+import logoLouisVuitton from '@/public/assets/images/logo-louis-vuitton.png'
+import logoChanel from '@/public/assets/images/logo-chanel.png'
+import logoAirFrance from '@/public/assets/images/logo-air-france.png'
 
 export default function HomePage() {
   // Animation controls

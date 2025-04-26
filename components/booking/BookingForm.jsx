@@ -8,7 +8,7 @@ import DateTimePicker from './DateTimePicker'
 import VehicleSelector from './VehicleSelector'
 import BookingSuccess from './BookingSuccess'
 import BookingConfirmation from './BookingConfirmation'
-import { formatDate, formatTime } from '@/lib/formatters'
+import { formatDate, formatTime } from '@/lib/formatter'
 import { api } from '@/lib/api'
 
 const BookingForm = () => {

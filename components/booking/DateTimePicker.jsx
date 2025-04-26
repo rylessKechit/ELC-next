@@ -2,7 +2,7 @@
 "use client"
 
 import { useEffect } from 'react'
-import { formatDate, formatTime } from '@/lib/formatters'
+import { formatDate, formatTime } from '@/lib/formatter'
 
 const DateTimePicker = ({ 
   dateId, 
