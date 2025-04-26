@@ -22,9 +22,10 @@ export const useGoogleMapsScript = () => {
     }
 
     // Récupérer la clé API depuis l'environnement
-    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || 'YOUR_API_KEY'
 
-    if (!apiKey) {
+    if (!apiKey || apiKey === 'YOUR_API_KEY') {
+      console.warn('Clé API Google Maps non configurée correctement')
       setLoadError(new Error('Clé API Google Maps non configurée'))
       return
     }
@@ -76,7 +77,16 @@ export const useMapsLibrary = (library) => {
     // Essayer de récupérer la bibliothèque
     try {
       if (window.google && window.google.maps) {
-        setLib(window.google.maps.importLibrary(library))
+        const loadLibrary = async () => {
+          try {
+            const loadedLib = await window.google.maps.importLibrary(library)
+            setLib(loadedLib)
+          } catch (error) {
+            console.error(`Erreur lors de l'importation de la bibliothèque ${library}:`, error)
+          }
+        }
+        
+        loadLibrary()
       }
     } catch (error) {
       console.error(`Erreur lors de l'accès à la bibliothèque ${library}:`, error)
@@ -88,7 +98,7 @@ export const useMapsLibrary = (library) => {
 
 /**
  * Hook pour créer un jeton de session pour les requêtes Places API
- * @returns {string} - Jeton de session
+ * @returns {Object} - Jeton de session et fonction pour en générer un nouveau
  */
 export const useSessionToken = () => {
   const { isLoaded } = useGoogleMapsScript()
@@ -134,6 +144,10 @@ export const useAddressAutocomplete = (options = {}) => {
     setError(null)
 
     try {
+      if (!window.google || !window.google.maps || !window.google.maps.places) {
+        throw new Error('Google Maps Places API non disponible')
+      }
+
       const placesService = new window.google.maps.places.AutocompleteService()
       
       const request = {
@@ -144,7 +158,7 @@ export const useAddressAutocomplete = (options = {}) => {
       }
 
       const response = await placesService.getPlacePredictions(request)
-      setPredictions(response.predictions || [])
+      setPredictions(response?.predictions || [])
     } catch (err) {
       console.error('Erreur lors de la récupération des prédictions d\'adresse:', err)
       setError(err)
@@ -158,6 +172,10 @@ export const useAddressAutocomplete = (options = {}) => {
     if (!isLoaded || !placeId) return null
 
     try {
+      if (!window.google || !window.google.maps || !window.google.maps.places) {
+        throw new Error('Google Maps Places API non disponible')
+      }
+
       const placesService = new window.google.maps.places.PlacesService(
         document.createElement('div')
       )

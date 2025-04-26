@@ -74,6 +74,8 @@ export const emailService = {
   async sendBookingConfirmation(booking) {
     // Formater la date et l'heure pour l'affichage
     const formatDate = (dateTimeStr) => {
+      if (!dateTimeStr) return 'Non spécifié'
+      
       const date = new Date(dateTimeStr)
       return date.toLocaleString('fr-FR', {
         weekday: 'long',
@@ -216,12 +218,54 @@ export const emailService = {
     
     const adminEmail = process.env.ADMIN_EMAIL || 'admin@elysian-chauffeurs.fr'
     
+    // Formater la date
+    const formatDate = (dateTimeStr) => {
+      if (!dateTimeStr) return 'Non spécifié'
+      
+      const date = new Date(dateTimeStr)
+      return date.toLocaleString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      })
+    }
+    
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #1c2938; padding: 15px; text-align: center; color: white;">
+          <h1 style="margin: 0; color: #d4af37; font-size: 20px;">Nouvelle Réservation</h1>
+        </div>
+        
+        <div style="padding: 20px; border: 1px solid #e5e5e5; border-top: none;">
+          <p>Une nouvelle réservation a été effectuée :</p>
+          
+          <div style="background-color: #f9f9f9; padding: 15px; margin: 20px 0;">
+            <p style="margin: 3px 0;"><strong>Référence :</strong> ${booking.bookingId}</p>
+            <p style="margin: 3px 0;"><strong>Client :</strong> ${booking.customerName}</p>
+            <p style="margin: 3px 0;"><strong>Tél :</strong> ${booking.customerPhone}</p>
+            <p style="margin: 3px 0;"><strong>Email :</strong> ${booking.customerEmail}</p>
+            <p style="margin: 3px 0;"><strong>Date :</strong> ${formatDate(booking.pickupDateTime)}</p>
+            <p style="margin: 3px 0;"><strong>Départ :</strong> ${booking.pickupAddress}</p>
+            <p style="margin: 3px 0;"><strong>Arrivée :</strong> ${booking.dropoffAddress}</p>
+            <p style="margin: 3px 0;"><strong>Véhicule :</strong> ${booking.vehicleType}</p>
+            <p style="margin: 3px 0;"><strong>Passagers :</strong> ${booking.passengers}</p>
+            <p style="margin: 3px 0;"><strong>Bagages :</strong> ${booking.luggage}</p>
+            ${booking.flightNumber ? `<p style="margin: 3px 0;"><strong>Vol :</strong> ${booking.flightNumber}</p>` : ''}
+            ${booking.trainNumber ? `<p style="margin: 3px 0;"><strong>Train :</strong> ${booking.trainNumber}</p>` : ''}
+            ${booking.roundTrip ? `<p style="margin: 3px 0;"><strong>Retour :</strong> ${formatDate(booking.returnDateTime)}</p>` : ''}
+          </div>
+          
+          <p><a href="#" style="background-color: #d4af37; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; display: inline-block;">Accéder au tableau de bord</a></p>
+        </div>
+      </div>
+    `
+    
     return this.sendEmail({
       to: adminEmail,
       subject: `Nouvelle réservation #${booking.bookingId}`,
-      text: `Une nouvelle réservation a été effectuée. ID: ${booking.bookingId}`,
-      html: `<p>Une nouvelle réservation a été effectuée. ID: <strong>${booking.bookingId}</strong></p>`
-      // Contenu complet à implémenter selon les besoins
+      html: htmlContent
     })
   },
 
@@ -311,7 +355,7 @@ export const emailService = {
           <div style="background-color: #f9f9f9; padding: 15px; margin: 20px 0; border-left: 4px solid #d4af37;">
             <p style="margin: 5px 0;"><strong>Nom :</strong> ${contactMessage.name}</p>
             <p style="margin: 5px 0;"><strong>Email :</strong> ${contactMessage.email}</p>
-            <p style="margin: 5px 0;"><strong>Téléphone :</strong> ${contactMessage.phone}</p>
+            <p style="margin: 5px 0;"><strong>Téléphone :</strong> ${contactMessage.phone || 'Non renseigné'}</p>
             <p style="margin: 5px 0;"><strong>Sujet :</strong> ${contactMessage.subject}</p>
             <p style="margin: 5px 0;"><strong>Message :</strong></p>
             <p style="margin: 5px 0;">${contactMessage.message}</p>

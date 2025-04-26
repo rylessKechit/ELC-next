@@ -59,9 +59,10 @@ export async function POST(request) {
 
     // Combiner date et heure pour les champs DateTime
     const pickupDateTime = `${pickupDate}T${pickupTime}`
-    const returnDateTime = roundTrip ? `${returnDate}T${returnTime}` : null
+    const returnDateTime = roundTrip && returnDate && returnTime ? `${returnDate}T${returnTime}` : null
     
-    // Simuler la création d'une réservation (dans un vrai système, ceci serait enregistré en base de données)
+    // Dans un environnement de production, sauvegarder en base de données
+    // Ici, nous simulons la création d'une réservation
     const booking = {
       bookingId,
       pickupAddress,
@@ -75,7 +76,7 @@ export async function POST(request) {
       flightNumber,
       trainNumber,
       specialRequests,
-      price: priceEstimate.exactPrice,
+      price: priceEstimate?.exactPrice || 0,
       currency: 'EUR',
       status: 'confirmed',
       createdAt: new Date().toISOString(),
@@ -84,17 +85,25 @@ export async function POST(request) {
       customerPhone: customerInfo.phone
     }
     
-    // Envoyer un email de confirmation au client
+    // Envoyer un email de confirmation au client (si le service est disponible)
     try {
-      await emailService.sendBookingConfirmation(booking)
+      if (typeof emailService.sendBookingConfirmation === 'function') {
+        await emailService.sendBookingConfirmation(booking)
+      } else {
+        console.log('Service d\'email non disponible - simulation d\'envoi')
+      }
     } catch (emailError) {
       console.error('Erreur lors de l\'envoi de l\'email de confirmation:', emailError)
       // Ne pas échouer la réservation si l'email échoue
     }
     
-    // Envoyer une notification WhatsApp à l'administrateur
+    // Envoyer une notification WhatsApp à l'administrateur (si le service est disponible)
     try {
-      await whatsappService.sendAdminNotification(booking)
+      if (typeof whatsappService.sendAdminNotification === 'function') {
+        await whatsappService.sendAdminNotification(booking)
+      } else {
+        console.log('Service WhatsApp non disponible - simulation d\'envoi')
+      }
     } catch (whatsappError) {
       console.error('Erreur lors de l\'envoi de la notification WhatsApp:', whatsappError)
       // Ne pas échouer la réservation si la notification échoue

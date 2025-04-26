@@ -1,4 +1,3 @@
-// app/(pages)/services-longue-distance/page.js
 "use client"
 
 import { useState, useEffect } from 'react'
@@ -257,7 +256,7 @@ export default function ServicesLongueDistancePage() {
             <p className="text-gray-600 mb-8">
               Oubliez les contraintes des horaires imposés, des correspondances stressantes et 
               du manque d'intimité des transports en commun. Avec Elysian Luxury Chauffeurs, 
-              votre voyage longue distance devient une expérience agréable et productif.
+              votre voyage longue distance devient une expérience agréable et productive.
             </p>
             
             <p className="text-gray-600 mb-8">
@@ -610,3 +609,127 @@ export default function ServicesLongueDistancePage() {
                 <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                   <i className="fas fa-calculator text-primary text-3xl"></i>
                 </div>
+                <h3 className="text-xl font-medium mb-2">Calculateur de prix</h3>
+                <p className="text-gray-600">Obtenez une estimation instantanée pour votre trajet longue distance</p>
+              </div>
+              
+              <div className="lg:w-2/3">
+                <div className="bg-white p-6 rounded-lg shadow-sm">
+                  <p className="text-gray-600 mb-4">
+                    Nos prix longue distance sont calculés sur mesure en fonction de plusieurs critères :
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div className="flex items-start">
+                      <i className="fas fa-road text-primary mt-1 mr-3"></i>
+                      <div>
+                        <span className="font-medium">Distance totale</span>
+                        <p className="text-sm text-gray-500">La longueur exacte de votre trajet</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start">
+                      <i className="fas fa-clock text-primary mt-1 mr-3"></i>
+                      <div>
+                        <span className="font-medium">Durée estimée</span>
+                        <p className="text-sm text-gray-500">Le temps prévu pour le trajet</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start">
+                      <i className="fas fa-car text-primary mt-1 mr-3"></i>
+                      <div>
+                        <span className="font-medium">Type de véhicule</span>
+                        <p className="text-sm text-gray-500">Berline, Premium, SUV ou Van</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start">
+                      <i className="fas fa-calendar-alt text-primary mt-1 mr-3"></i>
+                      <div>
+                        <span className="font-medium">Durée du séjour</span>
+                        <p className="text-sm text-gray-500">Pour les trajets aller-retour</p>
+                      </div>
+                    </div>
+                  </div>
+                  <Link href="/#booking" className="btn btn-primary w-full">
+                    Calculer votre tarif
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+      </section>
+      
+      {/* FAQ Section */}
+      <section 
+        ref={faqRef}
+        className="py-20 bg-gray-50"
+      >
+        <div className="container-custom">
+          <div className="text-center mb-16">
+            <h2>QUESTIONS FRÉQUENTES</h2>
+            <p className="subtitle">Tout ce que vous devez savoir sur nos services longue distance</p>
+          </div>
+          
+          <motion.div
+            initial="hidden"
+            animate={faqControls}
+            variants={staggerContainer}
+            className="max-w-3xl mx-auto"
+          >
+            {faqs.map((faq, index) => (
+              <motion.div 
+                key={index} 
+                variants={fadeInVariant}
+                className="bg-white rounded-lg shadow-md mb-4 overflow-hidden"
+              >
+                <div className="p-6">
+                  <h3 className="text-xl font-medium mb-2">{faq.question}</h3>
+                  <p className="text-gray-600">{faq.answer}</p>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+          
+          <div className="text-center mt-12">
+            <p className="text-gray-600 mb-4">
+              Vous avez d'autres questions sur nos services longue distance ?
+            </p>
+            <Link href="/contact" className="btn btn-primary">
+              Contactez-nous
+            </Link>
+          </div>
+        </div>
+      </section>
+      
+      {/* Call to Action Section */}
+      <section 
+        ref={ctaRef}
+        className="py-20 bg-secondary text-white relative overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-black/90 to-black/80 z-0"></div>
+        <div className="container-custom relative z-10">
+          <motion.div 
+            initial="hidden"
+            animate={ctaControls}
+            variants={fadeInVariant}
+            className="text-center max-w-3xl mx-auto"
+          >
+            <h2 className="text-white text-3xl md:text-4xl mb-6 after:bg-primary">Voyagez sans stress, partout en France</h2>
+            <p className="text-gray-300 text-lg mb-10">
+              Ne laissez pas les longues distances vous fatiguer. Profitez du confort et de l'élégance
+              de nos véhicules premium pour vos trajets longue distance, avec un chauffeur expérimenté
+              qui s'occupe de tout pendant que vous vous détendez.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-6">
+              <Link href="/#booking" className="btn btn-primary">
+                Réserver maintenant
+              </Link>
+              <Link href="/contact" className="btn btn-outline text-white border-white hover:bg-white hover:text-secondary">
+                Nous contacter
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+    </div>
+  )
+}
