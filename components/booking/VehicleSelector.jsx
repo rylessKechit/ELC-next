@@ -1,4 +1,3 @@
-// components/booking/VehicleSelector.jsx
 "use client"
 
 import { useState } from 'react'
@@ -26,7 +25,7 @@ const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, lugg
   // Trier par prix croissant
   const sortedVehicles = [...suitableVehicles].sort((a, b) => a.price - b.price)
 
-  // Véhicule recommandé (2ème ou 3ème option si disponible)
+  // Véhicule recommandé (2ème option si disponible)
   const recommendedVehicle = sortedVehicles.length > 2 ? sortedVehicles[1].id : 
                              sortedVehicles.length > 0 ? sortedVehicles[0].id : null
 

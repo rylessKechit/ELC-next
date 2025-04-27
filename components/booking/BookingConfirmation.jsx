@@ -1,4 +1,3 @@
-// components/booking/BookingConfirmation.jsx
 "use client"
 
 import { useState } from 'react'
@@ -37,6 +36,37 @@ const BookingConfirmation = ({ bookingData, priceEstimate, onSuccess, onCancel }
     setError('')
     
     try {
+      // Dans un environnement de développement, simuler une réponse
+      if (process.env.NODE_ENV === 'development') {
+        // Simuler un délai de réseau
+        await new Promise(resolve => setTimeout(resolve, 1500))
+        
+        // Créer un ID de réservation fictif
+        const mockBookingId = `ELC-${Date.now().toString().slice(-6)}`
+        
+        // Créer une réponse simulée
+        const mockResponse = {
+          success: true,
+          data: {
+            id: mockBookingId,
+            ...bookingData,
+            price: {
+              amount: priceEstimate.exactPrice,
+              currency: 'EUR'
+            },
+            status: 'confirmed',
+            pickupDateTime: `${bookingData.pickupDate}T${bookingData.pickupTime}`,
+            returnDateTime: bookingData.roundTrip ? `${bookingData.returnDate}T${bookingData.returnTime}` : null,
+            polyline: null,
+            createdAt: new Date().toISOString()
+          }
+        }
+        
+        onSuccess(mockResponse.data)
+        return
+      }
+      
+      // Appel API réel en production
       const response = await api.post('/api/booking', {
         ...bookingData,
         priceEstimate
@@ -242,7 +272,7 @@ const BookingConfirmation = ({ bookingData, priceEstimate, onSuccess, onCancel }
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default BookingConfirmation
+export default BookingConfirmation;

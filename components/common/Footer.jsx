@@ -1,10 +1,9 @@
-// components/common/Footer.jsx
-import Link from 'next/link'
-import Image from 'next/image'
-import logo from '../../public/assets/images/logo.png'
+import Link from 'next/link';
+import Image from 'next/image';
+import logo from '../../public/assets/images/logo.png';
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear()
+  const currentYear = new Date().getFullYear();
   
   return (
     <footer className="bg-secondary text-white">
@@ -31,7 +30,7 @@ const Footer = () => {
               <span className="mt-2 font-medium tracking-wide">ME TROUVER</span>
             </Link>
             
-            <Link href="/" className="flex flex-col items-center group">
+            <Link href="tel:+33600000000" className="flex flex-col items-center group">
               <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-primary transition-all duration-300">
                 <i className="fas fa-phone text-lg"></i>
               </div>
@@ -69,9 +68,12 @@ const Footer = () => {
             <span>CRÉÉ PAR <a href="https://example.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">VOTRE AGENCE</a></span>
           </div>
         </div>
+        
+        {/* Gradient line at the bottom */}
+        <div className="h-1 w-full bg-gradient-to-r from-primary via-secondary to-primary bg-[length:300%_100%] animate-gradient"></div>
       </div>
     </footer>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;

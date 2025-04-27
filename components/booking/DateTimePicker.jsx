@@ -1,8 +1,6 @@
-// components/booking/DateTimePicker.jsx
-"use client"
+"use client";
 
-import { useEffect } from 'react'
-import { formatDate, formatTime } from '@/lib/formatter'
+import { useEffect } from 'react';
 
 const DateTimePicker = ({ 
   dateId, 
@@ -11,61 +9,101 @@ const DateTimePicker = ({
   timeValue, 
   onDateChange, 
   onTimeChange,
-  minDate 
+  minDate,
+  dateLabelText = "Date",
+  timeLabelText = "Heure"
 }) => {
   useEffect(() => {
     // Set default date to tomorrow if not set
     if (!dateValue) {
-      const tomorrow = new Date()
-      tomorrow.setDate(tomorrow.getDate() + 1)
-      const formattedDate = formatDate(tomorrow)
-      onDateChange(formattedDate)
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const formattedDate = formatDate(tomorrow);
+      onDateChange(formattedDate);
     }
     
     // Set default time to current time + 1 hour if not set
     if (!timeValue) {
-      const defaultTime = new Date()
-      defaultTime.setHours(defaultTime.getHours() + 1)
-      const formattedTime = formatTime(defaultTime)
-      onTimeChange(formattedTime)
+      const defaultTime = new Date();
+      defaultTime.setHours(defaultTime.getHours() + 1);
+      const formattedTime = formatTime(defaultTime);
+      onTimeChange(formattedTime);
     }
-  }, [dateValue, timeValue, onDateChange, onTimeChange])
+  }, [dateValue, timeValue, onDateChange, onTimeChange]);
 
-  // Get minimum date (today or provided minDate)
-  const today = new Date()
-  const minimumDate = minDate || formatDate(today)
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const formatTime = (date) => {
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
+  
+  // Get minimum date (today)
+  const today = new Date();
+  const defaultMinDate = formatDate(today);
   
   // Get minimum time (current time if date is today)
-  const isToday = dateValue === formatDate(today)
-  const now = new Date()
-  const minimumTime = isToday ? formatTime(now) : '00:00'
+  const isToday = dateValue === defaultMinDate;
+  const now = new Date();
+  const minTime = isToday ? formatTime(now) : '00:00';
 
   return (
-    <div className="flex gap-3">
-      <div className="flex-1">
-        <input
-          type="date"
-          id={dateId}
-          value={dateValue}
-          min={minimumDate}
-          onChange={(e) => onDateChange(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
-          required
-        />
+    <div className="flex flex-col sm:flex-row gap-3">
+      <div className="relative flex-1">
+        <label htmlFor={dateId} className="block text-sm font-medium text-gray-700 mb-2">
+          {dateLabelText} <span className="text-red-500">*</span>
+        </label>
+        <div className="relative">
+          <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+            <i className="fas fa-calendar-alt text-gray-400"></i>
+          </span>
+          <input
+            type="date"
+            id={dateId}
+            value={dateValue}
+            min={minDate || defaultMinDate}
+            onChange={(e) => onDateChange(e.target.value)}
+            className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+            required
+            aria-describedby={`${dateId}-description`}
+          />
+        </div>
+        <div id={`${dateId}-description`} className="mt-1 text-xs text-gray-500">
+          Format : année-mois-jour
+        </div>
       </div>
-      <div className="flex-1">
-        <input
-          type="time"
-          id={timeId}
-          value={timeValue}
-          min={isToday ? minimumTime : undefined}
-          onChange={(e) => onTimeChange(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
-          required
-        />
+      
+      <div className="relative flex-1">
+        <label htmlFor={timeId} className="block text-sm font-medium text-gray-700 mb-2">
+          {timeLabelText} <span className="text-red-500">*</span>
+        </label>
+        <div className="relative">
+          <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+            <i className="fas fa-clock text-gray-400"></i>
+          </span>
+          <input
+            type="time"
+            id={timeId}
+            value={timeValue}
+            min={isToday ? minTime : undefined}
+            onChange={(e) => onTimeChange(e.target.value)}
+            className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+            required
+            aria-describedby={`${timeId}-description`}
+          />
+        </div>
+        <div id={`${timeId}-description`} className="mt-1 text-xs text-gray-500">
+          Format : heures:minutes (24h)
+        </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default DateTimePicker
+export default DateTimePicker;
