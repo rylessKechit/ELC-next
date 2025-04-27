@@ -172,75 +172,65 @@ export default function HomePage() {
 
   return (
     <div className="home-page">
-      {/* Hero Section */}
+      {/* Hero Section avec position d'arrière-plan ajustée */}
       <section 
-        ref={heroRef} 
-        className="relative h-screen min-h-[700px] flex items-center overflow-hidden bg-cover bg-center"
-        style={{ backgroundImage: 'url(/assets/images/hero.jpg)' }}
+        className="relative h-screen min-h-[700px] flex items-center overflow-hidden bg-black"
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-black/90 to-black/70 z-10"></div>
+        {/* Image d'arrière-plan avec position ajustée */}
+        <div 
+          className="absolute inset-0 z-0 bg-cover bg-center md:bg-right-top"
+          style={{ 
+            backgroundImage: 'url(/assets/images/hero.jpg)',
+            backgroundPosition: 'center left 35%', // Décalage vers la gauche pour mieux centrer visuellement
+            backgroundSize: 'cover'
+          }}
+        ></div>
         
-        <div className="container-custom relative z-20 ml-[10%] max-w-[650px] text-white p-8">
-          <motion.h1 
-            initial="hidden"
-            animate={heroControls}
-            variants={slideInLeftVariant}
-            className="mb-6"
-          >
-            <span className="text-primary">ELYSIAN</span> LUXURY CHAUFFEURS
-          </motion.h1>
+        {/* Overlay pour améliorer la lisibilité */}
+        <div className="absolute inset-0 bg-black/50 z-10"></div>
+        
+        <div className="container relative z-20 mx-auto px-6 md:ml-[10%] md:max-w-[650px] text-white">
+          <h1 className="text-center md:text-left mb-6">
+            <span className="text-primary block font-bold text-5xl">ELYSIAN</span>
+            <span className="text-white block font-bold text-5xl">LUXURY</span>
+            <span className="text-white block font-bold text-5xl">CHAUFFEURS</span>
+          </h1>
           
-          <motion.p 
-            initial="hidden"
-            animate={heroControls}
-            variants={fadeInVariant}
-            className="font-tertiary text-2xl italic text-primary mb-6"
-          >
-            L'excellence du transport VIP pour une clientèle d'exception
-          </motion.p>
+          <p className="text-center md:text-left font-tertiary text-xl italic text-primary mb-6">
+            <span className="bg-black/30 px-2 py-1 rounded">L'excellence du transport VIP pour une clientèle d'exception</span>
+          </p>
           
-          <motion.p 
-            initial="hidden"
-            animate={heroControls}
-            variants={slideInRightVariant}
-            className="text-xl mb-8"
-          >
+          <p className="text-center md:text-left text-lg mb-8 text-white">
             Service de chauffeur privé haut de gamme pour vos déplacements professionnels, 
             événements prestigieux et voyages d'affaires.
-          </motion.p>
+          </p>
           
-          <motion.div 
-            initial="hidden"
-            animate={heroControls}
-            variants={fadeInVariant}
-            className="flex flex-col sm:flex-row gap-6 mt-10"
-          >
-            <Link href="/flotte-vehicules" className="btn btn-primary">
-              Découvrir notre flotte
-            </Link>
+          <div className="flex flex-col sm:flex-row gap-4 mt-10 justify-center md:justify-start">
             <a 
-              href="#booking" 
-              onClick={(e) => {
-                e.preventDefault()
-                scrollToSection('booking')
-              }}
-              className="btn btn-outline"
+              href="/flotte-vehicules"
+              className="py-3 px-6 bg-primary text-white font-medium rounded-none uppercase tracking-wider text-sm text-center hover:bg-primary-dark transition-all"
+            >
+              Découvrir notre flotte
+            </a>
+            <a 
+              href="#booking"
+              className="py-3 px-6 bg-transparent text-white border border-primary font-medium rounded-none uppercase tracking-wider text-sm text-center hover:bg-primary hover:text-white transition-all"
             >
               Réserver maintenant
             </a>
-          </motion.div>
+          </div>
         </div>
         
-        <a 
-          href="#services" 
-          className="absolute bottom-10 left-1/2 transform -translate-x-1/2 w-12 h-12 rounded-full bg-primary text-white flex justify-center items-center z-20 shadow-md animate-bounce"
-          onClick={(e) => {
-            e.preventDefault()
-            scrollToSection('services')
-          }}
-        >
-          <i className="fas fa-chevron-down"></i>
-        </a>
+        {/* Indicateur de défilement en bas */}
+        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-20">
+          <a 
+            href="#services" 
+            className="w-12 h-12 rounded-full bg-primary flex items-center justify-center animate-bounce"
+            aria-label="Défiler vers le bas"
+          >
+            <i className="fas fa-chevron-down text-white"></i>
+          </a>
+        </div>
       </section>
       
       {/* Services Section */}

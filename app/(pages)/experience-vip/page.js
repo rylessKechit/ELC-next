@@ -8,9 +8,7 @@ import { motion, useAnimation } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 
 // Images
-import vipHero from '@/public/assets/images/vip-hero.jpg'
 import vipInterieur from '@/public/assets/images/vip-interieur.jpg'
-import vipService from '@/public/assets/images/vip-service.jpg'
 import vipChauffeur from '@/public/assets/images/vip-chauffeur.jpg'
 
 export default function ExperienceVipPage() {

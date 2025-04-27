@@ -133,3 +133,58 @@
   .stagger-delay-5 { transition-delay: 500ms; }
   .stagger-delay-6 { transition-delay: 600ms; }
 }
+
+/* Ajout à styles/globals.css pour améliorer le contraste du texte */
+
+@layer utilities {
+  /* Ombre de texte pour améliorer la lisibilité */
+  .text-shadow-sm {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  }
+
+  .text-shadow-md {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  .text-shadow-lg {
+    text-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Styles pour les titres héroïques */
+  .hero-title {
+    @apply font-bold tracking-wider;
+  }
+
+  .hero-title-primary {
+    @apply text-primary hero-title text-shadow-md;
+  }
+
+  .hero-title-secondary {
+    @apply text-white hero-title text-shadow-md;
+  }
+
+  /* Style pour les indicateurs de dropdown */
+  .dropdown-indicator {
+    @apply relative;
+  }
+
+  .dropdown-indicator::after {
+    content: "";
+    @apply absolute bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0 
+            border-l-[4px] border-l-transparent 
+            border-r-[4px] border-r-transparent 
+            border-t-[4px] border-t-primary;
+  }
+
+  /* Style pour le bouton de défilement */
+  .scroll-button {
+    @apply absolute bottom-10 left-1/2 transform -translate-x-1/2 
+           w-14 h-14 rounded-full bg-primary text-white 
+           flex flex-col justify-center items-center z-20 
+           shadow-md animate-bounce transition-all duration-300;
+  }
+
+  .scroll-button:hover {
+    @apply bg-primary-dark shadow-lg;
+  }
+}
