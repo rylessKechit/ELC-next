@@ -8,7 +8,6 @@ import { motion, useAnimation } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 
 // Images
-import aboutHero from '@/public/assets/images/about-hero.jpg'
 import founderImage1 from '@/public/assets/images/founder-1.jpg'
 import founderImage2 from '@/public/assets/images/founder-2.jpg'
 import certificateImage from '@/public/assets/images/certificate.jpg'
