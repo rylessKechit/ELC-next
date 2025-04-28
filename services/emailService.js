@@ -10,7 +10,7 @@ export const emailService = {
    * @returns {Object} - Transporteur NodeMailer configuré
    */
   createTransporter() {
-    // Dans un environnement de production, ces valeurs seraient récupérées des variables d'environnement
+    // Récupérer les paramètres SMTP depuis les variables d'environnement
     const host = process.env.EMAIL_HOST || 'smtp.example.com'
     const port = parseInt(process.env.EMAIL_PORT || '587', 10)
     const secure = process.env.EMAIL_SECURE === 'true'
@@ -50,15 +50,23 @@ export const emailService = {
         mailOptions.attachments = options.attachments
       }
       
-      // En mode développement, simuler l'envoi
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Simulation d\'envoi d\'email:')
+      // Vérifier si on est en mode test ou sans configuration SMTP
+      if (!process.env.EMAIL_HOST || process.env.EMAIL_HOST === 'smtp.example.com') {
+        console.log('⚠️ Configuration SMTP incomplète. Simulation d\'envoi d\'email:')
         console.log(mailOptions)
-        return { messageId: `dev-${Date.now()}` }
+        
+        // Retourner un ID de message simulé pour le développement
+        return { 
+          messageId: `dev-${Date.now()}`,
+          simulated: true,
+          status: 'Simulated - Missing EMAIL_HOST configuration'
+        }
       }
       
-      // Envoyer l'email
+      // Envoyer l'email réellement
+      console.log(`📧 Envoi d'email à ${options.to}`)
       const info = await transporter.sendMail(mailOptions)
+      console.log(`📧 Email envoyé: ${info.messageId}`)
       return info
     } catch (error) {
       console.error('Erreur lors de l\'envoi de l\'email:', error)

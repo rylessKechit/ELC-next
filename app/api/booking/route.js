@@ -2,8 +2,6 @@
 import { NextResponse } from 'next/server'
 import { validateBookingRequest } from '@/lib/validator'
 import { emailService } from '@/services/emailService'
-// Suppression de l'import WhatsApp
-// import { whatsappService } from '@/services/whatsappService'
 
 /**
  * Génère un ID unique pour la réservation
@@ -86,37 +84,34 @@ export async function POST(request) {
       customerPhone: customerInfo.phone
     }
     
-    // Envoyer un email de confirmation au client (si le service est disponible)
+    // Envoyer un email de confirmation au client
     try {
-      if (typeof emailService.sendBookingConfirmation === 'function') {
-        await emailService.sendBookingConfirmation(booking)
-      } else {
-        console.log('Service d\'email non disponible - simulation d\'envoi')
+      console.log('Envoi de l\'email de confirmation de réservation...')
+      const emailResult = await emailService.sendBookingConfirmation(booking)
+      console.log('Résultat de l\'envoi d\'email:', emailResult)
+      
+      // Envoyer également une notification à l'administrateur
+      try {
+        console.log('Envoi de la notification admin...')
+        await emailService.sendBookingNotification(booking)
+      } catch (adminEmailError) {
+        console.error('Erreur lors de l\'envoi de la notification admin:', adminEmailError)
+        // Ne pas échouer la réservation si l'email admin échoue
       }
     } catch (emailError) {
       console.error('Erreur lors de l\'envoi de l\'email de confirmation:', emailError)
-      // Ne pas échouer la réservation si l'email échoue
+      
+      // On continue le processus mais on enregistre l'erreur
+      // Dans un environnement de production, on pourrait mettre cette réservation dans une file d'attente pour renvoyer l'email plus tard
+      booking.emailSent = false;
+      booking.emailError = emailError.message;
     }
-    
-    // Suppression du code d'envoi de notification WhatsApp
-    /*
-    // Envoyer une notification WhatsApp à l'administrateur (si le service est disponible)
-    try {
-      if (typeof whatsappService.sendAdminNotification === 'function') {
-        await whatsappService.sendAdminNotification(booking)
-      } else {
-        console.log('Service WhatsApp non disponible - simulation d\'envoi')
-      }
-    } catch (whatsappError) {
-      console.error('Erreur lors de l\'envoi de la notification WhatsApp:', whatsappError)
-      // Ne pas échouer la réservation si la notification échoue
-    }
-    */
     
     // Retourner la réservation confirmée
     return NextResponse.json({
       success: true,
-      booking
+      booking,
+      emailStatus: booking.emailSent === false ? 'failed' : 'sent'
     })
   } catch (error) {
     console.error('Erreur lors de la création de la réservation:', error)

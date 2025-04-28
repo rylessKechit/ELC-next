@@ -1,4 +1,4 @@
-// app/page.js
+// app/(pages)/page.js
 "use client"
 
 import { useState, useEffect, useRef } from 'react'
@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { motion, useAnimation } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import BookingForm from '@/components/booking/BookingForm'
+import Head from 'next/head'
 
 // Images
 import TeslaModel3 from '@/public/assets/images/tesla-model-3.png'
@@ -29,6 +30,7 @@ export default function HomePage() {
   const testimonialsControls = useAnimation()
   const bookingControls = useAnimation()
   const partnersControls = useAnimation()
+  const locationsControls = useAnimation() // Nouveau pour la section zones d'intervention
 
   // Intersection observers
   const [heroRef, heroInView] = useInView({ threshold: 0.1, triggerOnce: true })
@@ -38,6 +40,7 @@ export default function HomePage() {
   const [testimonialsRef, testimonialsInView] = useInView({ threshold: 0.1, triggerOnce: true })
   const [bookingRef, bookingInView] = useInView({ threshold: 0.1, triggerOnce: true })
   const [partnersRef, partnersInView] = useInView({ threshold: 0.1, triggerOnce: true })
+  const [locationsRef, locationsInView] = useInView({ threshold: 0.1, triggerOnce: true }) // Nouveau
 
   // Current testimonial index for carousel
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
@@ -60,11 +63,12 @@ export default function HomePage() {
     if (testimonialsInView) testimonialsControls.start('visible')
     if (bookingInView) bookingControls.start('visible')
     if (partnersInView) partnersControls.start('visible')
+    if (locationsInView) locationsControls.start('visible') // Nouveau
   }, [
     heroInView, servicesInView, fleetInView, experienceInView, 
-    testimonialsInView, bookingInView, partnersInView,
+    testimonialsInView, bookingInView, partnersInView, locationsInView,
     heroControls, servicesControls, fleetControls, experienceControls,
-    testimonialsControls, bookingControls, partnersControls
+    testimonialsControls, bookingControls, partnersControls, locationsControls
   ])
 
   // Smooth scroll function
@@ -87,26 +91,49 @@ export default function HomePage() {
     {
       name: 'Tesla Model 3',
       image: TeslaModel3,
-      description: 'Élégance et confort inégalés pour vos déplacements d\'affaires et événements prestigieux.',
+      description: 'Élégance et confort écologique pour vos déplacements en Essonne et dans toute l\'Île-de-France.',
       features: ['Jusqu\'à 3 passagers', 'Wi-Fi gratuit', 'Boissons fraîches', 'Sièges en cuir premium']
     },
     {
       name: 'Mercedes-Benz Classe S',
       image: MercedesClassS,
-      description: 'Élégance et confort inégalés pour vos déplacements d\'affaires et événements prestigieux.',
+      description: 'Élégance et confort inégalés pour vos déplacements d\'affaires à Longjumeau et dans le 91.',
       features: ['Jusqu\'à 3 passagers', 'Wi-Fi gratuit', 'Boissons fraîches', 'Sièges en cuir premium']
     },
     {
       name: 'BMW Série 7',
       image: BmwSerie7,
-      description: 'L\'alliance parfaite entre technologie de pointe et luxe raffiné pour vos trajets professionnels.',
+      description: 'L\'alliance parfaite entre technologie de pointe et luxe raffiné pour vos trajets dans l\'Essonne.',
       features: ['Jusqu\'à 3 passagers', 'Écrans tactiles individuels', 'Système audio haut de gamme', 'Ambiance lumineuse personnalisable']
     },
     {
       name: 'Mercedes-Benz Classe V VIP',
       image: MercedesVClass,
-      description: 'Espace généreux et aménagements luxueux pour vos déplacements en groupe.',
+      description: 'Espace généreux et aménagements luxueux pour vos déplacements en groupe dans le département 91.',
       features: ['Jusqu\'à 7 passagers', 'Configuration salon privé', 'Bar intégré', 'Isolation acoustique renforcée']
+    }
+  ]
+
+  // Zone d'intervention - Nouvelle section
+  const serviceAreas = [
+    {
+      title: "ESSONNE (91)",
+      description: "Service de chauffeurs privés premium dans tout le département de l'Essonne",
+      cities: ["Évry-Courcouronnes", "Longjumeau", "Massy", "Palaiseau", "Savigny-sur-Orge", "Athis-Mons", "Viry-Châtillon", "Sainte-Geneviève-des-Bois", "Brétigny-sur-Orge", "Corbeil-Essonnes"],
+      link: "/chauffeurs-essonne-91"
+    },
+    {
+      title: "LONGJUMEAU",
+      description: "Chauffeurs professionnels à Longjumeau pour tous vos déplacements",
+      nearby: ["Massy", "Chilly-Mazarin", "Morangis", "Épinay-sur-Orge", "Saulx-les-Chartreux"],
+      specialFeatures: ["Transferts aéroport", "Transports d'affaires", "Événements à Longjumeau", "Service 24/7"],
+      link: "/chauffeurs-longjumeau"
+    },
+    {
+      title: "PARIS & ÎLE-DE-FRANCE",
+      description: "Transport VTC haut de gamme dans toute la région parisienne",
+      highlights: ["Aéroports (CDG, Orly, Beauvais)", "Gares parisiennes", "Sites touristiques", "Centres d'affaires", "Événements spéciaux"],
+      link: "/service-chauffeurs-ile-de-france"
     }
   ]
 
@@ -115,19 +142,19 @@ export default function HomePage() {
     {
       name: 'Sophie Marceau',
       role: 'Actrice',
-      text: 'Un service d\'exception que j\'utilise régulièrement lors de mes déplacements professionnels. Discrétion, ponctualité et confort absolu.',
+      text: 'Un service de chauffeurs d\'exception que j\'utilise régulièrement lors de mes déplacements dans l\'Essonne. Discrétion, ponctualité et confort absolu.',
       image: '/assets/images/testimonial-1.jpg'
     },
     {
       name: 'Jean Dujardin',
       role: 'Acteur et Producteur',
-      text: 'Une prestation VIP impeccable pour tous mes trajets entre Paris et les festivals. Je recommande sans hésitation ce service haut de gamme.',
+      text: 'Une prestation VTC impeccable pour tous mes trajets entre Paris et Longjumeau. Je recommande sans hésitation ce service de chauffeurs haut de gamme dans le 91.',
       image: '/assets/images/testimonial-2.jpg'
     },
     {
       name: 'Marion Cotillard',
       role: 'Actrice',
-      text: 'Le summum du luxe et de l\'élégance pour vos déplacements. Un chauffeur toujours disponible et parfaitement professionnel.',
+      text: 'Le summum du luxe et de l\'élégance pour vos déplacements avec chauffeur en Essonne. Un chauffeur toujours disponible et parfaitement professionnel.',
       image: '/assets/images/testimonial-3.jpg'
     }
   ]
@@ -192,17 +219,17 @@ export default function HomePage() {
         <div className="container relative z-20 mx-auto px-6 md:ml-[10%] md:max-w-[650px] text-white">
           <h1 className="text-center md:text-left mb-6">
             <span className="text-primary block font-bold text-5xl">ELYSIAN</span>
-            <span className="text-white block font-bold text-5xl">LUXURY</span>
             <span className="text-white block font-bold text-5xl">CHAUFFEURS</span>
+            <span className="text-white block font-bold text-5xl">ESSONNE (91)</span>
           </h1>
           
           <p className="text-center md:text-left font-tertiary text-xl italic text-primary mb-6">
-            <span className="bg-black/30 px-2 py-1 rounded">L'excellence du transport VIP pour une clientèle d'exception</span>
+            <span className="bg-black/30 px-2 py-1 rounded">Service de chauffeurs privés de luxe à Longjumeau et dans tout le département 91</span>
           </p>
           
           <p className="text-center md:text-left text-lg mb-8 text-white">
-            Service de chauffeur privé haut de gamme pour vos déplacements professionnels, 
-            événements prestigieux et voyages d'affaires.
+            Service de chauffeurs privés haut de gamme pour vos déplacements professionnels, 
+            événements prestigieux et voyages d'affaires en Essonne et Île-de-France.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 mt-10 justify-center md:justify-start">
@@ -241,8 +268,8 @@ export default function HomePage() {
       >
         <div className="container-custom">
           <div className="text-center mb-16">
-            <h2>NOS PRESTATIONS D'EXCEPTION</h2>
-            <p className="subtitle">Des services personnalisés pour vos exigences les plus élevées</p>
+            <h2>NOS SERVICES DE CHAUFFEURS PRIVÉS</h2>
+            <p className="subtitle">Des chauffeurs expérimentés pour vos exigences les plus élevées dans l'Essonne</p>
           </div>
           
           <motion.div 
@@ -255,10 +282,10 @@ export default function HomePage() {
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6 mx-auto">
                 <i className="fas fa-crown text-primary text-2xl"></i>
               </div>
-              <h3 className="text-xl mb-4 text-center">TRANSFERT VIP</h3>
+              <h3 className="text-xl mb-4 text-center">TRANSFERT VIP AVEC CHAUFFEUR</h3>
               <p className="text-gray-600 mb-6 text-center">
-                Une expérience d'exception avec chauffeur privé dédié, véhicule de luxe et service personnalisé. 
-                Confidentialité, élégance et attention aux moindres détails pour vos déplacements exclusifs.
+                Une expérience d'exception avec chauffeur privé dédié dans l'Essonne (91), véhicule de luxe et service personnalisé. 
+                Confidentialité, élégance et attention aux moindres détails pour vos déplacements exclusifs à Longjumeau et environs.
               </p>
               <Link href="/experience-vip" className="flex items-center justify-center text-primary font-medium hover:text-primary-dark transition-colors">
                 Découvrir
@@ -270,9 +297,9 @@ export default function HomePage() {
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6 mx-auto">
                 <i className="fas fa-glass-cheers text-primary text-2xl"></i>
               </div>
-              <h3 className="text-xl mb-4 text-center">ÉVÉNEMENTS & SOIRÉES</h3>
+              <h3 className="text-xl mb-4 text-center">CHAUFFEURS POUR ÉVÉNEMENTS</h3>
               <p className="text-gray-600 mb-6 text-center">
-                Service de prestige pour vos événements spéciaux, soirées de gala, tapis rouges et premières. Arrivez avec style et distinction.
+                Service de chauffeurs professionnels pour vos événements spéciaux à Longjumeau et dans tout le département 91, soirées de gala et premières. Arrivez avec style et distinction.
               </p>
               <Link href="/services-evenements" className="flex items-center justify-center text-primary font-medium hover:text-primary-dark transition-colors">
                 Découvrir
@@ -284,9 +311,9 @@ export default function HomePage() {
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6 mx-auto">
                 <i className="fas fa-route text-primary text-2xl"></i>
               </div>
-              <h3 className="text-xl mb-4 text-center">VOYAGES LONGUE DISTANCE</h3>
+              <h3 className="text-xl mb-4 text-center">CHAUFFEURS LONGUE DISTANCE</h3>
               <p className="text-gray-600 mb-6 text-center">
-                Confort et luxe pour vos déplacements entre villes, voyages d'affaires et touristiques. Service sur-mesure sans limite de kilométrage.
+                Confort et luxe avec nos chauffeurs pour vos déplacements entre l'Essonne et les autres villes françaises. Service sur-mesure sans limite de kilométrage au départ du 91.
               </p>
               <Link href="/services-longue-distance" className="flex items-center justify-center text-primary font-medium hover:text-primary-dark transition-colors">
                 Découvrir
@@ -298,9 +325,9 @@ export default function HomePage() {
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6 mx-auto">
                 <i className="fas fa-briefcase text-primary text-2xl"></i>
               </div>
-              <h3 className="text-xl mb-4 text-center">TRANSPORT D'AFFAIRES</h3>
+              <h3 className="text-xl mb-4 text-center">CHAUFFEURS PROFESSIONNELS</h3>
               <p className="text-gray-600 mb-6 text-center">
-                Solutions dédiées aux entreprises et dirigeants exigeants. Confidentialité, ponctualité et excellence pour vos rendez-vous professionnels.
+                Chauffeurs dédiés aux entreprises et dirigeants exigeants de Longjumeau et de l'Essonne. Confidentialité, ponctualité et excellence pour vos rendez-vous professionnels.
               </p>
               <Link href="/services-affaires" className="flex items-center justify-center text-primary font-medium hover:text-primary-dark transition-colors">
                 Découvrir
@@ -310,17 +337,110 @@ export default function HomePage() {
           </motion.div>
         </div>
       </section>
+
+      {/* Zones d'intervention - Nouvelle section */}
+      <section 
+        id="locations" 
+        ref={locationsRef} 
+        className="py-24 bg-gray-50"
+      >
+        <div className="container-custom">
+          <div className="text-center mb-16">
+            <h2>NOS CHAUFFEURS DANS L'ESSONNE ET À LONGJUMEAU</h2>
+            <p className="subtitle">Service de transport de qualité dans le département 91 et ses environs</p>
+          </div>
+          
+          <motion.div 
+            initial="hidden"
+            animate={locationsControls}
+            variants={staggerContainer}
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          >
+            {serviceAreas.map((area, index) => (
+              <motion.div 
+                key={index}
+                variants={fadeInVariant}
+                className="bg-white rounded-lg shadow-md overflow-hidden"
+              >
+                <div className="bg-primary p-4">
+                  <h3 className="text-xl text-white font-bold text-center">{area.title}</h3>
+                </div>
+                <div className="p-6">
+                  <p className="text-gray-700 mb-4 text-center">{area.description}</p>
+                  
+                  {area.cities && (
+                    <div className="mb-4">
+                      <h4 className="font-semibold mb-2 text-gray-800">Principales communes desservies:</h4>
+                      <ul className="grid grid-cols-2 gap-2">
+                        {area.cities.slice(0, 8).map((city, cityIndex) => (
+                          <li key={cityIndex} className="flex items-center text-sm">
+                            <i className="fas fa-check text-primary mr-2 text-xs"></i>
+                            {city}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  {area.nearby && (
+                    <div className="mb-4">
+                      <h4 className="font-semibold mb-2 text-gray-800">Villes proches:</h4>
+                      <p className="text-sm text-gray-600">{area.nearby.join(', ')}</p>
+                    </div>
+                  )}
+                  
+                  {area.specialFeatures && (
+                    <div className="mb-4">
+                      <h4 className="font-semibold mb-2 text-gray-800">Nos services spécifiques:</h4>
+                      <ul className="space-y-1">
+                        {area.specialFeatures.map((feature, featureIndex) => (
+                          <li key={featureIndex} className="flex items-center text-sm">
+                            <i className="fas fa-star text-primary mr-2 text-xs"></i>
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  {area.highlights && (
+                    <div className="mb-4">
+                      <h4 className="font-semibold mb-2 text-gray-800">Destinations prisées:</h4>
+                      <p className="text-sm text-gray-600">{area.highlights.join(' • ')}</p>
+                    </div>
+                  )}
+                  
+                  <div className="text-center mt-4">
+                    <Link href={area.link} className="inline-block px-4 py-2 border border-primary text-primary rounded-full hover:bg-primary hover:text-white transition-colors duration-300 text-sm font-medium">
+                      En savoir plus
+                    </Link>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+          
+          <div className="mt-12 text-center">
+            <p className="text-gray-600 mb-6">
+              Nos chauffeurs professionnels connaissent parfaitement le département de l'Essonne (91) et sont à votre disposition 24h/24 pour tous vos déplacements à Longjumeau et dans toute la région.
+            </p>
+            <a href="#booking" className="inline-block py-3 px-6 bg-primary text-white font-medium rounded-full hover:bg-primary-dark transition-colors duration-300">
+              Réserver un chauffeur
+            </a>
+          </div>
+        </div>
+      </section>
       
       {/* Fleet Section */}
       <section 
         id="fleet" 
         ref={fleetRef} 
-        className="py-24 bg-gray-50 relative overflow-hidden"
+        className="py-24 bg-white relative overflow-hidden"
       >
         <div className="container-custom">
           <div className="text-center mb-16">
-            <h2>NOTRE FLOTTE PREMIUM</h2>
-            <p className="subtitle">Des véhicules d'exception pour une expérience inoubliable</p>
+            <h2>NOTRE FLOTTE DE VÉHICULES AVEC CHAUFFEUR</h2>
+            <p className="subtitle">Des véhicules d'exception avec chauffeur pour une expérience inoubliable en Essonne</p>
           </div>
           
           <div className="space-y-16">
@@ -337,7 +457,7 @@ export default function HomePage() {
                 <div className="w-full md:w-2/5 relative h-[300px] md:h-auto overflow-hidden">
                   <Image 
                     src={item.image}
-                    alt={item.name}
+                    alt={`${item.name} avec chauffeur privé dans l'Essonne`}
                     fill
                     className="object-cover transition-transform duration-500 hover:scale-105"
                     priority={index === 0}
@@ -355,7 +475,7 @@ export default function HomePage() {
                     ))}
                   </ul>
                   <Link href="/flotte-vehicules" className="btn btn-primary">
-                    Réserver ce véhicule
+                    Réserver ce véhicule avec chauffeur
                   </Link>
                 </div>
               </motion.div>
@@ -364,7 +484,7 @@ export default function HomePage() {
           
           <div className="text-center mt-16">
             <Link href="/flotte-vehicules" className="inline-flex items-center text-primary text-lg font-medium hover:text-primary-dark transition-colors">
-              Découvrir toute notre flotte
+              Découvrir toute notre flotte avec chauffeur
               <i className="fas fa-arrow-right ml-2"></i>
             </Link>
           </div>
@@ -375,7 +495,7 @@ export default function HomePage() {
       <section 
         id="experience" 
         ref={experienceRef} 
-        className="py-24 bg-white"
+        className="py-24 bg-gray-50"
       >
         <div className="container-custom">
           <div className="flex flex-col lg:flex-row items-center gap-16">
@@ -386,12 +506,12 @@ export default function HomePage() {
               className="lg:w-1/2"
             >
               <div className="mb-6">
-                <h2 className="text-left">L'EXPÉRIENCE VIP</h2>
+                <h2 className="text-left">L'EXPÉRIENCE VIP AVEC NOS CHAUFFEURS</h2>
                 <div className="h-0.5 w-12 bg-primary my-6"></div>
-                <p className="text-gray-600">Bien plus qu'un simple transport, une expérience unique</p>
+                <p className="text-gray-600">Plus qu'un simple transport, une expérience unique avec des chauffeurs professionnels</p>
               </div>
               <p className="text-gray-600 mb-8">
-                Chaque voyage avec notre service de chauffeur privé est une expérience raffinée, 
+                Chaque voyage avec notre service de chauffeurs privés dans l'Essonne (91) est une expérience raffinée, 
                 où chaque détail est pensé pour répondre à vos attentes les plus exigeantes.
               </p>
               <ul className="space-y-6 mb-10">
@@ -421,7 +541,7 @@ export default function HomePage() {
                 </li>
               </ul>
               <Link href="/experience-vip" className="btn btn-primary">
-                Découvrir l'expérience VIP
+                Découvrir l'expérience VIP avec nos chauffeurs
               </Link>
             </motion.div>
             
@@ -434,7 +554,7 @@ export default function HomePage() {
               <div className="rounded-lg overflow-hidden shadow-xl relative">
                 <Image 
                   src={ExperienceVip}
-                  alt="Expérience VIP"
+                  alt="Expérience chauffeur VIP en Essonne (91)"
                   width={600}
                   height={500}
                   className="object-cover w-full h-[500px]"
@@ -450,12 +570,12 @@ export default function HomePage() {
       <section 
         id="testimonials" 
         ref={testimonialsRef} 
-        className="py-24 bg-gray-50 relative"
+        className="py-24 bg-white relative"
       >
         <div className="container-custom">
           <div className="text-center mb-16">
-            <h2>ILS NOUS FONT CONFIANCE</h2>
-            <p className="subtitle">Ce que disent nos clients d'exception</p>
+            <h2>AVIS SUR NOS CHAUFFEURS</h2>
+            <p className="subtitle">Ce que disent nos clients sur notre service de chauffeurs en Essonne</p>
           </div>
           
           <div className="max-w-3xl mx-auto relative">
@@ -481,7 +601,7 @@ export default function HomePage() {
                   <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow-md">
                     <Image 
                       src={testimonial.image} 
-                      alt={testimonial.name}
+                      alt={`Avis client sur chauffeurs Essonne - ${testimonial.name}`}
                       width={64}
                       height={64}
                       className="w-full h-full object-cover"
@@ -513,12 +633,12 @@ export default function HomePage() {
       <section 
         id="booking" 
         ref={bookingRef} 
-        className="py-24 bg-white"
+        className="py-24 bg-gray-50"
       >
         <div className="container-custom">
           <div className="text-center mb-16">
-            <h2>RÉSERVEZ VOTRE EXPÉRIENCE DE LUXE</h2>
-            <p className="subtitle">Un service sur-mesure pour répondre à toutes vos exigences</p>
+            <h2>RÉSERVEZ VOTRE CHAUFFEUR PRIVÉ EN ESSONNE</h2>
+            <p className="subtitle">Un service de chauffeurs sur-mesure pour répondre à toutes vos exigences dans le 91</p>
           </div>
           
           <motion.div
@@ -536,12 +656,12 @@ export default function HomePage() {
       <section 
         id="partners" 
         ref={partnersRef} 
-        className="py-24 bg-gray-50"
+        className="py-24 bg-white"
       >
         <div className="container-custom">
           <div className="text-center mb-16">
-            <h2>NOS PARTENAIRES DE PRESTIGE</h2>
-            <p className="subtitle">Ils nous accordent leur confiance au quotidien</p>
+            <h2>NOS PARTENAIRES EN ESSONNE ET ÎLE-DE-FRANCE</h2>
+            <p className="subtitle">Ils font confiance à nos chauffeurs professionnels au quotidien</p>
           </div>
           
           <motion.div
@@ -551,21 +671,70 @@ export default function HomePage() {
             className="flex flex-wrap justify-center items-center gap-12 lg:gap-16"
           >
             <div className="partner-logo h-20 flex items-center opacity-60 hover:opacity-100 transition-opacity">
-              <Image src={logoCannesFestival} alt="Festival de Cannes" height={80} className="max-h-full w-auto filter grayscale hover:grayscale-0 transition-all" />
+              <Image src={logoCannesFestival} alt="Festival de Cannes - partenaire chauffeurs VIP" height={80} className="max-h-full w-auto filter grayscale hover:grayscale-0 transition-all" />
             </div>
             <div className="partner-logo h-20 flex items-center opacity-60 hover:opacity-100 transition-opacity">
-              <Image src={logoRitzParis} alt="Ritz Paris" height={80} className="max-h-full w-auto filter grayscale hover:grayscale-0 transition-all" />
+              <Image src={logoRitzParis} alt="Ritz Paris - service de chauffeurs de luxe" height={80} className="max-h-full w-auto filter grayscale hover:grayscale-0 transition-all" />
             </div>
             <div className="partner-logo h-20 flex items-center opacity-60 hover:opacity-100 transition-opacity">
-              <Image src={logoLouisVuitton} alt="Louis Vuitton" height={80} className="max-h-full w-auto filter grayscale hover:grayscale-0 transition-all" />
+              <Image src={logoLouisVuitton} alt="Louis Vuitton - transport VIP avec chauffeur" height={80} className="max-h-full w-auto filter grayscale hover:grayscale-0 transition-all" />
             </div>
             <div className="partner-logo h-20 flex items-center opacity-60 hover:opacity-100 transition-opacity">
-              <Image src={logoChanel} alt="Chanel" height={80} className="max-h-full w-auto filter grayscale hover:grayscale-0 transition-all" />
+              <Image src={logoChanel} alt="Chanel - chauffeurs professionnels événementiel" height={80} className="max-h-full w-auto filter grayscale hover:grayscale-0 transition-all" />
             </div>
             <div className="partner-logo h-20 flex items-center opacity-60 hover:opacity-100 transition-opacity">
-              <Image src={logoAirFrance} alt="Air France" height={80} className="max-h-full w-auto filter grayscale hover:grayscale-0 transition-all" />
+              <Image src={logoAirFrance} alt="Air France - service chauffeurs aéroport Essonne" height={80} className="max-h-full w-auto filter grayscale hover:grayscale-0 transition-all" />
             </div>
           </motion.div>
+        </div>
+      </section>
+      
+      {/* FAQ Section - Nouvelle section pour SEO */}
+      <section className="py-24 bg-gray-50">
+        <div className="container-custom">
+          <div className="text-center mb-16">
+            <h2>QUESTIONS FRÉQUENTES SUR NOS CHAUFFEURS</h2>
+            <p className="subtitle">Tout ce que vous devez savoir sur notre service de chauffeurs en Essonne</p>
+          </div>
+          
+          <div className="max-w-3xl mx-auto">
+            <div className="space-y-6">
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h3 className="text-xl font-medium mb-3">Comment réserver un chauffeur à Longjumeau et dans l'Essonne ?</h3>
+                <p className="text-gray-600">
+                  Vous pouvez réserver un chauffeur pour Longjumeau et toute l'Essonne en quelques clics via notre formulaire en ligne, en appelant notre service client au 01 23 45 67 89 ou par email. Nos chauffeurs sont disponibles 24h/24 et 7j/7 dans tout le département 91.
+                </p>
+              </div>
+              
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h3 className="text-xl font-medium mb-3">Quels sont les tarifs pour un service de chauffeur dans le 91 ?</h3>
+                <p className="text-gray-600">
+                  Nos tarifs de chauffeurs dans l'Essonne débutent à partir de 30€, avec un prix au kilomètre qui varie selon le type de véhicule. Vous pouvez obtenir une estimation précise en utilisant notre calculateur en ligne qui prend en compte votre trajet spécifique dans le 91.
+                </p>
+              </div>
+              
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h3 className="text-xl font-medium mb-3">Vos chauffeurs connaissent-ils bien Longjumeau et l'Essonne ?</h3>
+                <p className="text-gray-600">
+                  Absolument ! Nos chauffeurs sont des professionnels qui connaissent parfaitement Longjumeau et l'ensemble du département de l'Essonne (91). Leur expertise locale garantit des trajets optimisés et une connaissance précise des meilleurs itinéraires dans la région.
+                </p>
+              </div>
+              
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h3 className="text-xl font-medium mb-3">Proposez-vous des transferts aéroport depuis l'Essonne ?</h3>
+                <p className="text-gray-600">
+                  Oui, nous proposons des services de transfert avec chauffeur entre tous les points de l'Essonne (91) et les aéroports parisiens (Orly, Roissy CDG, Le Bourget). Nos chauffeurs assurent des transferts ponctuels et confortables, avec suivi des vols en temps réel.
+                </p>
+              </div>
+              
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h3 className="text-xl font-medium mb-3">Peut-on réserver un chauffeur pour toute la journée à Longjumeau ?</h3>
+                <p className="text-gray-600">
+                  Bien sûr, nous proposons des services de mise à disposition avec chauffeur à la journée ou à la demi-journée à Longjumeau et dans toute l'Essonne. Idéal pour vos rendez-vous professionnels multiples ou pour découvrir la région en toute sérénité.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
       
@@ -574,8 +743,8 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-r from-black/90 to-black/80 z-0"></div>
         <div className="container-custom relative z-10">
           <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-white text-3xl md:text-4xl mb-6 after:bg-primary">Prêt à vivre l'excellence ?</h2>
-            <p className="text-gray-300 text-lg mb-10">Contactez-nous dès maintenant pour réserver votre expérience de transport VIP.</p>
+            <h2 className="text-white text-3xl md:text-4xl mb-6 after:bg-primary">Réservez votre chauffeur en Essonne dès maintenant</h2>
+            <p className="text-gray-300 text-lg mb-10">Un service de chauffeurs professionnels est à votre disposition dans tout le département 91, y compris à Longjumeau.</p>
             <div className="flex flex-col sm:flex-row justify-center gap-6">
               <Link href="/contact" className="btn btn-primary">
                 Nous contacter
