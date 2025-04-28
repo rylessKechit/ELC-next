@@ -19,7 +19,7 @@ const BookingForm = () => {
   const [error, setError] = useState('');
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [bookingResult, setBookingResult] = useState(null);
-  
+  const [mapReady, setMapReady] = useState(false)
   // États pour les champs conditionnels
   const [isAirport, setIsAirport] = useState(false);
   const [isTrainStation, setIsTrainStation] = useState(false);
@@ -123,6 +123,15 @@ const BookingForm = () => {
   const handleVehicleSelect = (vehicleType, priceInfo) => {
     setValue('vehicleType', vehicleType);
     setPriceEstimate(priceInfo);
+    
+    // Réinitialiser l'état de la carte pour qu'elle se charge correctement
+    // après la sélection du véhicule
+    setMapReady(false);
+    
+    // Retarder légèrement l'activation de la carte pour permettre au DOM de se mettre à jour
+    setTimeout(() => {
+      setMapReady(true);
+    }, 500);
   };
   
   // Calcul du prix
@@ -741,108 +750,131 @@ const BookingForm = () => {
               />
             </div>
             
-            {/* Route Map if we have addresses */}
-            {formValues.pickupAddress && formValues.dropoffAddress && (
-              <div className="mb-6">
-                <h4 className="text-lg font-semibold mb-4">Itinéraire</h4>
-                <RouteMap 
-                  pickupAddress={formValues.pickupAddress}
-                  dropoffAddress={formValues.dropoffAddress}
-                  pickupPlaceId={formValues.pickupAddressPlaceId}
-                  dropoffPlaceId={formValues.dropoffAddressPlaceId}
+            {/* Tous les éléments ci-dessous ne s'affichent que si un véhicule est sélectionné */}
+            {formValues.vehicleType && (
+              <>
+                {/* Route Map if we have addresses */}
+                {formValues.pickupAddress && formValues.dropoffAddress && (
+                  <div className="mb-6">
+                    <h4 className="text-lg font-semibold mb-4">Itinéraire</h4>
+                    <div className={mapReady ? 'block' : 'hidden'}>
+                      <RouteMap 
+                        pickupAddress={formValues.pickupAddress}
+                        dropoffAddress={formValues.dropoffAddress}
+                        pickupPlaceId={formValues.pickupAddressPlaceId}
+                        dropoffPlaceId={formValues.dropoffAddressPlaceId}
+                      />
+                    </div>
+                    {!mapReady && (
+                      <div className="relative w-full h-64 md:h-80 rounded-lg overflow-hidden shadow-md flex items-center justify-center bg-gray-100">
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {/* Booking Summary */}
+                <div className="bg-gray-50 rounded-lg p-6 mt-8 mb-6">
+                  <h4 className="text-lg font-medium text-center text-gray-800 mb-6 relative pb-3 after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-12 after:h-0.5 after:bg-primary">
+                    Résumé de votre réservation
+                  </h4>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="space-y-1">
+                      <span className="text-sm text-gray-500">Départ:</span>
+                      <span className="block font-medium">{formValues.pickupAddress}</span>
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <span className="text-sm text-gray-500">Arrivée:</span>
+                      <span className="block font-medium">{formValues.dropoffAddress}</span>
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <span className="text-sm text-gray-500">Date et heure:</span>
+                      <span className="block font-medium">
+                        {new Date(`${formValues.pickupDate}T${formValues.pickupTime}`).toLocaleString('fr-FR', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </span>
+                    </div>
+                    
+                    {formValues.roundTrip && (
+                      <div className="space-y-1">
+                        <span className="text-sm text-gray-500">Retour:</span>
+                        <span className="block font-medium">
+                          {new Date(`${formValues.returnDate}T${formValues.returnTime}`).toLocaleString('fr-FR', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </span>
+                      </div>
+                    )}
+                    
+                    <div className="space-y-1">
+                      <span className="text-sm text-gray-500">Véhicule:</span>
+                      <span className="block font-medium">
+                        {availableVehicles.find(v => v.id === formValues.vehicleType)?.name || 'Non sélectionné'}
+                      </span>
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <span className="text-sm text-gray-500">Passagers:</span>
+                      <span className="block font-medium">{formValues.passengers}</span>
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <span className="text-sm text-gray-500">Bagages:</span>
+                      <span className="block font-medium">{formValues.luggage}</span>
+                    </div>
+                    
+                    {formValues.flightNumber && (
+                      <div className="space-y-1">
+                        <span className="text-sm text-gray-500">N° de vol:</span>
+                        <span className="block font-medium">{formValues.flightNumber}</span>
+                      </div>
+                    )}
+                    
+                    {formValues.trainNumber && (
+                      <div className="space-y-1">
+                        <span className="text-sm text-gray-500">N° de train:</span>
+                        <span className="block font-medium">{formValues.trainNumber}</span>
+                      </div>
+                    )}
+                    
+                    <div className="space-y-1 col-span-full flex justify-between items-center pt-4 border-t border-gray-200 mt-2">
+                      <span className="text-sm font-semibold text-gray-700">Prix total:</span>
+                      <span className="text-xl font-bold text-primary">{formatPrice(priceEstimate?.exactPrice || 0)}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* BookingConfirmation Component */}
+                <BookingConfirmation 
+                  bookingData={formValues}
+                  priceEstimate={priceEstimate}
+                  onSuccess={handleBookingSuccess}
+                  onCancel={goBack}
                 />
-              </div>
+              </>
             )}
             
-            {/* Booking Summary */}
-            <div className="bg-gray-50 rounded-lg p-6 mt-8 mb-6">
-              <h4 className="text-lg font-medium text-center text-gray-800 mb-6 relative pb-3 after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-12 after:h-0.5 after:bg-primary">
-                Résumé de votre réservation
-              </h4>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="space-y-1">
-                  <span className="text-sm text-gray-500">Départ:</span>
-                  <span className="block font-medium">{formValues.pickupAddress}</span>
-                </div>
-                
-                <div className="space-y-1">
-                  <span className="text-sm text-gray-500">Arrivée:</span>
-                  <span className="block font-medium">{formValues.dropoffAddress}</span>
-                </div>
-                
-                <div className="space-y-1">
-                  <span className="text-sm text-gray-500">Date et heure:</span>
-                  <span className="block font-medium">
-                    {new Date(`${formValues.pickupDate}T${formValues.pickupTime}`).toLocaleString('fr-FR', {
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </span>
-                </div>
-                
-                {formValues.roundTrip && (
-                  <div className="space-y-1">
-                    <span className="text-sm text-gray-500">Retour:</span>
-                    <span className="block font-medium">
-                      {new Date(`${formValues.returnDate}T${formValues.returnTime}`).toLocaleString('fr-FR', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </span>
-                  </div>
-                )}
-                
-                <div className="space-y-1">
-                  <span className="text-sm text-gray-500">Véhicule:</span>
-                  <span className="block font-medium">
-                    {availableVehicles.find(v => v.id === formValues.vehicleType)?.name || 'Non sélectionné'}
-                  </span>
-                </div>
-                
-                <div className="space-y-1">
-                  <span className="text-sm text-gray-500">Passagers:</span>
-                  <span className="block font-medium">{formValues.passengers}</span>
-                </div>
-                
-                <div className="space-y-1">
-                  <span className="text-sm text-gray-500">Bagages:</span>
-                  <span className="block font-medium">{formValues.luggage}</span>
-                </div>
-                
-                {formValues.flightNumber && (
-                  <div className="space-y-1">
-                    <span className="text-sm text-gray-500">N° de vol:</span>
-                    <span className="block font-medium">{formValues.flightNumber}</span>
-                  </div>
-                )}
-                
-                {formValues.trainNumber && (
-                  <div className="space-y-1">
-                    <span className="text-sm text-gray-500">N° de train:</span>
-                    <span className="block font-medium">{formValues.trainNumber}</span>
-                  </div>
-                )}
-                
-                <div className="space-y-1 col-span-full flex justify-between items-center pt-4 border-t border-gray-200 mt-2">
-                  <span className="text-sm font-semibold text-gray-700">Prix total:</span>
-                  <span className="text-xl font-bold text-primary">{formatPrice(priceEstimate?.exactPrice || 0)}</span>
+            {/* Si aucun véhicule n'est sélectionné, afficher un message ou une indication */}
+            {!formValues.vehicleType && (
+              <div className="mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700">
+                <div className="flex items-center">
+                  <i className="fas fa-info-circle mr-3"></i>
+                  <p>Veuillez sélectionner un véhicule pour continuer votre réservation.</p>
                 </div>
               </div>
-            </div>
-            
-            <BookingConfirmation 
-              bookingData={formValues}
-              priceEstimate={priceEstimate}
-              onSuccess={handleBookingSuccess}
-              onCancel={goBack}
-            />
+            )}
           </div>
         )}
       </form>
