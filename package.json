@@ -22,8 +22,7 @@
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "react-hook-form": "^7.46.2",
-        "react-intersection-observer": "^9.16.0",
-        "whatsapp-web.js": "^1.23.0"
+        "react-intersection-observer": "^9.16.0"
     },
     "devDependencies": {
         "autoprefixer": "^10.4.16",

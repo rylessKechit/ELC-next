@@ -4,6 +4,7 @@ import { useState } from 'react'
 
 const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, luggage }) => {
   const [showDetails, setShowDetails] = useState(null)
+  const formValues = { vehicleType: selectedVehicle };
 
   // Fonction pour formater le prix
   const formatPrice = (price) => {
@@ -13,22 +14,6 @@ const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, lugg
     }).format(price)
   }
 
-  // Fonction pour vérifier si un véhicule a une capacité suffisante
-  const hasCapacity = (vehicle) => {
-    const capacity = parseInt(vehicle.capacity.match(/\d+/)[0])
-    return capacity >= passengers
-  }
-
-  // Filtrer les véhicules qui ont une capacité suffisante
-  const suitableVehicles = vehicles.filter(hasCapacity)
-
-  // Trier par prix croissant
-  const sortedVehicles = [...suitableVehicles].sort((a, b) => a.price - b.price)
-
-  // Véhicule recommandé (2ème option si disponible)
-  const recommendedVehicle = sortedVehicles.length > 2 ? sortedVehicles[1].id : 
-                             sortedVehicles.length > 0 ? sortedVehicles[0].id : null
-
   const toggleDetails = (vehicleId) => {
     if (showDetails === vehicleId) {
       setShowDetails(null)
@@ -37,7 +22,7 @@ const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, lugg
     }
   }
 
-  if (sortedVehicles.length === 0) {
+  if (vehicles.length === 0) {
     return (
       <div className="p-8 text-center bg-gray-50 rounded-lg">
         <p className="text-gray-500">Aucun véhicule disponible pour {passengers} passagers et {luggage} bagages.</p>
@@ -45,9 +30,13 @@ const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, lugg
     )
   }
 
+  // Identifier le véhicule recommandé (le 2ème moins cher si disponible, sinon le moins cher)
+  const sortedByPrice = [...vehicles].sort((a, b) => a.price - b.price);
+  const recommendedVehicle = sortedByPrice.length > 1 ? sortedByPrice[1].id : sortedByPrice[0].id;
+
   return (
     <div className="space-y-4">
-      {sortedVehicles.map((vehicle) => (
+      {vehicles.map((vehicle) => (
         <div key={vehicle.id} className="space-y-4">
           <div 
             className={`border rounded-lg overflow-hidden cursor-pointer transition-all duration-300 ${
@@ -65,10 +54,9 @@ const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, lugg
             
             <div className="flex flex-col md:flex-row p-4">
               <div className="flex items-center justify-center md:w-14 md:mr-4 mb-3 md:mb-0">
-                {vehicle.id === 'sedan' && <i className="fas fa-car-side text-primary text-2xl"></i>}
-                {vehicle.id === 'premium' && <i className="fas fa-car text-primary text-2xl"></i>}
                 {vehicle.id === 'green' && <i className="fas fa-leaf text-green-500 text-2xl"></i>}
-                {vehicle.id === 'suv' && <i className="fas fa-truck text-primary text-2xl"></i>}
+                {vehicle.id === 'premium' && <i className="fas fa-car text-primary text-2xl"></i>}
+                {vehicle.id === 'sedan' && <i className="fas fa-car-side text-primary text-2xl"></i>}
                 {vehicle.id === 'van' && <i className="fas fa-shuttle-van text-primary text-2xl"></i>}
               </div>
               
@@ -77,7 +65,7 @@ const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, lugg
                 <p className="text-sm text-gray-500">{vehicle.desc}</p>
                 <div className="mt-2 flex flex-wrap gap-3 justify-center md:justify-start">
                   <span className="text-xs text-gray-600"><i className="fas fa-users mr-1"></i> {vehicle.capacity}</span>
-                  <span className="text-xs text-gray-600"><i className="fas fa-suitcase mr-1"></i> Jusqu'à {luggage > 5 ? 'nombreux' : luggage} bagages</span>
+                  <span className="text-xs text-gray-600"><i className="fas fa-suitcase mr-1"></i> {vehicle.luggage}</span>
                 </div>
               </div>
               
@@ -125,31 +113,31 @@ const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, lugg
                   </div>
                 )}
                 
-                {vehicle.id === 'green' && (
+                {vehicle.id === 'green' && vehicle.estimate.breakdown?.greenDiscount > 0 && (
                   <div className="flex justify-between border-b border-dashed border-gray-200 pb-2 text-green-600">
-                    <span>Supplément véhicule électrique</span>
-                    <span>{formatPrice(vehicle.estimate.breakdown.greenSupplement || 0)}</span>
+                    <span>Réduction Green</span>
+                    <span>-{formatPrice(vehicle.estimate.breakdown.greenDiscount)}</span>
                   </div>
                 )}
                 
-                {vehicle.id === 'premium' && (
+                {vehicle.id === 'premium' && vehicle.estimate.breakdown?.premiumSupplement > 0 && (
                   <div className="flex justify-between border-b border-dashed border-gray-200 pb-2 text-purple-600">
                     <span>Supplément premium</span>
-                    <span>{formatPrice(vehicle.estimate.breakdown.premiumSupplement || 0)}</span>
+                    <span>{formatPrice(vehicle.estimate.breakdown.premiumSupplement)}</span>
                   </div>
                 )}
                 
-                {vehicle.id === 'suv' && (
+                {vehicle.id === 'sedan' && vehicle.estimate.breakdown?.sedanSupplement > 0 && (
                   <div className="flex justify-between border-b border-dashed border-gray-200 pb-2 text-orange-600">
-                    <span>Supplément SUV</span>
-                    <span>{formatPrice(vehicle.estimate.breakdown.suvSupplement || 0)}</span>
+                    <span>Supplément luxe</span>
+                    <span>{formatPrice(vehicle.estimate.breakdown.sedanSupplement)}</span>
                   </div>
                 )}
                 
-                {vehicle.id === 'van' && (
+                {vehicle.id === 'van' && vehicle.estimate.breakdown?.vanSupplement > 0 && (
                   <div className="flex justify-between border-b border-dashed border-gray-200 pb-2 text-blue-600">
                     <span>Supplément Van</span>
-                    <span>{formatPrice(vehicle.estimate.breakdown.vanSupplement || 0)}</span>
+                    <span>{formatPrice(vehicle.estimate.breakdown.vanSupplement)}</span>
                   </div>
                 )}
                 
@@ -163,6 +151,7 @@ const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, lugg
                 <h4 className="font-semibold text-gray-800 mb-3">Caractéristiques du véhicule</h4>
                 <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> {vehicle.capacity}</li>
+                  <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> {vehicle.luggage}</li>
                   <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Wifi gratuit à bord</li>
                   <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Bouteille d'eau offerte</li>
                   <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Sièges en cuir</li>
@@ -172,19 +161,22 @@ const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, lugg
                       <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> 100% électrique</li>
                       <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Zéro émission CO2</li>
                       <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Écran tactile</li>
+                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Système de divertissement</li>
                     </>
                   )}
                   {vehicle.id === 'premium' && (
                     <>
                       <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Intérieur haut de gamme</li>
                       <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Minibar</li>
-                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Sièges massants</li>
+                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Éclairage d'ambiance</li>
+                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Confort supérieur</li>
                     </>
                   )}
-                  {vehicle.id === 'suv' && (
+                  {vehicle.id === 'sedan' && (
                     <>
-                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Espace bagages généreux</li>
-                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Vue surélevée</li>
+                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Finitions luxueuses</li>
+                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Sièges massants</li>
+                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Système audio premium</li>
                     </>
                   )}
                   {vehicle.id === 'van' && (
@@ -192,10 +184,41 @@ const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, lugg
                       <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Espace intérieur spacieux</li>
                       <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Configuration salon privé</li>
                       <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Séparation chauffeur</li>
+                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Tables de travail</li>
                     </>
                   )}
                 </ul>
               </div>
+              
+              {formValues && formValues.vehicleType === vehicle.id && (
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <button
+                    type="button"
+                    className="w-full py-2 px-4 bg-primary text-white font-medium rounded-md hover:bg-primary-dark transition-colors duration-300"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // La fonction onSelect est déjà appelée lors du clic sur la div parente
+                    }}
+                  >
+                    Véhicule sélectionné
+                  </button>
+                </div>
+              )}
+              
+              {(!formValues || formValues.vehicleType !== vehicle.id) && (
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <button
+                    type="button"
+                    className="w-full py-2 px-4 bg-white border border-primary text-primary font-medium rounded-md hover:bg-primary/10 transition-colors duration-300"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelect(vehicle.id, vehicle.estimate);
+                    }}
+                  >
+                    Sélectionner ce véhicule
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>

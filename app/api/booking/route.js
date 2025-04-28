@@ -2,7 +2,8 @@
 import { NextResponse } from 'next/server'
 import { validateBookingRequest } from '@/lib/validator'
 import { emailService } from '@/services/emailService'
-import { whatsappService } from '@/services/whatsappService'
+// Suppression de l'import WhatsApp
+// import { whatsappService } from '@/services/whatsappService'
 
 /**
  * Génère un ID unique pour la réservation
@@ -97,6 +98,8 @@ export async function POST(request) {
       // Ne pas échouer la réservation si l'email échoue
     }
     
+    // Suppression du code d'envoi de notification WhatsApp
+    /*
     // Envoyer une notification WhatsApp à l'administrateur (si le service est disponible)
     try {
       if (typeof whatsappService.sendAdminNotification === 'function') {
@@ -108,6 +111,7 @@ export async function POST(request) {
       console.error('Erreur lors de l\'envoi de la notification WhatsApp:', whatsappError)
       // Ne pas échouer la réservation si la notification échoue
     }
+    */
     
     // Retourner la réservation confirmée
     return NextResponse.json({
