@@ -1,0 +1,69 @@
+# robots.txt pour Elysian Luxury Chauffeurs
+# https://elysian-luxury-chauffeurs.com/
+
+User-agent: *
+Allow: /
+
+# Pages principales - autorisées pour l'indexation
+Allow: /
+Allow: /flotte-vehicules
+Allow: /experience-vip
+Allow: /services-evenements
+Allow: /services-longue-distance
+Allow: /services-affaires
+Allow: /a-propos
+Allow: /contact
+Allow: /legals
+Allow: /chauffeurs-essonne-91
+Allow: /chauffeurs-longjumeau
+Allow: /service-chauffeurs-ile-de-france
+
+# Répertoires qui ne doivent pas être indexés
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /out/
+Disallow: /.next/
+Disallow: /node_modules/
+
+# Fichiers qui ne doivent pas être indexés
+Disallow: /*.json$
+Disallow: /*.js$
+Disallow: /*.css$
+Disallow: /*.xml$
+Disallow: /*.md$
+Disallow: /*.txt$
+Disallow: /*.svg$
+Disallow: /*.scss$
+Disallow: /error
+Disallow: /404
+Disallow: /500
+
+# Permettre l'accès aux fichiers statiques importants
+Allow: /robots.txt
+Allow: /sitemap.xml
+Allow: /manifest.json
+Allow: /assets/
+Allow: /public/
+Allow: /images/
+Allow: /icons/
+
+# Règles pour les robots spécifiques
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /assets/images/
+Allow: /public/assets/images/
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+# Sitemap
+Sitemap: https://elysian-luxury-chauffeurs.com/sitemap.xml

@@ -14,7 +14,7 @@ import TeslaModel3 from '@/public/assets/images/tesla-model-3.png'
 import MercedesClassS from '@/public/assets/images/mercedes-classe-s.png'
 import BmwSerie7 from '@/public/assets/images/bmw-7-series.png'
 import MercedesVClass from '@/public/assets/images/mercedes-v-class.png'
-import ExperienceVip from '@/public/assets/images/experience-vip.jpg'
+import ExperienceVip from '@/public/assets/images/experience-vip.webp'
 import logoCannesFestival from '@/public/assets/images/logo-cannes-festival.png'
 import logoRitzParis from '@/public/assets/images/logo-ritz-paris.png'
 import logoLouisVuitton from '@/public/assets/images/logo-louis-vuitton.png'
@@ -143,19 +143,19 @@ export default function HomePage() {
       name: 'Sophie Marceau',
       role: 'Actrice',
       text: 'Un service de chauffeurs d\'exception que j\'utilise régulièrement lors de mes déplacements dans l\'Essonne. Discrétion, ponctualité et confort absolu.',
-      image: '/assets/images/testimonial-1.jpg'
+      image: '/assets/images/testimonial-1.webp'
     },
     {
       name: 'Jean Dujardin',
       role: 'Acteur et Producteur',
       text: 'Une prestation VTC impeccable pour tous mes trajets entre Paris et Longjumeau. Je recommande sans hésitation ce service de chauffeurs haut de gamme dans le 91.',
-      image: '/assets/images/testimonial-2.jpg'
+      image: '/assets/images/testimonial-2.webp'
     },
     {
       name: 'Marion Cotillard',
       role: 'Actrice',
       text: 'Le summum du luxe et de l\'élégance pour vos déplacements avec chauffeur en Essonne. Un chauffeur toujours disponible et parfaitement professionnel.',
-      image: '/assets/images/testimonial-3.jpg'
+      image: '/assets/images/testimonial-3.webp'
     }
   ]
 
@@ -207,7 +207,7 @@ export default function HomePage() {
         <div 
           className="absolute inset-0 z-0 bg-cover bg-center md:bg-right-top"
           style={{ 
-            backgroundImage: 'url(/assets/images/hero.jpg)',
+            backgroundImage: 'url(/assets/images/hero.webp)',
             backgroundPosition: 'center left 35%', // Décalage vers la gauche pour mieux centrer visuellement
             backgroundSize: 'cover'
           }}

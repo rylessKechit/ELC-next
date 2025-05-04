@@ -1,0 +1,78 @@
+{
+    "name": "Elysian Luxury Chauffeurs",
+    "short_name": "Elysian",
+    "description": "Service de chauffeurs privés de luxe en Essonne (91). Véhicules haut de gamme avec chauffeurs professionnels pour tous vos déplacements à Longjumeau et dans tout le département.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#1c2938",
+    "theme_color": "#d4af37",
+    "orientation": "portrait",
+    "scope": "/",
+    "lang": "fr-FR",
+    "icons": [
+      {
+        "src": "/icons/icon-72x72.png",
+        "sizes": "72x72",
+        "type": "image/png"
+      },
+      {
+        "src": "/icons/icon-96x96.png",
+        "sizes": "96x96",
+        "type": "image/png"
+      },
+      {
+        "src": "/icons/icon-128x128.png",
+        "sizes": "128x128",
+        "type": "image/png"
+      },
+      {
+        "src": "/icons/icon-144x144.png",
+        "sizes": "144x144",
+        "type": "image/png"
+      },
+      {
+        "src": "/icons/icon-152x152.png",
+        "sizes": "152x152",
+        "type": "image/png"
+      },
+      {
+        "src": "/icons/icon-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "/icons/icon-384x384.png",
+        "sizes": "384x384",
+        "type": "image/png"
+      },
+      {
+        "src": "/icons/icon-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ],
+    "shortcuts": [
+      {
+        "name": "Réserver",
+        "short_name": "Réserver",
+        "description": "Réserver un chauffeur en Essonne",
+        "url": "/#booking",
+        "icons": [{ "src": "/icons/booking-icon.png", "sizes": "192x192" }]
+      },
+      {
+        "name": "Notre flotte",
+        "short_name": "Flotte",
+        "description": "Découvrir notre flotte de véhicules avec chauffeur",
+        "url": "/flotte-vehicules",
+        "icons": [{ "src": "/icons/fleet-icon.png", "sizes": "192x192" }]
+      }
+    ],
+    "categories": ["services", "transport", "business"],
+    "dir": "ltr",
+    "related_applications": [
+      {
+        "platform": "webapp",
+        "url": "https://elysian-luxury-chauffeurs.com"
+      }
+    ]
+  }

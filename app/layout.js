@@ -30,7 +30,7 @@ export const metadata = {
     type: 'website',
     images: [
       {
-        url: 'https://elysian-luxury-chauffeurs.com/images/og-image.jpg', 
+        url: 'https://elysian-luxury-chauffeurs.com/images/og-image.webp', 
         width: 1200,
         height: 630,
         alt: 'Elysian Luxury Chauffeurs',
@@ -55,7 +55,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'Elysian Luxury Chauffeurs - Service de chauffeur privé de luxe',
     description: 'Service de chauffeur privé de luxe pour tous vos déplacements.',
-    images: ['https://elysian-luxury-chauffeurs.com/images/twitter-card.jpg'],
+    images: ['https://elysian-luxury-chauffeurs.com/images/twitter-card.webp'],
   },
   viewport: 'width=device-width, initial-scale=1, maximum-scale=5',
   themeColor: '#d4af37',

@@ -8,10 +8,10 @@ import { motion, useAnimation } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 
 // Images
-import eventHero from '@/public/assets/images/event-hero.jpg'
-import eventWedding from '@/public/assets/images/event-wedding.jpg'
-import eventGala from '@/public/assets/images/event-gala.jpg'
-import eventCorporate from '@/public/assets/images/event-corporate.jpg'
+import eventHero from '@/public/assets/images/event-hero.webp'
+import eventWedding from '@/public/assets/images/event-wedding.webp'
+import eventGala from '@/public/assets/images/event-gala.webp'
+import eventCorporate from '@/public/assets/images/event-corporate.webp'
 
 export default function ServicesEvenementsPage() {
   // Animation controls
@@ -154,7 +154,7 @@ export default function ServicesEvenementsPage() {
       <section 
         ref={headerRef} 
         className="relative min-h-[60vh] flex items-center overflow-hidden bg-cover bg-center pt-32 pb-16"
-        style={{ backgroundImage: 'url(/assets/images/event-hero.jpg)' }}
+        style={{ backgroundImage: 'url(/assets/images/event-hero.webp)' }}
       >
         <div className="absolute inset-0 bg-black/70 z-10"></div>
         
@@ -476,7 +476,7 @@ export default function ServicesEvenementsPage() {
         className="py-20 bg-gray-50 relative overflow-hidden"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-black/50 z-0"></div>
-        <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: 'url(/assets/images/event-testimonial-bg.jpg)' }}></div>
+        <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: 'url(/assets/images/event-testimonial-bg.webp)' }}></div>
         
         <div className="container-custom relative z-10">
           <motion.div

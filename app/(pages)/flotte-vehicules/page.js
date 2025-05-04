@@ -193,7 +193,7 @@ export default function FlotteVehiculesPage() {
       <section 
         ref={headerRef} 
         className="relative min-h-[50vh] flex items-center overflow-hidden bg-cover bg-center pt-32 pb-16"
-        style={{ backgroundImage: 'url(/assets/images/fleet-hero.jpg)' }}
+        style={{ backgroundImage: 'url(/assets/images/fleet-hero.webp)' }}
       >
         <div className="absolute inset-0 bg-black/70 z-10"></div>
         

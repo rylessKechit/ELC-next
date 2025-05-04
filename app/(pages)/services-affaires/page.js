@@ -8,10 +8,10 @@ import { motion, useAnimation } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 
 // Images
-import businessHero from '@/public/assets/images/business-hero.jpg'
-import businessMeeting from '@/public/assets/images/business-meeting.jpg'
-import businessRoadshow from '@/public/assets/images/business-roadshow.jpg'
-import businessAirport from '@/public/assets/images/business-airport.jpg'
+import businessHero from '@/public/assets/images/business-hero.webp'
+import businessMeeting from '@/public/assets/images/business-meeting.webp'
+import businessRoadshow from '@/public/assets/images/business-roadshow.webp'
+import businessAirport from '@/public/assets/images/business-airport.webp'
 
 export default function ServicesAffairesPage() {
   // Animation controls
@@ -174,7 +174,7 @@ export default function ServicesAffairesPage() {
       <section 
         ref={headerRef} 
         className="relative min-h-[60vh] flex items-center overflow-hidden bg-cover bg-center pt-32 pb-16"
-        style={{ backgroundImage: 'url(/assets/images/business-hero.jpg)' }}
+        style={{ backgroundImage: 'url(/assets/images/business-hero.webp)' }}
       >
         <div className="absolute inset-0 bg-black/70 z-10"></div>
         

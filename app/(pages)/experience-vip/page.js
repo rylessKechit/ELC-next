@@ -8,8 +8,8 @@ import { motion, useAnimation } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 
 // Images
-import vipInterieur from '@/public/assets/images/vip-interieur.jpg'
-import vipChauffeur from '@/public/assets/images/vip-chauffeur.jpg'
+import vipInterieur from '@/public/assets/images/vip-interieur.webp'
+import vipChauffeur from '@/public/assets/images/vip-chauffeur.webp'
 
 export default function ExperienceVipPage() {
   // Animation controls
@@ -165,7 +165,7 @@ export default function ExperienceVipPage() {
       <section 
         ref={headerRef} 
         className="relative min-h-[75vh] flex items-center overflow-hidden bg-cover bg-center pt-32 pb-16"
-        style={{ backgroundImage: 'url(/assets/images/vip-hero.jpg)' }}
+        style={{ backgroundImage: 'url(/assets/images/vip-hero.webp)' }}
       >
         <div className="absolute inset-0 bg-black/70 z-10"></div>
         
@@ -529,7 +529,7 @@ export default function ExperienceVipPage() {
         className="py-20 bg-secondary text-white relative overflow-hidden"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-black/50 z-0"></div>
-        <div className="absolute inset-0 bg-cover bg-center opacity-30" style={{ backgroundImage: 'url(/assets/images/vip-service.jpg)' }}></div>
+        <div className="absolute inset-0 bg-cover bg-center opacity-30" style={{ backgroundImage: 'url(/assets/images/vip-service.webp)' }}></div>
         
         <div className="container-custom relative z-10">
           <motion.div 

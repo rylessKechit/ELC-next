@@ -7,10 +7,10 @@ import { motion, useAnimation } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 
 // Images
-import longDistanceHero from '@/public/assets/images/longdistance-hero.jpg'
-import interCity from '@/public/assets/images/intercity-travel.jpg'
-import multicityTour from '@/public/assets/images/multicity-tour.jpg'
-import dayTrip from '@/public/assets/images/day-trip.jpg'
+import longDistanceHero from '@/public/assets/images/longdistance-hero.webp'
+import interCity from '@/public/assets/images/intercity-travel.webp'
+import multicityTour from '@/public/assets/images/multicity-tour.webp'
+import dayTrip from '@/public/assets/images/day-trip.webp'
 
 export default function ServicesLongueDistancePage() {
   // Animation controls
@@ -203,7 +203,7 @@ export default function ServicesLongueDistancePage() {
       <section 
         ref={headerRef} 
         className="relative min-h-[60vh] flex items-center overflow-hidden bg-cover bg-center pt-32 pb-16"
-        style={{ backgroundImage: 'url(/assets/images/longdistance-hero.jpg)' }}
+        style={{ backgroundImage: 'url(/assets/images/longdistance-hero.webp)' }}
       >
         <div className="absolute inset-0 bg-black/70 z-10"></div>
         

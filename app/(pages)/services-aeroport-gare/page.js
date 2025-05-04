@@ -8,10 +8,10 @@ import { motion, useAnimation } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 
 // Images
-import airportHero from '@/public/assets/images/airport-hero.jpg'
-import airportTransfer from '@/public/assets/images/airport-transfer.jpg'
-import trainTransfer from '@/public/assets/images/train-transfer.jpg'
-import meetGreet from '@/public/assets/images/meet-greet.jpg'
+import airportHero from '@/public/assets/images/airport-hero.webp'
+import airportTransfer from '@/public/assets/images/airport-transfer.webp'
+import trainTransfer from '@/public/assets/images/train-transfer.webp'
+import meetGreet from '@/public/assets/images/meet-greet.webp'
 
 export default function ServicesAeroportGarePage() {
   // Animation controls
@@ -202,7 +202,7 @@ export default function ServicesAeroportGarePage() {
       <section 
         ref={headerRef} 
         className="relative min-h-[60vh] flex items-center overflow-hidden bg-cover bg-center pt-32 pb-16"
-        style={{ backgroundImage: 'url(/assets/images/airport-hero.jpg)' }}
+        style={{ backgroundImage: 'url(/assets/images/airport-hero.webp)' }}
       >
         <div className="absolute inset-0 bg-black/70 z-10"></div>
         

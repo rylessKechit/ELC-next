@@ -8,9 +8,9 @@ import { motion, useAnimation } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 
 // Images
-import founderImage1 from '@/public/assets/images/founder-1.jpg'
-import founderImage2 from '@/public/assets/images/founder-2.jpg'
-import certificateImage from '@/public/assets/images/certificate.jpg'
+import founderImage1 from '@/public/assets/images/founder-1.webp'
+import founderImage2 from '@/public/assets/images/founder-2.webp'
+import certificateImage from '@/public/assets/images/certificate.webp'
 
 export default function AboutPage() {
   // Animation controls
@@ -174,7 +174,7 @@ export default function AboutPage() {
       <section 
         ref={headerRef} 
         className="relative min-h-[60vh] flex items-center overflow-hidden bg-cover bg-center pt-32 pb-16"
-        style={{ backgroundImage: 'url(/assets/images/about-hero.jpg)' }}
+        style={{ backgroundImage: 'url(/assets/images/about-hero.webp)' }}
       >
         <div className="absolute inset-0 bg-black/70 z-10"></div>
         

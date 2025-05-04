@@ -107,7 +107,7 @@ export default function ContactPage() {
       <section 
         ref={headerRef} 
         className="relative min-h-[40vh] flex items-center overflow-hidden bg-cover bg-center pt-32 pb-16"
-        style={{ backgroundImage: 'url(/assets/images/contact-hero.jpg)' }}
+        style={{ backgroundImage: 'url(/assets/images/contact-hero.webp)' }}
       >
         <div className="absolute inset-0 bg-black/70 z-10"></div>
         
