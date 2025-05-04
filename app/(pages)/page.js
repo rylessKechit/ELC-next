@@ -10,16 +10,16 @@ import BookingForm from '@/components/booking/BookingForm'
 import Head from 'next/head'
 
 // Images
-import TeslaModel3 from '@/public/assets/images/tesla-model-3.png'
-import MercedesClassS from '@/public/assets/images/mercedes-classe-s.png'
-import BmwSerie7 from '@/public/assets/images/bmw-7-series.png'
-import MercedesVClass from '@/public/assets/images/mercedes-v-class.png'
+import TeslaModel3 from '@/public/assets/images/tesla-model-3.webp'
+import MercedesClassS from '@/public/assets/images/mercedes-classe-s.webp'
+import BmwSerie7 from '@/public/assets/images/bmw-7-series.webp'
+import MercedesVClass from '@/public/assets/images/mercedes-v-class.webp'
 import ExperienceVip from '@/public/assets/images/experience-vip.webp'
-import logoCannesFestival from '@/public/assets/images/logo-cannes-festival.png'
-import logoRitzParis from '@/public/assets/images/logo-ritz-paris.png'
-import logoLouisVuitton from '@/public/assets/images/logo-louis-vuitton.png'
-import logoChanel from '@/public/assets/images/logo-chanel.png'
-import logoAirFrance from '@/public/assets/images/logo-air-france.png'
+import logoCannesFestival from '@/public/assets/images/logo-cannes-festival.webp'
+import logoRitzParis from '@/public/assets/images/logo-ritz-paris.webp'
+import logoLouisVuitton from '@/public/assets/images/logo-louis-vuitton.webp'
+import logoChanel from '@/public/assets/images/logo-chanel.webp'
+import logoAirFrance from '@/public/assets/images/logo-air-france.webp'
 
 export default function HomePage() {
   // Animation controls

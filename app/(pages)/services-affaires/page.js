@@ -160,12 +160,12 @@ export default function ServicesAffairesPage() {
 
   // Nos clients corporate
   const corporateClients = [
-    { name: 'Groupe Finance Plus', logo: '/assets/images/logo-finance.png' },
-    { name: 'Tech Innovations', logo: '/assets/images/logo-tech.png' },
-    { name: 'Global Consulting', logo: '/assets/images/logo-consulting.png' },
-    { name: 'Luxury Brands International', logo: '/assets/images/logo-luxury.png' },
-    { name: 'EssoneTech', logo: '/assets/images/logo-essonnetech.png' },
-    { name: 'Paris Investment Group', logo: '/assets/images/logo-investment.png' }
+    { name: 'Groupe Finance Plus', logo: '/assets/images/logo-finance.webp' },
+    { name: 'Tech Innovations', logo: '/assets/images/logo-tech.webp' },
+    { name: 'Global Consulting', logo: '/assets/images/logo-consulting.webp' },
+    { name: 'Luxury Brands International', logo: '/assets/images/logo-luxury.webp' },
+    { name: 'EssoneTech', logo: '/assets/images/logo-essonnetech.webp' },
+    { name: 'Paris Investment Group', logo: '/assets/images/logo-investment.webp' }
   ]
 
   return (

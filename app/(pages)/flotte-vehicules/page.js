@@ -8,10 +8,10 @@ import { motion, useAnimation } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 
 // Images
-import teslaModel3 from '@/public/assets/images/tesla-model-3.png'
-import mercedesClassS from '@/public/assets/images/mercedes-classe-s.png'
-import bmwSerie7 from '@/public/assets/images/bmw-7-series.png'
-import mercedesVClass from '@/public/assets/images/mercedes-v-class.png'
+import teslaModel3 from '@/public/assets/images/tesla-model-3.webp'
+import mercedesClassS from '@/public/assets/images/mercedes-classe-s.webp'
+import bmwSerie7 from '@/public/assets/images/bmw-7-series.webp'
+import mercedesVClass from '@/public/assets/images/mercedes-v-class.webp'
 
 export default function FlotteVehiculesPage() {
   // État pour suivre le véhicule sélectionné

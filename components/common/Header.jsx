@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import Navbar from './Navbar';
-import logo from '../../public/assets/images/logo.png';
+import logo from '../../public/assets/images/logo.webp';
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);

@@ -89,7 +89,7 @@ export default function RootLayout({ children }) {
         {/* Préchargement des ressources critiques */}
         <link 
           rel="preload" 
-          href="/assets/images/logo.png" 
+          href="/assets/images/logo.webp" 
           as="image" 
           fetchPriority="high"
         />
@@ -97,7 +97,7 @@ export default function RootLayout({ children }) {
         {/* Pour les appareils Apple */}
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <link rel="apple-touch-icon" href="/icons/apple-icon-180x180.png" />
+        <link rel="apple-touch-icon" href="/icons/apple-icon-180x180.webp" />
         
         {/* PWA manifest */}
         <link rel="manifest" href="/manifest.json" />
@@ -160,7 +160,7 @@ export default function RootLayout({ children }) {
               "@context": "https://schema.org",
               "@type": "LimousineService",
               "name": "Elysian Luxury Chauffeurs",
-              "image": "https://elysian-luxury-chauffeurs.com/assets/images/logo.png",
+              "image": "https://elysian-luxury-chauffeurs.com/assets/images/logo.webp",
               "url": "https://elysian-luxury-chauffeurs.com",
               "telephone": "+33600000000",
               "address": {
