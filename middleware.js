@@ -4,8 +4,8 @@ import { NextResponse } from 'next/server'
 // Liste des origines autorisées (en production, limiter aux domaines spécifiques)
 const allowedOrigins = process.env.NODE_ENV === 'production' 
   ? [
-      'https://elysian-chauffeurs.fr',
-      'https://www.elysian-chauffeurs.fr',
+      'https://elysian-luxury-chauffeurs.com',
+      'https://www.elysian-luxury-chauffeurs.com',
     ] 
   : ['http://localhost:3000']
 

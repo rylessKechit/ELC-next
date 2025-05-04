@@ -344,9 +344,9 @@ export default function ContactPage() {
                   </div>
                   <div className="ml-4">
                     <h3 className="text-xl font-medium mb-1">Email</h3>
-                    <p className="text-gray-600">contact@elysian-chauffeurs.fr</p>
+                    <p className="text-gray-600">contact@elysian-luxury-chauffeurs.com</p>
                     <p className="text-gray-500 text-sm">Réponse sous 24h</p>
-                    <a href="mailto:contact@elysian-chauffeurs.fr" className="text-primary inline-flex items-center mt-2 hover:text-primary-dark">
+                    <a href="mailto:contact@elysian-luxury-chauffeurs.com" className="text-primary inline-flex items-center mt-2 hover:text-primary-dark">
                       <span>Envoyer un email</span>
                       <i className="fas fa-envelope ml-2 text-xs"></i>
                     </a>
@@ -429,7 +429,7 @@ export default function ContactPage() {
                 <h3 className="text-xl font-medium mb-2">Comment puis-je réserver un chauffeur ?</h3>
                 <p className="text-gray-600">
                   Vous pouvez réserver un chauffeur directement sur notre site web en utilisant notre formulaire de réservation, 
-                  par téléphone au +33 (0)1 23 45 67 89, ou en nous envoyant un email à contact@elysian-chauffeurs.fr.
+                  par téléphone au +33 (0)1 23 45 67 89, ou en nous envoyant un email à contact@elysian-luxury-chauffeurs.com.
                 </p>
               </div>
               

@@ -38,7 +38,7 @@ export const emailService = {
       const transporter = this.createTransporter()
       
       const mailOptions = {
-        from: options.from || process.env.EMAIL_FROM || '"Elysian Luxury Chauffeurs" <contact@elysian-chauffeurs.fr>',
+        from: options.from || process.env.EMAIL_FROM || '"Elysian Luxury Chauffeurs" <contact@elysian-luxury-chauffeurs.com>',
         to: options.to,
         subject: options.subject,
         text: options.text,
@@ -152,7 +152,7 @@ export const emailService = {
             <li>En cas d'urgence, contactez-nous au 01 23 45 67 89</li>
           </ul>
           
-          <p>Pour toute question ou modification concernant votre réservation, n'hésitez pas à nous contacter par email à contact@elysian-chauffeurs.fr ou par téléphone au 01 23 45 67 89.</p>
+          <p>Pour toute question ou modification concernant votre réservation, n'hésitez pas à nous contacter par email à contact@elysian-luxury-chauffeurs.com ou par téléphone au 01 23 45 67 89.</p>
           
           <p>Nous vous remercions de votre confiance et vous souhaitons un agréable trajet.</p>
           
@@ -193,7 +193,7 @@ export const emailService = {
       - Le paiement s'effectuera auprès du chauffeur (espèces, carte bancaire)
       - En cas d'urgence, contactez-nous au 01 23 45 67 89
       
-      Pour toute question ou modification concernant votre réservation, n'hésitez pas à nous contacter par email à contact@elysian-chauffeurs.fr ou par téléphone au 01 23 45 67 89.
+      Pour toute question ou modification concernant votre réservation, n'hésitez pas à nous contacter par email à contact@elysian-luxury-chauffeurs.com ou par téléphone au 01 23 45 67 89.
       
       Nous vous remercions de votre confiance et vous souhaitons un agréable trajet.
       
@@ -224,7 +224,7 @@ export const emailService = {
     // Le contenu de l'email serait similaire à celui de confirmation
     // mais adapté pour les administrateurs
     
-    const adminEmail = process.env.ADMIN_EMAIL || 'admin@elysian-chauffeurs.fr'
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@elysian-luxury-chauffeurs.com'
     
     // Formater la date
     const formatDate = (dateTimeStr) => {
@@ -348,7 +348,7 @@ export const emailService = {
    * @returns {Promise<Object>} - Résultat de l'envoi
    */
   async sendContactNotification(contactMessage) {
-    const adminEmail = process.env.ADMIN_EMAIL || 'admin@elysian-chauffeurs.fr'
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@elysian-luxury-chauffeurs.com'
     
     const htmlContent = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">

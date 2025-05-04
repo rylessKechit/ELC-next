@@ -72,13 +72,13 @@ const Breadcrumb = () => {
         "@type": "ListItem",
         "position": 1,
         "name": "Accueil",
-        "item": "https://elysian-chauffeurs.fr"
+        "item": "https://elysian-luxury-chauffeurs.com"
       },
       ...breadcrumbItems.map((item, index) => ({
         "@type": "ListItem",
         "position": index + 2,
         "name": item.label,
-        "item": `https://elysian-chauffeurs.fr${item.url}`
+        "item": `https://elysian-luxury-chauffeurs.com${item.url}`
       }))
     ]
   };
