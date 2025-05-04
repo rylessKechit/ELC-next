@@ -148,6 +148,7 @@ const BookingStepOne = ({
                   const current = parseInt(formValues.passengers);
                   if (current > 1) setValue('passengers', current - 1);
                 }}
+                aria-label="Diminuer le nombre de passagers"
               >
                 <i className="fas fa-minus text-xs"></i>
               </button>
@@ -159,6 +160,7 @@ const BookingStepOne = ({
                   const current = parseInt(formValues.passengers);
                   if (current < 7) setValue('passengers', current + 1);
                 }}
+                aria-label="Augmenter le nombre de passagers"
               >
                 <i className="fas fa-plus text-xs"></i>
               </button>
@@ -180,6 +182,7 @@ const BookingStepOne = ({
                   const current = parseInt(formValues.luggage);
                   if (current > 0) setValue('luggage', current - 1);
                 }}
+                aria-label="Diminuer le nombre de bagages"
               >
                 <i className="fas fa-minus text-xs"></i>
               </button>
@@ -191,6 +194,7 @@ const BookingStepOne = ({
                   const current = parseInt(formValues.luggage);
                   setValue('luggage', current + 1);
                 }}
+                aria-label="Augmenter le nombre de bagages"
               >
                 <i className="fas fa-plus text-xs"></i>
               </button>

@@ -622,7 +622,7 @@ export default function HomePage() {
                 key={index} 
                 className={`w-3 h-3 rounded-full mx-1 transition-all duration-300 ${index === currentTestimonial ? 'bg-primary scale-125' : 'bg-primary/30'}`}
                 onClick={() => setCurrentTestimonial(index)}
-                aria-label={`Témoignage ${index + 1}`}
+                aria-label={`Témoignage ${index + 1} de ${testimonials[index].name}`}
               ></button>
             ))}
           </div>
