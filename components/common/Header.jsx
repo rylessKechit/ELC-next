@@ -104,6 +104,7 @@ const Header = () => {
               onClick={toggleMenu}
               aria-label="Menu principal"
               aria-expanded={mobileMenuOpen}
+              aria-controls="main-navigation"
             >
               <span className={`w-full h-0.5 bg-white transition-all duration-300 ${mobileMenuOpen ? 'rotate-45 translate-y-[7px]' : ''}`}></span>
               <span className={`w-full h-0.5 bg-white my-1.5 transition-all duration-300 ${mobileMenuOpen ? 'opacity-0' : ''}`}></span>

@@ -81,7 +81,7 @@ const Navbar = ({ mobileMenuOpen, onLinkClick }) => {
       aria-label="Navigation principale"
     >
       <div className="max-w-7xl mx-auto">
-        <ul className="flex flex-col md:flex-row justify-center md:h-12" role="menubar">
+        <ul className="flex flex-col md:flex-row justify-center md:h-12" role="menubar" aria-label="Menu principal">
           {navLinks.map((link, index) => {
             const dropdownIndex = link.isDropdown ? navLinks.filter((l, i) => l.isDropdown && i < index).length : -1;
             
@@ -89,9 +89,6 @@ const Navbar = ({ mobileMenuOpen, onLinkClick }) => {
               <li 
                 key={index} 
                 className={`relative ${link.isDropdown ? 'group' : ''}`}
-                onMouseEnter={link.isDropdown ? () => handleMouseEnter(dropdownIndex) : undefined}
-                onMouseLeave={link.isDropdown ? handleMouseLeave : undefined}
-                ref={link.isDropdown ? (el) => (dropdownRefs.current[dropdownIndex] = el) : null}
                 role="none"
               >
                 {link.isDropdown ? (
@@ -101,33 +98,41 @@ const Navbar = ({ mobileMenuOpen, onLinkClick }) => {
                         (openDropdown === dropdownIndex || isDropdownActive(link.items)) ? 'text-primary' : ''
                       }`}
                       onClick={() => toggleDropdown(dropdownIndex)}
-                      aria-haspopup="true"
+                      aria-haspopup="menu"
                       aria-expanded={openDropdown === dropdownIndex}
+                      role="menuitem"
                     >
                       {link.label}
                       <i className={`fas fa-chevron-down ml-2 text-xs transition-transform duration-300 ${openDropdown === dropdownIndex ? 'rotate-180' : ''}`}></i>
                     </button>
                     
-                    <div 
+                    <ul 
                       className={`${
                         openDropdown === dropdownIndex ? 'block' : 'hidden'
                       } md:absolute md:top-full md:left-0 md:w-64 bg-secondary/95 shadow-lg rounded-b-md z-40`}
+                      role="menu"
+                      aria-label={`Sous-menu ${link.label}`}
                     >
                       {link.items.map((item, itemIndex) => (
-                        <Link 
+                        <li 
                           key={itemIndex}
-                          href={item.path}
-                          className={`block px-8 md:px-5 py-3 text-sm border-b last:border-b-0 border-gray-700 transition-colors duration-300 ${
-                            isActive(item.path) 
-                              ? 'bg-primary bg-opacity-10 text-primary' 
-                              : 'text-white hover:bg-primary hover:bg-opacity-10 hover:text-primary'
-                          }`}
-                          onClick={() => { onLinkClick && onLinkClick(); setOpenDropdown(null); }}
+                          role="none"
                         >
-                          {item.label}
-                        </Link>
+                          <Link 
+                            href={item.path}
+                            className={`block px-8 md:px-5 py-3 text-sm border-b last:border-b-0 border-gray-700 transition-colors duration-300 ${
+                              isActive(item.path) 
+                                ? 'bg-primary bg-opacity-10 text-primary' 
+                                : 'text-white hover:bg-primary hover:bg-opacity-10 hover:text-primary'
+                            }`}
+                            onClick={() => { onLinkClick && onLinkClick(); setOpenDropdown(null); }}
+                            role="menuitem"
+                          >
+                            {item.label}
+                          </Link>
+                        </li>
                       ))}
-                    </div>
+                    </ul>
                   </>
                 ) : (
                   <Link 
@@ -138,6 +143,7 @@ const Navbar = ({ mobileMenuOpen, onLinkClick }) => {
                         : 'text-white hover:text-primary'
                     }`}
                     onClick={() => onLinkClick && onLinkClick()}
+                    role="menuitem"
                   >
                     {link.label}
                   </Link>
