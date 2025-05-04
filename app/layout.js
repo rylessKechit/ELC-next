@@ -104,12 +104,23 @@ export default function RootLayout({ children }) {
         
         {/* Font Awesome */}
         <link 
-          rel="stylesheet" 
+          rel="preload"
+          as="style"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
           integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" 
           crossOrigin="anonymous" 
           referrerPolicy="no-referrer"
+          onLoad="this.onload=null;this.rel='stylesheet'"
         />
+        <noscript>
+          <link 
+            rel="stylesheet" 
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+            integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" 
+            crossOrigin="anonymous" 
+            referrerPolicy="no-referrer"
+          />
+        </noscript>
       </head>
       <body className={inter.className}>
         <FontLoader />
