@@ -620,10 +620,16 @@ export default function HomePage() {
             {testimonials.map((_, index) => (
               <button 
                 key={index} 
-                className={`w-3 h-3 rounded-full mx-1 transition-all duration-300 ${index === currentTestimonial ? 'bg-primary scale-125' : 'bg-primary/30'}`}
+                className={`w-12 h-12 flex items-center justify-center p-2 mx-2 rounded-full transition-all duration-300 touch-manipulation ${
+                  index === currentTestimonial ? 'bg-primary text-white' : 'bg-primary/10 text-primary'
+                }`}
                 onClick={() => setCurrentTestimonial(index)}
                 aria-label={`Témoignage ${index + 1} de ${testimonials[index].name}`}
-              ></button>
+              >
+                <span className="w-3 h-3 rounded-full block" style={{
+                  backgroundColor: index === currentTestimonial ? 'white' : '#d4af37'
+                }}></span>
+              </button>
             ))}
           </div>
         </div>
