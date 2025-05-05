@@ -1,3 +1,4 @@
+// components/booking/RouteMap.jsx
 "use client";
 
 import { useEffect, useRef, useState } from 'react';
@@ -17,49 +18,69 @@ const RouteMap = ({ pickupAddress, dropoffAddress, pickupPlaceId, dropoffPlaceId
     setAddressesChanged(true);
   }, [pickupAddress, dropoffAddress, pickupPlaceId, dropoffPlaceId]);
 
-  // Charger le script Google Maps avec une gestion d'erreur améliorée
+  // Charger le script Google Maps
   useEffect(() => {
-    const loadGoogleMapsScript = () => {
-      if (window.google && window.google.maps) {
-        setMapLoaded(true);
-        return;
-      }
-      
-      if (window.googleMapsLoading) return;
-      window.googleMapsLoading = true;
-      
-      window.initMap = () => {
-        window.googleMapsLoading = false;
-        setMapLoaded(true);
-      };
-      
-      const script = document.createElement('script');
-      script.id = 'google-maps-script';
-      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap&libraries=places,geometry&v=weekly&loading=async`;
-      script.async = true;
-      script.defer = true;
-      
-      script.onerror = () => {
-        console.error('Impossible de charger le script Google Maps');
-        setLoadingError('Impossible de charger le script Google Maps');
-        window.googleMapsLoading = false;
-      };
-      
-      document.head.appendChild(script);
+    // Ne rien faire si on n'a pas d'adresses
+    if (!pickupAddress || !dropoffAddress) {
+      return;
+    }
+    
+    console.log("Chargement de Google Maps avec les adresses:", { pickupAddress, dropoffAddress });
+    
+    // Si l'API est déjà chargée
+    if (window.google && window.google.maps) {
+      console.log("Google Maps déjà chargé!");
+      setMapLoaded(true);
+      return;
+    }
+    
+    // Si le script est déjà en cours de chargement
+    if (window.googleMapsLoading) {
+      return;
+    }
+    
+    // Marquer comme en cours de chargement
+    window.googleMapsLoading = true;
+    
+    // Définir la fonction de callback
+    window.initMap = () => {
+      console.log("Callback initMap appelé !");
+      window.googleMapsLoading = false;
+      setMapLoaded(true);
     };
     
-    loadGoogleMapsScript();
+    // Créer et ajouter le script
+    const script = document.createElement('script');
+    script.id = 'google-maps-script';
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
     
-    // Nettoyage lors du démontage
+    if (!apiKey) {
+      console.error("Clé API Google Maps manquante");
+      setLoadingError("Clé API Google Maps manquante");
+      window.googleMapsLoading = false;
+      return;
+    }
+    
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap&libraries=places,geometry&v=weekly`;
+    script.async = true;
+    script.defer = true;
+    
+    script.onerror = () => {
+      console.error('Erreur lors du chargement du script Google Maps');
+      setLoadingError('Erreur lors du chargement du script Google Maps');
+      window.googleMapsLoading = false;
+    };
+    
+    document.head.appendChild(script);
+    
     return () => {
       if (map) {
         window.google?.maps?.event.clearInstanceListeners(map);
       }
     };
-  }, []);
+  }, [pickupAddress, dropoffAddress, map]);
   
-  // Initialiser la carte quand le script est chargé ou quand le composant est remonté
+  // Initialiser la carte quand le script est chargé
   useEffect(() => {
     // Vérifier que:
     // 1. Le script est chargé
@@ -133,7 +154,10 @@ const RouteMap = ({ pickupAddress, dropoffAddress, pickupPlaceId, dropoffPlaceId
         }
         
         // Nettoyer les marqueurs et polylines existants
-        mapInstance.overlayMapTypes.clear();
+        if (mapInstance.overlayMapTypes) {
+          mapInstance.overlayMapTypes.clear();
+        }
+        
         const overlays = mapInstance.__overlays || [];
         overlays.forEach(overlay => {
           if (overlay) overlay.setMap(null);
@@ -385,6 +409,7 @@ const RouteMap = ({ pickupAddress, dropoffAddress, pickupPlaceId, dropoffPlaceId
       {!mapLoaded && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          <span className="ml-3 text-gray-700">Chargement de la carte...</span>
         </div>
       )}
       

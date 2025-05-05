@@ -30,10 +30,11 @@ export const useGoogleMapsScript = () => {
       return
     }
 
-    // Créer et ajouter le script
+    // Créer et ajouter le script avec chargement optimisé
     const script = document.createElement('script')
     script.id = GOOGLE_MAPS_SCRIPT_ID
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=googleMapsCallback`
+    // Charger uniquement les bibliothèques nécessaires
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=googleMapsCallback&loading=async&v=weekly`
     script.async = true
     script.defer = true
 

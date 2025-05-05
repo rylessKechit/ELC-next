@@ -1,3 +1,4 @@
+// app/layout.js
 import '../styles/globals.css';
 import { Inter } from 'next/font/google';
 import Header from '@/components/common/Header';
@@ -5,6 +6,7 @@ import Footer from '@/components/common/Footer';
 import MobileCallButton from '@/components/common/MobileCallButton';
 import Breadcrumb from '@/components/common/Breadcrumb';
 import FontLoader from '@/components/common/FontLoader';
+import FontAwesomeLoader from '@/components/common/FontAwesomeLoader';
 import Script from 'next/script';
 
 // Configurer les fonts avec display swap pour améliorer le CLS
@@ -102,16 +104,7 @@ export default function RootLayout({ children }) {
         {/* PWA manifest */}
         <link rel="manifest" href="/manifest.json" />
         
-        {/* Font Awesome */}
-        <link 
-          rel="preload"
-          as="style"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
-          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" 
-          crossOrigin="anonymous" 
-          referrerPolicy="no-referrer"
-          onLoad="this.onload=null;this.rel='stylesheet'"
-        />
+        {/* Fallback pour les utilisateurs sans JavaScript */}
         <noscript>
           <link 
             rel="stylesheet" 
@@ -124,6 +117,7 @@ export default function RootLayout({ children }) {
       </head>
       <body className={inter.className}>
         <FontLoader />
+        <FontAwesomeLoader />
 
         <Header />
         
@@ -141,25 +135,42 @@ export default function RootLayout({ children }) {
         
         {/* Scripts analytiques avec chargement différé et respect RGPD */}
         <Script
-          id="gtag-script"
+          id="gtag-config" 
           strategy="lazyOnload"
-          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('consent', 'default', {
+                'analytics_storage': 'denied',
+                'ad_storage': 'denied',
+                'wait_for_update': 500
+              });
+              gtag('js', new Date());
+              gtag('config', '${process.env.NEXT_PUBLIC_GA_ID || ''}', {
+                'anonymize_ip': true,
+                'cookie_flags': 'SameSite=None;Secure'
+              });
+              
+              // Chargement différé du script GTM
+              const loadGTM = () => {
+                if (document.readyState === 'complete') {
+                  setTimeout(() => {
+                    const gtagScript = document.createElement('script');
+                    gtagScript.src = 'https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID || ''}';
+                    gtagScript.async = true;
+                    document.head.appendChild(gtagScript);
+                  }, 3000);  // Différer de 3 secondes après chargement complet
+                } else {
+                  // Réessayer plus tard si la page n'est pas encore complètement chargée
+                  window.addEventListener('load', loadGTM);
+                }
+              };
+              
+              loadGTM();
+            `
+          }}
         />
-        <Script
-          id="gtag-config"
-          strategy="lazyOnload"
-        >
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}', {
-              page_path: window.location.pathname,
-              'anonymize_ip': true,
-              'cookie_flags': 'SameSite=None;Secure'
-            });
-          `}
-        </Script>
         
         {/* Script pour le rich snippet LocalBusiness */}
         <Script
