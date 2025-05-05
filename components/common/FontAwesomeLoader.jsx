@@ -1,17 +1,25 @@
-// components/common/FontAwesomeLoader.jsx
+// components/common/FontAwesomeLoader.jsx - Version optimisée
 "use client";
 
 import { useEffect } from 'react';
 
 export default function FontAwesomeLoader() {
   useEffect(() => {
-    // Charger Font Awesome de manière asynchrone
+    // Utilisation de preload pour améliorer le chargement
+    const preloadLink = document.createElement('link');
+    preloadLink.rel = 'preload';
+    preloadLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
+    preloadLink.as = 'style';
+    preloadLink.crossOrigin = 'anonymous';
+    document.head.appendChild(preloadLink);
+    
+    // Chargement asynchrone avec priorité
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
-    link.integrity = 'sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==';
+    link.media = 'print';
+    link.onload = () => { link.media = 'all' }; // Chargement non bloquant
     link.crossOrigin = 'anonymous';
-    link.referrerPolicy = 'no-referrer';
     document.head.appendChild(link);
   }, []);
   

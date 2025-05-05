@@ -1,9 +1,12 @@
 // components/booking/RouteMap.jsx
 "use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, memo, useCallback } from 'react';
 
-const RouteMap = ({ pickupAddress, dropoffAddress, pickupPlaceId, dropoffPlaceId, polyline }) => {
+/**
+ * Composant de carte pour afficher l'itinéraire du trajet, optimisé pour les performances
+ */
+const RouteMap = memo(({ pickupAddress, dropoffAddress, pickupPlaceId, dropoffPlaceId, polyline }) => {
   const mapRef = useRef(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapInitialized, setMapInitialized] = useState(false);
@@ -13,23 +16,22 @@ const RouteMap = ({ pickupAddress, dropoffAddress, pickupPlaceId, dropoffPlaceId
   // État pour suivre si les adresses ont changé
   const [addressesChanged, setAddressesChanged] = useState(false);
   
-  // Surveiller les changements d'adresses
+  // Surveiller les changements d'adresses - optimisé pour éviter les rendus inutiles
   useEffect(() => {
-    setAddressesChanged(true);
+    if (pickupAddress && dropoffAddress && (pickupPlaceId || dropoffPlaceId)) {
+      setAddressesChanged(true);
+    }
   }, [pickupAddress, dropoffAddress, pickupPlaceId, dropoffPlaceId]);
 
-  // Charger le script Google Maps
+  // Charger le script Google Maps - optimisé pour éviter les chargements multiples
   useEffect(() => {
     // Ne rien faire si on n'a pas d'adresses
     if (!pickupAddress || !dropoffAddress) {
       return;
     }
     
-    console.log("Chargement de Google Maps avec les adresses:", { pickupAddress, dropoffAddress });
-    
     // Si l'API est déjà chargée
     if (window.google && window.google.maps) {
-      console.log("Google Maps déjà chargé!");
       setMapLoaded(true);
       return;
     }
@@ -44,12 +46,11 @@ const RouteMap = ({ pickupAddress, dropoffAddress, pickupPlaceId, dropoffPlaceId
     
     // Définir la fonction de callback
     window.initMap = () => {
-      console.log("Callback initMap appelé !");
       window.googleMapsLoading = false;
       setMapLoaded(true);
     };
     
-    // Créer et ajouter le script
+    // Créer et ajouter le script avec loading=async pour une meilleure performance
     const script = document.createElement('script');
     script.id = 'google-maps-script';
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
@@ -61,7 +62,7 @@ const RouteMap = ({ pickupAddress, dropoffAddress, pickupPlaceId, dropoffPlaceId
       return;
     }
     
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap&libraries=places,geometry&v=weekly`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap&libraries=places,geometry&loading=async`;
     script.async = true;
     script.defer = true;
     
@@ -74,30 +75,21 @@ const RouteMap = ({ pickupAddress, dropoffAddress, pickupPlaceId, dropoffPlaceId
     document.head.appendChild(script);
     
     return () => {
+      // Nettoyage des écouteurs d'événements lors du démontage
       if (map) {
         window.google?.maps?.event.clearInstanceListeners(map);
       }
     };
   }, [pickupAddress, dropoffAddress, map]);
   
-  // Initialiser la carte quand le script est chargé
+  // Initialiser la carte quand le script est chargé - avec memoization des fonctions
   useEffect(() => {
-    // Vérifier que:
-    // 1. Le script est chargé
-    // 2. La référence au conteneur de la carte existe
-    // 3. Soit la carte n'est pas initialisée, soit les adresses ont changé
+    // Vérifications optimisées
     if (!mapLoaded || !mapRef.current || (mapInitialized && !addressesChanged)) return;
-    
-    console.log('Initialisation/actualisation de la carte avec:', { 
-      pickupAddress, 
-      dropoffAddress,
-      pickupPlaceId,
-      dropoffPlaceId
-    });
     
     const initializeMap = async () => {
       try {
-        // Personnalisation du style de la carte pour correspondre à votre thème
+        // Personnalisation du style de la carte
         const mapStyles = [
           {
             "featureType": "all",
@@ -134,7 +126,7 @@ const RouteMap = ({ pickupAddress, dropoffAddress, pickupPlaceId, dropoffPlaceId
         // Créer ou récupérer l'instance de carte
         let mapInstance = map;
         if (!mapInstance) {
-          // Créer une nouvelle carte
+          // Créer une nouvelle carte avec options optimisées
           mapInstance = new window.google.maps.Map(mapRef.current, {
             zoom: 12,
             center: { lat: 48.856614, lng: 2.3522219 }, // Paris
@@ -144,6 +136,7 @@ const RouteMap = ({ pickupAddress, dropoffAddress, pickupPlaceId, dropoffPlaceId
             zoomControl: true,
             styles: mapStyles,
             disableDefaultUI: true,
+            gestureHandling: 'cooperative', // Améliore les performances tactiles
             scrollwheel: false,
             zoomControlOptions: {
               position: window.google.maps.ControlPosition.RIGHT_BOTTOM
@@ -154,14 +147,11 @@ const RouteMap = ({ pickupAddress, dropoffAddress, pickupPlaceId, dropoffPlaceId
         }
         
         // Nettoyer les marqueurs et polylines existants
-        if (mapInstance.overlayMapTypes) {
-          mapInstance.overlayMapTypes.clear();
+        if (mapInstance.__overlays) {
+          mapInstance.__overlays.forEach(overlay => {
+            if (overlay) overlay.setMap(null);
+          });
         }
-        
-        const overlays = mapInstance.__overlays || [];
-        overlays.forEach(overlay => {
-          if (overlay) overlay.setMap(null);
-        });
         mapInstance.__overlays = [];
         
         // Si nous avons déjà les identifiants de lieu, nous pouvons afficher la route
@@ -183,8 +173,8 @@ const RouteMap = ({ pickupAddress, dropoffAddress, pickupPlaceId, dropoffPlaceId
     initializeMap();
   }, [mapLoaded, addressesChanged, pickupAddress, dropoffAddress, pickupPlaceId, dropoffPlaceId, polyline, map, mapInitialized]);
   
-  // Fonction pour afficher l'itinéraire à partir d'adresses
-  const displayRouteFromAddresses = async (mapInstance, pickup, dropoff) => {
+  // Fonction pour afficher l'itinéraire à partir d'adresses - optimisée
+  const displayRouteFromAddresses = useCallback(async (mapInstance, pickup, dropoff) => {
     // Convertir les adresses en coordonnées
     const geocoder = new window.google.maps.Geocoder();
     
@@ -205,7 +195,7 @@ const RouteMap = ({ pickupAddress, dropoffAddress, pickupPlaceId, dropoffPlaceId
         });
       });
       
-      // Calculer et afficher l'itinéraire
+      // Calculer et afficher l'itinéraire - avec options optimisées
       const directionsService = new window.google.maps.DirectionsService();
       const directionsRenderer = new window.google.maps.DirectionsRenderer({
         map: mapInstance,
@@ -277,10 +267,10 @@ const RouteMap = ({ pickupAddress, dropoffAddress, pickupPlaceId, dropoffPlaceId
         console.error("Impossible d'afficher les marqueurs:", markerError);
       }
     }
-  };
+  }, []);
   
-  // Fonction pour ajouter des marqueurs personnalisés avec le style
-  const addCustomMarker = (mapInstance, position, label, title) => {
+  // Fonction optimisée pour ajouter des marqueurs personnalisés avec le style
+  const addCustomMarker = useCallback((mapInstance, position, label, title) => {
     const backgroundColor = label === 'A' ? '#d4af37' : '#1c2938'; // Couleurs primaire et secondaire
     
     const marker = new window.google.maps.Marker({
@@ -306,10 +296,10 @@ const RouteMap = ({ pickupAddress, dropoffAddress, pickupPlaceId, dropoffPlaceId
     });
     
     return marker;
-  };
+  }, []);
   
-  // Fonction pour afficher l'itinéraire à partir des identifiants de lieu
-  const displayRoute = async (mapInstance, originPlaceId, destinationPlaceId, encodedPolyline) => {
+  // Fonction optimisée pour afficher l'itinéraire à partir des identifiants de lieu
+  const displayRoute = useCallback(async (mapInstance, originPlaceId, destinationPlaceId, encodedPolyline) => {
     if (encodedPolyline && window.google.maps.geometry) {
       // Si nous avons un polyline encodé, l'utiliser
       try {
@@ -352,7 +342,7 @@ const RouteMap = ({ pickupAddress, dropoffAddress, pickupPlaceId, dropoffPlaceId
       }
     }
     
-    // Utiliser le service Directions
+    // Utiliser le service Directions avec options optimisées
     const directionsService = new window.google.maps.DirectionsService();
     const directionsRenderer = new window.google.maps.DirectionsRenderer({
       map: mapInstance,
@@ -402,7 +392,7 @@ const RouteMap = ({ pickupAddress, dropoffAddress, pickupPlaceId, dropoffPlaceId
         await displayRouteFromAddresses(mapInstance, pickupAddress, dropoffAddress);
       }
     }
-  };
+  }, [addCustomMarker, displayRouteFromAddresses, pickupAddress, dropoffAddress]);
   
   return (
     <div className="relative w-full h-64 md:h-80 rounded-lg overflow-hidden shadow-md">
@@ -435,6 +425,9 @@ const RouteMap = ({ pickupAddress, dropoffAddress, pickupPlaceId, dropoffPlaceId
       </div>
     </div>
   );
-};
+});
+
+// Nommer le composant pour les React DevTools
+RouteMap.displayName = 'RouteMap';
 
 export default RouteMap;

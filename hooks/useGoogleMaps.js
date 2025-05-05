@@ -7,7 +7,7 @@ import { useState, useEffect, useCallback } from 'react'
 const GOOGLE_MAPS_SCRIPT_ID = 'google-maps-script'
 
 /**
- * Hook pour charger le script de l'API Google Maps
+ * Hook pour charger le script de l'API Google Maps de manière optimisée
  * @returns {Object} - État de chargement du script
  */
 export const useGoogleMapsScript = () => {
@@ -22,21 +22,13 @@ export const useGoogleMapsScript = () => {
     }
 
     // Récupérer la clé API depuis l'environnement
-    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || 'YOUR_API_KEY'
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
 
-    if (!apiKey || apiKey === 'YOUR_API_KEY') {
-      console.warn('Clé API Google Maps non configurée correctement')
+    if (!apiKey) {
+      console.warn('Clé API Google Maps non configurée')
       setLoadError(new Error('Clé API Google Maps non configurée'))
       return
     }
-
-    // Créer et ajouter le script avec chargement optimisé
-    const script = document.createElement('script')
-    script.id = GOOGLE_MAPS_SCRIPT_ID
-    // Charger uniquement les bibliothèques nécessaires
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=googleMapsCallback&loading=async&v=weekly`
-    script.async = true
-    script.defer = true
 
     // Définir la fonction de callback globale
     window.googleMapsCallback = () => {
@@ -44,18 +36,21 @@ export const useGoogleMapsScript = () => {
       console.log('Google Maps API chargée avec succès')
     }
 
-    // Gérer les erreurs
+    // Créer et ajouter le script avec chargement optimisé
+    const script = document.createElement('script')
+    script.id = GOOGLE_MAPS_SCRIPT_ID
+    // Charger uniquement les bibliothèques nécessaires et utiliser le chargement asynchrone
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=googleMapsCallback&loading=async`
+    script.async = true
+    script.defer = true
+    
     script.onerror = () => {
       setLoadError(new Error('Erreur lors du chargement de l\'API Google Maps'))
     }
 
-    // Ajouter le script au document
     document.head.appendChild(script)
 
-    // Nettoyage
     return () => {
-      // Ne pas supprimer le script lors du démontage du composant
-      // car d'autres composants pourraient l'utiliser
       window.googleMapsCallback = null
     }
   }, [])
@@ -64,7 +59,7 @@ export const useGoogleMapsScript = () => {
 }
 
 /**
- * Hook pour utiliser une bibliothèque spécifique de Google Maps
+ * Hook pour utiliser une bibliothèque spécifique de Google Maps de manière optimisée
  * @param {string} library - Nom de la bibliothèque (places, drawing, geometry, etc.)
  * @returns {Object|null} - L'instance de la bibliothèque ou null si non chargée
  */
@@ -75,22 +70,19 @@ export const useMapsLibrary = (library) => {
   useEffect(() => {
     if (!isLoaded) return
 
-    // Essayer de récupérer la bibliothèque
-    try {
-      if (window.google && window.google.maps) {
-        const loadLibrary = async () => {
-          try {
-            const loadedLib = await window.google.maps.importLibrary(library)
-            setLib(loadedLib)
-          } catch (error) {
-            console.error(`Erreur lors de l'importation de la bibliothèque ${library}:`, error)
-          }
+    // Utilisation de la méthode moderne d'importation des bibliothèques
+    if (window.google && window.google.maps) {
+      const loadLibrary = async () => {
+        try {
+          // Utiliser importLibrary au lieu d'accéder directement
+          const loadedLib = await window.google.maps.importLibrary(library)
+          setLib(loadedLib)
+        } catch (error) {
+          console.error(`Erreur lors de l'importation de la bibliothèque ${library}:`, error)
         }
-        
-        loadLibrary()
       }
-    } catch (error) {
-      console.error(`Erreur lors de l'accès à la bibliothèque ${library}:`, error)
+      
+      loadLibrary()
     }
   }, [isLoaded, library])
 
@@ -124,7 +116,7 @@ export const useSessionToken = () => {
 }
 
 /**
- * Hook pour gérer l'autocomplétion d'adresses
+ * Hook pour gérer l'autocomplétion d'adresses de manière optimisée
  * @param {Object} options - Options de configuration
  * @returns {Object} - Fonctions et état pour l'autocomplétion
  */
@@ -134,10 +126,18 @@ export const useAddressAutocomplete = (options = {}) => {
   const [predictions, setPredictions] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [cache, setCache] = useState({}) // Cache pour éviter les requêtes répétées
 
   const getPlacePredictions = useCallback(async (input) => {
-    if (!isLoaded || !input) {
+    if (!isLoaded || !input || input.length < 3) {
       setPredictions([])
+      return
+    }
+
+    // Vérifier le cache
+    const cacheKey = `${input}:${options.country || ''}:${(options.types || []).join(',')}`
+    if (cache[cacheKey]) {
+      setPredictions(cache[cacheKey])
       return
     }
 
@@ -159,7 +159,15 @@ export const useAddressAutocomplete = (options = {}) => {
       }
 
       const response = await placesService.getPlacePredictions(request)
-      setPredictions(response?.predictions || [])
+      const results = response?.predictions || []
+      
+      // Mettre en cache les résultats
+      setCache(prevCache => ({
+        ...prevCache,
+        [cacheKey]: results
+      }))
+      
+      setPredictions(results)
     } catch (err) {
       console.error('Erreur lors de la récupération des prédictions d\'adresse:', err)
       setError(err)
@@ -167,7 +175,7 @@ export const useAddressAutocomplete = (options = {}) => {
     } finally {
       setLoading(false)
     }
-  }, [isLoaded, sessionToken, options.country, options.types])
+  }, [isLoaded, sessionToken, options.country, options.types, cache])
 
   const getPlaceDetails = useCallback(async (placeId) => {
     if (!isLoaded || !placeId) return null
@@ -205,12 +213,18 @@ export const useAddressAutocomplete = (options = {}) => {
     }
   }, [isLoaded, sessionToken, generateNewToken, options.fields])
 
+  // Fonction pour vider le cache
+  const clearCache = useCallback(() => {
+    setCache({})
+  }, [])
+
   return {
     predictions,
     loading,
     error,
     getPlacePredictions,
     getPlaceDetails,
+    clearCache,
     isLoaded
   }
 }
