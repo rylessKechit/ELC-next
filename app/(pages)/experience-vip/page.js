@@ -165,7 +165,7 @@ export default function ExperienceVipPage() {
       <section 
         ref={headerRef} 
         className="relative min-h-[75vh] flex items-center overflow-hidden bg-cover bg-center pt-32 pb-16"
-        style={{ backgroundImage: 'url(/assets/images/vip-hero.webp)' }}
+        style={{ backgroundImage: 'url(/assets/images/vip-service-hero.webp)' }}
       >
         <div className="absolute inset-0 bg-black/70 z-10"></div>
         
@@ -176,7 +176,7 @@ export default function ExperienceVipPage() {
             variants={fadeInVariant}
             className="max-w-3xl"
           >
-            <h1 className="mb-6">EXPÉRIENCE <span className="text-primary">VIP</span></h1>
+            <h1 className="mb-6 text-primary">EXPÉRIENCE VIP</h1>
             
             <p className="font-tertiary text-2xl italic text-primary mb-6">
               Un service d'exception pour une clientèle exigeante
@@ -442,87 +442,6 @@ export default function ExperienceVipPage() {
         </div>
       </section>
       
-      {/* VIP Packages Section */}
-      <section 
-        ref={pricingRef}
-        className="py-20 bg-gray-50"
-      >
-        <div className="container-custom">
-          <div className="text-center mb-16">
-            <h2>NOS OFFRES VIP</h2>
-            <p className="subtitle">Des formules adaptées à vos exigences</p>
-          </div>
-          
-          <motion.div 
-            initial="hidden"
-            animate={pricingControls}
-            variants={staggerContainer}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
-          >
-            {vipPackages.map((pkg, index) => (
-              <motion.div 
-                key={index} 
-                variants={fadeInVariant}
-                className={`rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-xl
-                           ${pkg.highlighted ? 'border-2 border-primary' : 'border border-gray-200'}`}
-              >
-                <div className={`p-6 text-center ${pkg.highlighted ? 'bg-primary text-white' : 'bg-white'}`}>
-                  <h3 className={`text-2xl font-bold mb-2 ${pkg.highlighted ? 'text-white' : 'text-gray-800'}`}>
-                    {pkg.title}
-                  </h3>
-                  <div className="text-3xl font-bold mt-4 mb-2">
-                    {pkg.price}
-                  </div>
-                  <p className={`mb-4 ${pkg.highlighted ? 'text-white/80' : 'text-gray-600'}`}>
-                    {pkg.description}
-                  </p>
-                </div>
-                
-                <div className="bg-white p-6">
-                  <ul className="space-y-3">
-                    {pkg.features.map((feature, i) => (
-                      <li key={i} className="flex items-center text-gray-700">
-                        <i className="fas fa-check text-primary mr-3"></i>
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  
-                  <div className="mt-8">
-                    <Link 
-                      href="/#booking" 
-                      className={`w-full block text-center py-3 px-6 rounded-full font-semibold transition-all duration-300
-                                ${pkg.highlighted 
-                                  ? 'bg-primary text-white hover:bg-primary-dark' 
-                                  : 'bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white'}`}
-                    >
-                      Réserver maintenant
-                    </Link>
-                  </div>
-                </div>
-                
-                {pkg.highlighted && (
-                  <div className="absolute top-0 right-0">
-                    <div className="bg-white text-primary text-xs font-bold py-1 px-4 rounded-bl-lg">
-                      RECOMMANDÉ
-                    </div>
-                  </div>
-                )}
-              </motion.div>
-            ))}
-          </motion.div>
-          
-          <div className="mt-12 text-center">
-            <p className="text-gray-600 mb-6">
-              Vous avez besoin d'une offre personnalisée pour un événement spécial ou un service régulier ?
-            </p>
-            <Link href="/contact" className="btn btn-primary">
-              Demander un devis sur mesure
-            </Link>
-          </div>
-        </div>
-      </section>
-      
       {/* Testimonials and CTA Section */}
       <section 
         ref={ctaRef}
@@ -538,19 +457,6 @@ export default function ExperienceVipPage() {
             variants={fadeInVariant}
             className="text-center max-w-3xl mx-auto"
           >
-            <div className="text-primary text-5xl mb-6">
-              <i className="fas fa-quote-left"></i>
-            </div>
-            
-            <p className="text-2xl font-tertiary italic text-white mb-8">
-              "Un service d'exception, une attention aux détails remarquable et une discrétion absolue. 
-              Elysian a redéfini mon expérience du transport de luxe."
-            </p>
-            
-            <div className="mb-12">
-              <p className="font-semibold text-lg">Sophie Laurent</p>
-              <p className="text-white/70">Directrice Générale, Groupe Luxéo</p>
-            </div>
             
             <h2 className="text-white text-3xl md:text-4xl mb-6">Prêt à vivre l'expérience VIP Elysian ?</h2>
             <p className="text-gray-300 text-lg mb-10">

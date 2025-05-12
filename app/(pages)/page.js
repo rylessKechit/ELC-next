@@ -224,7 +224,7 @@ export default function HomePage() {
           </h1>
           
           <p className="text-center md:text-left font-tertiary text-xl italic text-primary mb-6">
-            <span className="bg-black/30 px-2 py-1 rounded">Service de chauffeurs privés de luxe à Longjumeau et dans tout le département 91</span>
+            <span className="px-2 py-1 rounded">Service de chauffeurs privés de luxe à Longjumeau et dans tout le département 91</span>
           </p>
           
           <p className="text-center md:text-left text-lg mb-8 text-white">
@@ -234,14 +234,8 @@ export default function HomePage() {
           
           <div className="flex flex-col sm:flex-row gap-4 mt-10 justify-center md:justify-start">
             <a 
-              href="/flotte-vehicules"
-              className="py-3 px-6 bg-primary text-white font-medium rounded-none uppercase tracking-wider text-sm text-center hover:bg-primary-dark transition-all"
-            >
-              Découvrir notre flotte
-            </a>
-            <a 
               href="#booking"
-              className="py-3 px-6 bg-transparent text-white border border-primary font-medium rounded-none uppercase tracking-wider text-sm text-center hover:bg-primary hover:text-white transition-all"
+              className="py-3 px-6 bg-primary text-white font-medium rounded-none uppercase tracking-wider text-sm text-center hover:bg-primary-dark transition-all"
             >
               Réserver maintenant
             </a>

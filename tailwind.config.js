@@ -45,6 +45,8 @@ module.exports = {
         'lg': '8px',
       },
       animation: {
+        'fade-in-up': 'fadeInUp 0.6s ease-out',
+        'pulse': 'pulse 2s infinite',
         'bounce': 'bounce 1s infinite',
         'fade-in': 'fadeIn 0.8s ease-out',
         'slide-in-left': 'slideInLeft 0.8s ease-out',
@@ -53,6 +55,16 @@ module.exports = {
         'gradient': 'gradient 3s ease infinite',
       },
       keyframes: {
+        fadeInUp: {
+          '0%': {
+            opacity: '0',
+            transform: 'translateY(30px)',
+          },
+          '100%': {
+            opacity: '1',
+            transform: 'translateY(0)',
+          },
+        },
         bounce: {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-10px)' },

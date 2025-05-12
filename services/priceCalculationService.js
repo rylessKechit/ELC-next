@@ -1,40 +1,28 @@
 // services/priceCalculationService.js
 import { googleMapsService } from './googleMapsService'
 
-// Constantes de prix
+// TARIFS SELON LE BARÈME FOURNI - PEC + PRIX PAR KM UNIQUEMENT
 const BASE_FARES = {
-  'sedan': 30, // Berline de luxe
-  'premium': 50, // Berline premium
-  'green': 40, // Véhicule électrique
-  'suv': 45, // SUV
-  'van': 60 // Van VIP
+  'green': 10,    // Model 3 - PEC 10 euros
+  'premium': 18,  // Classe E premium - PEC 18 euros
+  'sedan': 45,    // Classe S luxe - PEC 45 euros
+  'van': 28       // Classe V VIP - PEC 28 euros
 }
 
 const PER_KM_RATES = {
-  'sedan': 1.5,
-  'premium': 2.2,
-  'green': 1.8,
-  'suv': 2.0,
-  'van': 2.5
+  'green': 2.30,   // Model 3 - 2.30 euros/km
+  'premium': 2.90, // Classe E premium - 2.90 euros/km
+  'sedan': 3.80,   // Classe S luxe - 3.80 euros/km
+  'van': 3.10      // Classe V VIP - 3.10 euros/km
 }
 
-// Tarifs horaires pour le temps de conduite (€ par minute)
-const PER_MINUTE_RATES = {
-  'sedan': 0.5,
-  'premium': 0.7,
-  'green': 0.6,
-  'suv': 0.65,
-  'van': 0.8
+// MINIMUM DE DISTANCE POUR LA CLASSE S (SEDAN)
+const MIN_DISTANCE_KM = {
+  'green': 0,
+  'premium': 0,
+  'sedan': 10,  // Minimum 10km pour la Classe S
+  'van': 0
 }
-
-// Surcharge pour bagages supplémentaires (au-delà de 2)
-const LUGGAGE_SURCHARGE = 5 // € par bagage supplémentaire au-delà de 2
-
-// Supplément pour périodes de forte demande
-const PEAK_HOURS_MULTIPLIER = 1.2 // +20% aux heures de pointe
-
-// Réduction pour réservation à l'avance
-const ADVANCE_BOOKING_DISCOUNT = 0.9 // -10% pour réservation plus de 7 jours à l'avance
 
 // Calcul du prix
 export const priceCalculationService = {
@@ -48,12 +36,8 @@ export const priceCalculationService = {
       const {
         pickupPlaceId,
         dropoffPlaceId,
-        pickupDateTime,
-        passengers = 1,
-        luggage = 0,
-        vehicleType = 'sedan', // par défaut
-        roundTrip = false,
-        returnDateTime
+        vehicleType = 'premium', // défaut à premium
+        roundTrip = false
       } = params
 
       // Tenter d'obtenir les détails du trajet via Google Maps
@@ -87,57 +71,36 @@ export const priceCalculationService = {
         };
       }
 
-      // Extraire les informations de distance et de durée
+      // Extraire les informations de distance
       const distanceInMeters = routeDetails.distance.value;
-      const durationInSeconds = routeDetails.duration.value;
-      
       const distanceInKm = distanceInMeters / 1000;
-      const durationInMinutes = durationInSeconds / 60;
+      const durationInMinutes = routeDetails.duration.value / 60;
 
-      // Déterminer si c'est une heure de pointe
-      const pickupTime = new Date(pickupDateTime);
-      const isPeakHour = this.isPeakHour(pickupTime);
-
-      // Déterminer si c'est une réservation anticipée
-      const isAdvanceBooking = this.isAdvanceBooking(pickupTime);
-
-      // Calculer le prix de base en fonction du type de véhicule
-      const baseFare = BASE_FARES[vehicleType] || BASE_FARES.sedan;
+      // Calculer le prix de base (PEC)
+      const baseFare = BASE_FARES[vehicleType] || BASE_FARES.premium;
+      
+      // Calculer la distance à facturer (minimum pour Classe S)
+      const minDistanceKm = MIN_DISTANCE_KM[vehicleType] || 0;
+      const chargeableDistanceKm = Math.max(distanceInKm, minDistanceKm);
       
       // Calculer le coût basé sur la distance
-      const distanceCharge = distanceInKm * (PER_KM_RATES[vehicleType] || PER_KM_RATES.sedan);
+      const perKmRate = PER_KM_RATES[vehicleType] || PER_KM_RATES.premium;
+      const distanceCharge = chargeableDistanceKm * perKmRate;
       
-      // Calculer le coût basé sur la durée
-      const timeCharge = durationInMinutes * (PER_MINUTE_RATES[vehicleType] || PER_MINUTE_RATES.sedan);
+      // Prix total = PEC + (Distance × Prix par km)
+      let exactPrice = baseFare + distanceCharge;
       
-      // Calculer les suppléments pour bagages
-      const extraLuggage = Math.max(0, luggage - 2); // 2 bagages inclus
-      const luggageCharge = extraLuggage * LUGGAGE_SURCHARGE;
-      
-      // Prix total avant ajustements
-      let totalBeforeAdjustments = baseFare + distanceCharge + timeCharge + luggageCharge;
-
-      // Appliquer le multiplicateur d'heure de pointe si nécessaire
-      if (isPeakHour) {
-        totalBeforeAdjustments *= PEAK_HOURS_MULTIPLIER;
-      }
-
-      // Appliquer la réduction pour réservation anticipée si applicable
-      if (isAdvanceBooking) {
-        totalBeforeAdjustments *= ADVANCE_BOOKING_DISCOUNT;
-      }
-
-      // Arrondir à l'euro supérieur
-      let exactPrice = Math.ceil(totalBeforeAdjustments);
-      
-      // Si aller-retour, multiplier par 1.8 (10% de remise sur le retour)
+      // Si aller-retour, multiplier par 2
       if (roundTrip) {
-        exactPrice *= 1.8;
+        exactPrice *= 2;
       }
 
-      // Prévoir une marge d'erreur de 10% pour le prix min/max
-      const minPrice = Math.floor(exactPrice * 0.9);
-      const maxPrice = Math.ceil(exactPrice * 1.1);
+      // Arrondir à 2 décimales
+      exactPrice = Math.round(exactPrice * 100) / 100;
+      
+      // Prévoir une marge d'erreur de 5% pour le prix min/max
+      const minPrice = Math.round(exactPrice * 0.95 * 100) / 100;
+      const maxPrice = Math.round(exactPrice * 1.05 * 100) / 100;
 
       // Retourner l'estimation complète
       return {
@@ -150,14 +113,15 @@ export const priceCalculationService = {
           breakdown: {
             baseFare,
             distanceCharge,
-            timeCharge,
-            luggageCharge,
-            isPeakHour,
-            isAdvanceBooking,
-            roundTrip
+            actualDistance: parseFloat(distanceInKm.toFixed(2)),
+            chargeableDistance: parseFloat(chargeableDistanceKm.toFixed(2)),
+            pricePerKm: perKmRate,
+            roundTrip,
+            vehicleType
           },
           details: {
-            distanceInKm: parseFloat(distanceInKm.toFixed(1)),
+            distanceInKm: parseFloat(distanceInKm.toFixed(2)),
+            chargeableDistanceInKm: parseFloat(chargeableDistanceKm.toFixed(2)),
             durationInMinutes: Math.round(durationInMinutes),
             formattedDistance: routeDetails.distance.text,
             formattedDuration: routeDetails.duration.text
@@ -178,75 +142,49 @@ export const priceCalculationService = {
    * @returns {Object} - Estimation par défaut
    */
   generateDefaultEstimate(params) {
-    const { vehicleType = 'sedan', roundTrip = false, luggage = 0 } = params;
+    const { vehicleType = 'premium', roundTrip = false } = params;
     
     // Valeurs par défaut
-    const baseFare = BASE_FARES[vehicleType] || 30;
-    const distanceCharge = 45; // ~30km à 1.5€/km
-    const timeCharge = 20; // ~40min à 0.5€/min
-    const luggageCharge = Math.max(0, luggage - 2) * LUGGAGE_SURCHARGE;
+    const baseFare = BASE_FARES[vehicleType] || BASE_FARES.premium;
+    const perKmRate = PER_KM_RATES[vehicleType] || PER_KM_RATES.premium;
+    const defaultDistance = 25; // 25km par défaut
+    const minDistanceKm = MIN_DISTANCE_KM[vehicleType] || 0;
+    const chargeableDistance = Math.max(defaultDistance, minDistanceKm);
     
-    let exactPrice = Math.ceil(baseFare + distanceCharge + timeCharge + luggageCharge);
+    const distanceCharge = chargeableDistance * perKmRate;
+    let exactPrice = baseFare + distanceCharge;
     
     if (roundTrip) {
-      exactPrice *= 1.8;
+      exactPrice *= 2;
     }
+    
+    exactPrice = Math.round(exactPrice * 100) / 100;
     
     return {
       success: true,
       estimate: {
         exactPrice,
-        minPrice: Math.floor(exactPrice * 0.9),
-        maxPrice: Math.ceil(exactPrice * 1.1),
+        minPrice: Math.round(exactPrice * 0.95 * 100) / 100,
+        maxPrice: Math.round(exactPrice * 1.05 * 100) / 100,
         currency: 'EUR',
         breakdown: {
           baseFare,
           distanceCharge,
-          timeCharge,
-          luggageCharge,
-          isPeakHour: false,
-          isAdvanceBooking: true,
-          roundTrip
+          actualDistance: defaultDistance,
+          chargeableDistance,
+          pricePerKm: perKmRate,
+          roundTrip,
+          vehicleType
         },
         details: {
-          distanceInKm: 30,
+          distanceInKm: defaultDistance,
+          chargeableDistanceInKm: chargeableDistance,
           durationInMinutes: 40,
-          formattedDistance: "30 km",
+          formattedDistance: `${defaultDistance} km`,
           formattedDuration: "40 min"
         }
       }
     };
-  },
-
-  /**
-   * Vérifie si l'heure donnée est une heure de pointe
-   * @param {Date} dateTime - Date et heure
-   * @returns {boolean}
-   */
-  isPeakHour(dateTime) {
-    const hour = dateTime.getHours();
-    const dayOfWeek = dateTime.getDay(); // 0 = dimanche, 1 = lundi, etc.
-    
-    // Heures de pointe en semaine : 7h-10h et 17h-20h
-    if (dayOfWeek >= 1 && dayOfWeek <= 5) {
-      return (hour >= 7 && hour < 10) || (hour >= 17 && hour < 20);
-    }
-    
-    // Weekend : pas d'heures de pointe
-    return false;
-  },
-
-  /**
-   * Vérifie si la réservation est faite suffisamment à l'avance
-   * @param {Date} dateTime - Date et heure de prise en charge
-   * @returns {boolean}
-   */
-  isAdvanceBooking(dateTime) {
-    const now = new Date();
-    const daysInAdvance = (dateTime - now) / (1000 * 60 * 60 * 24);
-    
-    // Réduction appliquée si réservation 7 jours ou plus à l'avance
-    return daysInAdvance >= 7;
   }
 };
 

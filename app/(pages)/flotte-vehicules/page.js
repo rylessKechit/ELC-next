@@ -202,9 +202,9 @@ export default function FlotteVehiculesPage() {
             initial="hidden"
             animate={headerControls}
             variants={fadeInVariant}
-            className="mb-6"
+            className="mb-6 text-primary"
           >
-            NOTRE <span className="text-primary">FLOTTE</span> D'EXCEPTION
+            NOTRE FLOTTE D'EXCEPTION
           </motion.h1>
           
           <motion.p 
@@ -376,140 +376,6 @@ export default function FlotteVehiculesPage() {
               </div>
             </motion.div>
           ))}
-        </div>
-      </section>
-      
-      {/* Special Offers Section */}
-      <section 
-        ref={specialsRef}
-        className="py-20 bg-white"
-      >
-        <div className="container-custom">
-          <div className="text-center mb-16">
-            <h2>OFFRES SPÉCIALES</h2>
-            <p className="subtitle">Des formules adaptées à vos besoins</p>
-          </div>
-          
-          <motion.div 
-            initial="hidden"
-            animate={specialsControls}
-            variants={staggerContainer}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
-          >
-            <motion.div 
-              variants={fadeInVariant}
-              className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300"
-            >
-              <div className="p-1 bg-primary"></div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-2">Forfait Aéroport</h3>
-                <p className="text-gray-600 mb-6">
-                  Transferts aéroport tout confort avec suivi de vol et temps d'attente inclus.
-                </p>
-                <div className="bg-gray-50 p-4 rounded-lg mb-6">
-                  <div className="text-xl font-bold text-primary">À partir de 95€</div>
-                  <p className="text-gray-500 text-sm">Prix pour un trajet simple</p>
-                </div>
-                <ul className="mb-8 space-y-2">
-                  <li className="flex items-center">
-                    <i className="fas fa-check text-primary mr-3"></i>
-                    <span>Suivi de vol en temps réel</span>
-                  </li>
-                  <li className="flex items-center">
-                    <i className="fas fa-check text-primary mr-3"></i>
-                    <span>Attente gratuite (60 min)</span>
-                  </li>
-                  <li className="flex items-center">
-                    <i className="fas fa-check text-primary mr-3"></i>
-                    <span>Assistance bagages</span>
-                  </li>
-                  <li className="flex items-center">
-                    <i className="fas fa-check text-primary mr-3"></i>
-                    <span>Bouteille d'eau offerte</span>
-                  </li>
-                </ul>
-                <Link href="/services-aeroport-gare" className="btn btn-primary w-full">
-                  En savoir plus
-                </Link>
-              </div>
-            </motion.div>
-            
-            <motion.div 
-              variants={fadeInVariant}
-              className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300"
-            >
-              <div className="p-1 bg-primary"></div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-2">Forfait Business</h3>
-                <p className="text-gray-600 mb-6">
-                  Service de chauffeur dédié pour vos rendez-vous d'affaires et déplacements professionnels.
-                </p>
-                <div className="bg-gray-50 p-4 rounded-lg mb-6">
-                  <div className="text-xl font-bold text-primary">À partir de 450€</div>
-                  <p className="text-gray-500 text-sm">Prix pour une journée (8h)</p>
-                </div>
-                <ul className="mb-8 space-y-2">
-                  <li className="flex items-center">
-                    <i className="fas fa-check text-primary mr-3"></i>
-                    <span>Chauffeur à disposition</span>
-                  </li>
-                  <li className="flex items-center">
-                    <i className="fas fa-check text-primary mr-3"></i>
-                    <span>Multiples arrêts inclus</span>
-                  </li>
-                  <li className="flex items-center">
-                    <i className="fas fa-check text-primary mr-3"></i>
-                    <span>WiFi haut débit & chargeurs</span>
-                  </li>
-                  <li className="flex items-center">
-                    <i className="fas fa-check text-primary mr-3"></i>
-                    <span>Confidentialité garantie</span>
-                  </li>
-                </ul>
-                <Link href="/services-affaires" className="btn btn-primary w-full">
-                  En savoir plus
-                </Link>
-              </div>
-            </motion.div>
-            
-            <motion.div 
-              variants={fadeInVariant}
-              className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300"
-            >
-              <div className="p-1 bg-primary"></div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-2">Événements Spéciaux</h3>
-                <p className="text-gray-600 mb-6">
-                  Transport de luxe pour vos événements importants: mariages, galas, soirées...
-                </p>
-                <div className="bg-gray-50 p-4 rounded-lg mb-6">
-                  <div className="text-xl font-bold text-primary">Sur mesure</div>
-                  <p className="text-gray-500 text-sm">Devis personnalisé selon vos besoins</p>
-                </div>
-                <ul className="mb-8 space-y-2">
-                  <li className="flex items-center">
-                    <i className="fas fa-check text-primary mr-3"></i>
-                    <span>Décoration personnalisée</span>
-                  </li>
-                  <li className="flex items-center">
-                    <i className="fas fa-check text-primary mr-3"></i>
-                    <span>Champagne offert (événements)</span>
-                  </li>
-                  <li className="flex items-center">
-                    <i className="fas fa-check text-primary mr-3"></i>
-                    <span>Service photo chauffeur</span>
-                  </li>
-                  <li className="flex items-center">
-                    <i className="fas fa-check text-primary mr-3"></i>
-                    <span>Options personnalisables</span>
-                  </li>
-                </ul>
-                <Link href="/services-evenements" className="btn btn-primary w-full">
-                  En savoir plus
-                </Link>
-              </div>
-            </motion.div>
-          </motion.div>
         </div>
       </section>
       

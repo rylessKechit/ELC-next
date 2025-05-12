@@ -214,7 +214,7 @@ export default function ServicesLongueDistancePage() {
             variants={fadeInVariant}
             className="max-w-3xl"
           >
-            <h1 className="mb-6">VOYAGES <span className="text-primary">LONGUE DISTANCE</span></h1>
+            <h1 className="mb-6 text-primary">VOYAGES LONGUE DISTANCE</h1>
             
             <p className="font-tertiary text-2xl italic text-primary mb-6">
               Le luxe et le confort pour tous vos déplacements inter-villes

@@ -185,7 +185,7 @@ export default function ServicesAffairesPage() {
             variants={fadeInVariant}
             className="max-w-3xl"
           >
-            <h1 className="mb-6">SERVICES <span className="text-primary">D'AFFAIRES</span></h1>
+            <h1 className="mb-6 text-primary">SERVICES D'AFFAIRES</h1>
             
             <p className="font-tertiary text-2xl italic text-primary mb-6">
               Des solutions de transport premium pour professionnels exigeants
