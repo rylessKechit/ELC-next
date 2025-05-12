@@ -177,76 +177,105 @@ const BookingForm = () => {
   
   // Calcul du prix
   const calculatePrice = async () => {
-    // Validation du formulaire
-    if (!formValues.pickupAddress || !formValues.dropoffAddress || !formValues.pickupDate || !formValues.pickupTime) {
-      setError('Veuillez remplir tous les champs obligatoires');
-      return;
-    }
+  // Validation des champs obligatoires
+  if (!formValues.pickupAddress || !formValues.dropoffAddress || !formValues.pickupDate || !formValues.pickupTime) {
+    setError('Veuillez remplir tous les champs obligatoires')
+    return
+  }
+  
+  if (!formValues.pickupAddressPlaceId || !formValues.dropoffAddressPlaceId) {
+    setError('Veuillez sélectionner des adresses valides dans les suggestions')
+    return
+  }
+  
+  setError('')
+  setIsCalculating(true)
+  
+  try {
+    // Calculer pour tous les types de véhicules
+    const vehicleTypes = ['green', 'premium', 'sedan', 'van']
+    const vehicleEstimates = []
     
-    if (!formValues.pickupAddressPlaceId || !formValues.dropoffAddressPlaceId) {
-      setError('Veuillez sélectionner des adresses valides dans les suggestions');
-      return;
-    }
-    
-    setError('');
-    setIsCalculating(true);
-    
-    try {
-      console.log('Calcul du prix avec les données:', {
-        pickupPlaceId: formValues.pickupAddressPlaceId,
-        dropoffPlaceId: formValues.dropoffAddressPlaceId,
-        pickupDateTime: `${formValues.pickupDate}T${formValues.pickupTime}`,
-        passengers: parseInt(formValues.passengers),
-        luggage: parseInt(formValues.luggage),
-        roundTrip: formValues.roundTrip,
-        returnDateTime: formValues.roundTrip && formValues.returnDate ? `${formValues.returnDate}T${formValues.returnTime}` : null
-      });
-
-      // Faire UN SEUL appel API pour obtenir l'estimation de base
-      const response = await api.post('/price/estimate', {
-        pickupPlaceId: formValues.pickupAddressPlaceId,
-        dropoffPlaceId: formValues.dropoffAddressPlaceId,
-        pickupDateTime: `${formValues.pickupDate}T${formValues.pickupTime}`,
-        passengers: parseInt(formValues.passengers),
-        luggage: parseInt(formValues.luggage),
-        roundTrip: formValues.roundTrip,
-        returnDateTime: formValues.roundTrip && formValues.returnDate ? `${formValues.returnDate}T${formValues.returnTime}` : null,
-        // Utiliser premium comme base de calcul
-        vehicleType: 'premium'
-      });
-      
-      if (response.data && response.data.success) {
-        console.log('Réponse API:', response.data);
+    for (const vehicleType of vehicleTypes) {
+      try {
+        const response = await api.post('/price/estimate', {
+          pickupPlaceId: formValues.pickupAddressPlaceId,
+          dropoffPlaceId: formValues.dropoffAddressPlaceId,
+          pickupDateTime: `${formValues.pickupDate}T${formValues.pickupTime}`,
+          passengers: parseInt(formValues.passengers),
+          luggage: parseInt(formValues.luggage),
+          roundTrip: formValues.roundTrip,
+          returnDateTime: formValues.roundTrip && formValues.returnDate ? `${formValues.returnDate}T${formValues.returnTime}` : null,
+          vehicleType: vehicleType
+        })
         
-        // L'API retourne { success: true, data: { success: true, estimate: {...} } }
-        const baseEstimate = response.data.data.estimate;
-        
-        if (!baseEstimate) {
-          setError('Estimation non reçue du serveur');
-          return;
+        if (response.data && response.data.success) {
+          vehicleEstimates.push({
+            vehicleType,
+            estimate: response.data.data.estimate
+          })
         }
-        
-        // Créer les options de véhicules avec calculs locaux basés sur vos tarifs
-        const vehicleOptions = createVehicleOptions(baseEstimate, formValues);
-        
-        setAvailableVehicles(vehicleOptions);
-        setCurrentStep(2); // Avancer à l'étape 2 (sélection du véhicule)
-      } else {
-        setError(response.data?.error || "Erreur lors du calcul du prix.");
+      } catch (err) {
+        // Continuer avec les autres véhicules même si un calcul échoue
+        continue
       }
-    } catch (err) {
-      console.error('Erreur lors du calcul du prix:', err);
-      if (err.response) {
-        setError(`Erreur ${err.response.status}: ${err.response.data?.error || 'Erreur serveur'}`);
-      } else if (err.request) {
-        setError('Pas de réponse du serveur. Veuillez réessayer plus tard.');
-      } else {
-        setError(`Erreur: ${err.message}`);
-      }
-    } finally {
-      setIsCalculating(false);
     }
-  };
+    
+    if (vehicleEstimates.length === 0) {
+      throw new Error('Impossible de calculer le prix pour aucun véhicule')
+    }
+    
+    // Créer les options de véhicules avec les prix réels
+    const vehicleOptions = [
+      {
+        id: 'green',
+        name: 'Green Eco',
+        desc: 'Tesla Model 3 - 100% électrique',
+        capacity: 'Jusqu\'à 4 passagers',
+        luggage: 'Jusqu\'à 3 bagages',
+        estimate: vehicleEstimates.find(v => v.vehicleType === 'green')?.estimate || null,
+        price: vehicleEstimates.find(v => v.vehicleType === 'green')?.estimate?.exactPrice || 0
+      },
+      {
+        id: 'premium',
+        name: 'Berline Premium',
+        desc: 'Mercedes Classe E ou similaire',
+        capacity: 'Jusqu\'à 4 passagers',
+        luggage: 'Jusqu\'à 4 bagages',
+        estimate: vehicleEstimates.find(v => v.vehicleType === 'premium')?.estimate || null,
+        price: vehicleEstimates.find(v => v.vehicleType === 'premium')?.estimate?.exactPrice || 0
+      },
+      {
+        id: 'sedan',
+        name: 'Berline de Luxe',
+        desc: 'Mercedes Classe S ou similaire',
+        capacity: 'Jusqu\'à 4 passagers',
+        luggage: 'Jusqu\'à 3 bagages',
+        estimate: vehicleEstimates.find(v => v.vehicleType === 'sedan')?.estimate || null,
+        price: vehicleEstimates.find(v => v.vehicleType === 'sedan')?.estimate?.exactPrice || 0
+      },
+      {
+        id: 'van',
+        name: 'Van VIP',
+        desc: 'Mercedes Classe V ou similaire',
+        capacity: 'Jusqu\'à 7 passagers',
+        luggage: 'Bagages multiples',
+        estimate: vehicleEstimates.find(v => v.vehicleType === 'van')?.estimate || null,
+        price: vehicleEstimates.find(v => v.vehicleType === 'van')?.estimate?.exactPrice || 0
+      }
+    ]
+    
+    // Filtrer les véhicules qui ont pu être calculés
+    const validVehicles = vehicleOptions.filter(v => v.estimate !== null)
+    
+    setAvailableVehicles(validVehicles)
+    setCurrentStep(2)
+  } catch (err) {
+    setError(err.message || 'Erreur lors du calcul du prix')
+  } finally {
+    setIsCalculating(false)
+  }
+}
 
 // Nouvelle fonction pour créer les options de véhicules
 function createVehicleOptions(baseEstimate, formValues) {

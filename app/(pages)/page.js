@@ -140,21 +140,21 @@ export default function HomePage() {
   // Testimonials data
   const testimonials = [
     {
-      name: 'Sophie Marceau',
-      role: 'Actrice',
-      text: 'Un service de chauffeurs d\'exception que j\'utilise régulièrement lors de mes déplacements dans l\'Essonne. Discrétion, ponctualité et confort absolu.',
+      name: 'Marie L.',
+      role: 'Cliente régulière',
+      text: 'Un service exceptionnel ! J\'utilise régulièrement ce service de chauffeurs pour mes déplacements professionnels entre Longjumeau et Paris. Toujours ponctuel, véhicule impeccable et chauffeur très professionnel.',
       image: '/assets/images/testimonial-1.webp'
     },
     {
-      name: 'Jean Dujardin',
-      role: 'Acteur et Producteur',
-      text: 'Une prestation VTC impeccable pour tous mes trajets entre Paris et Longjumeau. Je recommande sans hésitation ce service de chauffeurs haut de gamme dans le 91.',
+      name: 'Jean-Pierre M.',
+      role: 'Dirigeant d\'entreprise',
+      text: 'Je recommande vivement ce service de chauffeurs dans l\'Essonne. Pour mes rendez-vous d\'affaires à Massy et dans le 91, c\'est devenu indispensable. Discrétion et qualité au rendez-vous.',
       image: '/assets/images/testimonial-2.webp'
     },
     {
-      name: 'Marion Cotillard',
-      role: 'Actrice',
-      text: 'Le summum du luxe et de l\'élégance pour vos déplacements avec chauffeur en Essonne. Un chauffeur toujours disponible et parfaitement professionnel.',
+      name: 'Sylvie B.',
+      role: 'Organisatrice d\'événements',
+      text: 'Parfait pour nos événements à Évry-Courcouronnes ! Le chauffeur connaît parfaitement le département 91, véhicule luxueux et service impeccable. Nos invités sont toujours ravis.',
       image: '/assets/images/testimonial-3.webp'
     }
   ]

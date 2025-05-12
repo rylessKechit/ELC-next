@@ -1,7 +1,7 @@
-// services/priceCalculationService.js - Version qui utilise UNIQUEMENT Google Maps
+// services/priceCalculationService.js - Version propre
 import { googleMapsService } from './googleMapsService'
 
-// TARIFS SELON LE BARÈME FOURNI - PEC + PRIX PAR KM UNIQUEMENT
+// TARIFS SELON VOTRE BARÈME
 const BASE_FARES = {
   'green': 10,    // Model 3 - PEC 10 euros
   'premium': 18,  // Classe E premium - PEC 18 euros
@@ -24,18 +24,12 @@ const MIN_DISTANCE_KM = {
   'van': 0
 }
 
-// Calcul du prix
 export const priceCalculationService = {
-  /**
-   * Calculer une estimation de prix pour un trajet
-   * @param {Object} params - Paramètres du trajet
-   * @returns {Promise<Object>} - Estimation de prix
-   */
   async calculatePrice(params) {
     const {
       pickupPlaceId,
       dropoffPlaceId,
-      vehicleType = 'premium', // défaut à premium
+      vehicleType = 'premium',
       roundTrip = false
     } = params
 
@@ -44,19 +38,11 @@ export const priceCalculationService = {
       throw new Error('pickupPlaceId et dropoffPlaceId sont requis')
     }
 
-    console.log('=== Calcul avec Google Maps ===')
-    console.log('pickupPlaceId:', pickupPlaceId)
-    console.log('dropoffPlaceId:', dropoffPlaceId)
-    console.log('vehicleType:', vehicleType)
-
-    // Obtenir les détails du trajet via Google Maps (OBLIGATOIRE)
+    // Obtenir les détails du trajet via Google Maps
     let routeDetails
     try {
-      console.log('Appel de googleMapsService.getRouteDetails...')
       routeDetails = await googleMapsService.getRouteDetails(pickupPlaceId, dropoffPlaceId)
-      console.log('Résultat Google Maps:', routeDetails)
     } catch (error) {
-      console.error('Erreur Google Maps:', error)
       throw new Error(`Impossible d'obtenir les détails de route depuis Google Maps: ${error.message}`)
     }
 
@@ -69,9 +55,6 @@ export const priceCalculationService = {
     const distanceInMeters = routeDetails.distance.value
     const distanceInKm = distanceInMeters / 1000
     const durationInMinutes = routeDetails.duration.value / 60
-
-    console.log(`Distance réelle: ${distanceInKm.toFixed(2)} km`)
-    console.log(`Durée: ${durationInMinutes.toFixed(0)} min`)
 
     // Calculer le prix de base (PEC)
     const baseFare = BASE_FARES[vehicleType] || BASE_FARES.premium
@@ -125,7 +108,6 @@ export const priceCalculationService = {
       }
     }
 
-    console.log('Prix calculé:', exactPrice)
     return result
   }
 }
