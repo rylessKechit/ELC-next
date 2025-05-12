@@ -192,118 +192,7 @@ const BookingForm = () => {
     setIsCalculating(true);
     
     try {
-      // Dans un environnement de développement, simuler une réponse
-      if (process.env.NODE_ENV === 'development') {
-        // Simuler un délai réseau
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // Simuler les différentes options de véhicules disponibles avec les prix
-        const basePrice = Math.floor(Math.random() * 50) + 70; // Entre 70 et 120€
-        
-        const estimate = {
-          exactPrice: basePrice,
-          minPrice: Math.floor(basePrice * 0.9),
-          maxPrice: Math.ceil(basePrice * 1.1),
-          currency: 'EUR',
-          breakdown: {
-            baseFare: 30,
-            distanceCharge: basePrice - 50,
-            timeCharge: 20,
-            luggageCharge: formValues.luggage > 2 ? (formValues.luggage - 2) * 5 : 0,
-            isPeakHour: false,
-            isAdvanceBooking: true,
-            roundTrip: formValues.roundTrip
-          },
-          details: {
-            distanceInKm: 25,
-            durationInMinutes: 40,
-            formattedDistance: "25 km",
-            formattedDuration: "40 min"
-          }
-        };
-        
-        const vehicleOptions = [
-          {
-            id: 'green',
-            name: 'Green Eco',
-            desc: 'Tesla Model 3 - 100% électrique',
-            capacity: 'Jusqu\'à 4 passagers',
-            luggage: 'Jusqu\'à 3 bagages',
-            price: estimate.exactPrice * 0.9, // 10% moins cher (le moins cher)
-            estimate: {
-              ...estimate,
-              exactPrice: estimate.exactPrice * 0.9,
-              minPrice: estimate.minPrice * 0.9,
-              maxPrice: estimate.maxPrice * 0.9,
-              breakdown: {
-                ...estimate.breakdown,
-                baseFare: estimate.breakdown.baseFare * 0.9,
-                distanceCharge: estimate.breakdown.distanceCharge * 0.9,
-                timeCharge: estimate.breakdown.timeCharge * 0.9,
-                greenDiscount: estimate.exactPrice * 0.1
-              }
-            }
-          },
-          {
-            id: 'premium',
-            name: 'Berline Premium',
-            desc: 'Mercedes Classe E ou similaire',
-            capacity: 'Jusqu\'à 4 passagers',
-            luggage: 'Jusqu\'à 4 bagages',
-            price: estimate.exactPrice, // Prix de base (2ème moins cher)
-            estimate: estimate
-          },
-          {
-            id: 'sedan',
-            name: 'Berline de Luxe',
-            desc: 'Mercedes Classe S ou similaire',
-            capacity: 'Jusqu\'à 4 passagers',
-            luggage: 'Jusqu\'à 3 bagages',
-            price: estimate.exactPrice * 1.1, // 10% plus cher (3ème moins cher)
-            estimate: {
-              ...estimate,
-              exactPrice: estimate.exactPrice * 1.1,
-              minPrice: estimate.minPrice * 1.1,
-              maxPrice: estimate.maxPrice * 1.1,
-              breakdown: {
-                ...estimate.breakdown,
-                baseFare: estimate.breakdown.baseFare * 1.1,
-                distanceCharge: estimate.breakdown.distanceCharge * 1.1,
-                timeCharge: estimate.breakdown.timeCharge * 1.1,
-                sedanSupplement: estimate.exactPrice * 0.1
-              }
-            }
-          },
-          {
-            id: 'van',
-            name: 'Van VIP',
-            desc: 'Mercedes Classe V ou similaire',
-            capacity: 'Jusqu\'à 7 passagers',
-            luggage: 'Bagages multiples',
-            price: estimate.exactPrice * 1.5, // 50% plus cher (le plus cher)
-            estimate: {
-              ...estimate,
-              exactPrice: estimate.exactPrice * 1.5,
-              minPrice: estimate.minPrice * 1.5,
-              maxPrice: estimate.maxPrice * 1.5,
-              breakdown: {
-                ...estimate.breakdown,
-                baseFare: estimate.breakdown.baseFare * 1.5,
-                distanceCharge: estimate.breakdown.distanceCharge * 1.5,
-                timeCharge: estimate.breakdown.timeCharge * 1.5,
-                vanSupplement: estimate.exactPrice * 0.5
-              }
-            }
-          }
-        ];
-        
-        setAvailableVehicles(vehicleOptions);
-        setCurrentStep(2); // Avancer à l'étape 2 (sélection du véhicule)
-        return;
-      }
-      
-      // Requête API pour le calcul du prix
-      const response = await api.post('/api/price/estimate', {
+      console.log('Calcul du prix avec les données:', {
         pickupPlaceId: formValues.pickupAddressPlaceId,
         dropoffPlaceId: formValues.dropoffAddressPlaceId,
         pickupDateTime: `${formValues.pickupDate}T${formValues.pickupTime}`,
@@ -312,85 +201,33 @@ const BookingForm = () => {
         roundTrip: formValues.roundTrip,
         returnDateTime: formValues.roundTrip && formValues.returnDate ? `${formValues.returnDate}T${formValues.returnTime}` : null
       });
+
+      // Faire UN SEUL appel API pour obtenir l'estimation de base
+      const response = await api.post('/price/estimate', {
+        pickupPlaceId: formValues.pickupAddressPlaceId,
+        dropoffPlaceId: formValues.dropoffAddressPlaceId,
+        pickupDateTime: `${formValues.pickupDate}T${formValues.pickupTime}`,
+        passengers: parseInt(formValues.passengers),
+        luggage: parseInt(formValues.luggage),
+        roundTrip: formValues.roundTrip,
+        returnDateTime: formValues.roundTrip && formValues.returnDate ? `${formValues.returnDate}T${formValues.returnTime}` : null,
+        // Utiliser premium comme base de calcul
+        vehicleType: 'premium'
+      });
       
       if (response.data && response.data.success) {
-        // Convertir en options de véhicules avec les prix
-        const estimate = response.data.data.estimate;
+        console.log('Réponse API:', response.data);
         
-        const vehicleOptions = [
-          {
-            id: 'green',
-            name: 'Green Eco',
-            desc: 'Tesla Model 3 - 100% électrique',
-            capacity: 'Jusqu\'à 4 passagers',
-            luggage: 'Jusqu\'à 3 bagages',
-            price: estimate.exactPrice * 0.9, // 10% moins cher (le moins cher)
-            estimate: {
-              ...estimate,
-              exactPrice: estimate.exactPrice * 0.9,
-              minPrice: estimate.minPrice * 0.9,
-              maxPrice: estimate.maxPrice * 0.9,
-              breakdown: {
-                ...estimate.breakdown,
-                baseFare: estimate.breakdown.baseFare * 0.9,
-                distanceCharge: estimate.breakdown.distanceCharge * 0.9,
-                timeCharge: estimate.breakdown.timeCharge * 0.9,
-                greenDiscount: estimate.exactPrice * 0.1
-              }
-            }
-          },
-          {
-            id: 'premium',
-            name: 'Berline Premium',
-            desc: 'Mercedes Classe E ou similaire',
-            capacity: 'Jusqu\'à 4 passagers',
-            luggage: 'Jusqu\'à 4 bagages',
-            price: estimate.exactPrice, // Prix de base (2ème moins cher)
-            estimate: estimate
-          },
-          {
-            id: 'sedan',
-            name: 'Berline de Luxe',
-            desc: 'Mercedes Classe S ou similaire',
-            capacity: 'Jusqu\'à 4 passagers',
-            luggage: 'Jusqu\'à 3 bagages',
-            price: estimate.exactPrice * 1.1, // 10% plus cher (3ème moins cher)
-            estimate: {
-              ...estimate,
-              exactPrice: estimate.exactPrice * 1.1,
-              minPrice: estimate.minPrice * 1.1,
-              maxPrice: estimate.maxPrice * 1.1,
-              breakdown: {
-                ...estimate.breakdown,
-                baseFare: estimate.breakdown.baseFare * 1.1,
-                distanceCharge: estimate.breakdown.distanceCharge * 1.1,
-                timeCharge: estimate.breakdown.timeCharge * 1.1,
-                sedanSupplement: estimate.exactPrice * 0.1
-              }
-            }
-          },
-          {
-            id: 'van',
-            name: 'Van VIP',
-            desc: 'Mercedes Classe V ou similaire',
-            capacity: 'Jusqu\'à 7 passagers',
-            luggage: 'Bagages multiples',
-            price: estimate.exactPrice * 1.5, // 50% plus cher (le plus cher)
-            estimate: {
-              ...estimate,
-              exactPrice: estimate.exactPrice * 1.5,
-              minPrice: estimate.minPrice * 1.5,
-              maxPrice: estimate.maxPrice * 1.5,
-              breakdown: {
-                ...estimate.breakdown,
-                baseFare: estimate.breakdown.baseFare * 1.5,
-                distanceCharge: estimate.breakdown.distanceCharge * 1.5,
-                timeCharge: estimate.breakdown.timeCharge * 1.5,
-                vanSupplement: estimate.exactPrice * 0.5
-              }
-            }
-          }
-        ];
+        // L'API retourne { success: true, data: { success: true, estimate: {...} } }
+        const baseEstimate = response.data.data.estimate;
+        
+        if (!baseEstimate) {
+          setError('Estimation non reçue du serveur');
+          return;
+        }
+        
+        // Créer les options de véhicules avec calculs locaux basés sur vos tarifs
+        const vehicleOptions = createVehicleOptions(baseEstimate, formValues);
         
         setAvailableVehicles(vehicleOptions);
         setCurrentStep(2); // Avancer à l'étape 2 (sélection du véhicule)
@@ -399,9 +236,8 @@ const BookingForm = () => {
       }
     } catch (err) {
       console.error('Erreur lors du calcul du prix:', err);
-      
       if (err.response) {
-        setError(`Erreur ${err.response.status}: ${err.response.data.error || 'Erreur serveur'}`);
+        setError(`Erreur ${err.response.status}: ${err.response.data?.error || 'Erreur serveur'}`);
       } else if (err.request) {
         setError('Pas de réponse du serveur. Veuillez réessayer plus tard.');
       } else {
@@ -411,6 +247,223 @@ const BookingForm = () => {
       setIsCalculating(false);
     }
   };
+
+// Nouvelle fonction pour créer les options de véhicules
+function createVehicleOptions(baseEstimate, formValues) {
+  // Récupérer les détails du trajet depuis l'estimation de base
+  const distanceInKm = baseEstimate.details?.distanceInKm || 25;
+  const roundTrip = formValues.roundTrip;
+  
+  // Vos tarifs
+  const BASE_FARES = { green: 10, premium: 18, sedan: 45, van: 28 };
+  const PER_KM_RATES = { green: 2.30, premium: 2.90, sedan: 3.80, van: 3.10 };
+  const MIN_DISTANCE_KM = { green: 0, premium: 0, sedan: 10, van: 0 };
+  
+  // Fonction pour calculer le prix d'un véhicule
+  function calculateVehiclePrice(vehicleType) {
+    const baseFare = BASE_FARES[vehicleType];
+    const perKmRate = PER_KM_RATES[vehicleType];
+    const minDistance = MIN_DISTANCE_KM[vehicleType];
+    
+    const chargeableDistance = Math.max(distanceInKm, minDistance);
+    const distanceCharge = chargeableDistance * perKmRate;
+    
+    let exactPrice = baseFare + distanceCharge;
+    if (roundTrip) exactPrice *= 2;
+    
+    exactPrice = Math.round(exactPrice * 100) / 100;
+    
+    return {
+      exactPrice,
+      minPrice: Math.round(exactPrice * 0.95 * 100) / 100,
+      maxPrice: Math.round(exactPrice * 1.05 * 100) / 100,
+      currency: 'EUR',
+      breakdown: {
+        baseFare,
+        distanceCharge,
+        actualDistance: distanceInKm,
+        chargeableDistance,
+        pricePerKm: perKmRate,
+        roundTrip,
+        vehicleType
+      },
+      details: {
+        distanceInKm,
+        chargeableDistanceInKm: chargeableDistance,
+        durationInMinutes: baseEstimate.details?.durationInMinutes || 40,
+        formattedDistance: baseEstimate.details?.formattedDistance || `${distanceInKm} km`,
+        formattedDuration: baseEstimate.details?.formattedDuration || "40 min"
+      }
+    };
+  }
+  
+  // Créer toutes les options de véhicules
+  return [
+    {
+      id: 'green',
+      name: 'Green Eco',
+      desc: 'Tesla Model 3 - 100% électrique',
+      capacity: 'Jusqu\'à 4 passagers',
+      luggage: 'Jusqu\'à 3 bagages',
+      price: calculateVehiclePrice('green').exactPrice,
+      estimate: calculateVehiclePrice('green')
+    },
+    {
+      id: 'premium',
+      name: 'Berline Premium',
+      desc: 'Mercedes Classe E ou similaire',
+      capacity: 'Jusqu\'à 4 passagers',
+      luggage: 'Jusqu\'à 4 bagages',
+      price: calculateVehiclePrice('premium').exactPrice,
+      estimate: calculateVehiclePrice('premium')
+    },
+    {
+      id: 'sedan',
+      name: 'Berline de Luxe',
+      desc: 'Mercedes Classe S ou similaire',
+      capacity: 'Jusqu\'à 4 passagers',
+      luggage: 'Jusqu\'à 3 bagages',
+      price: calculateVehiclePrice('sedan').exactPrice,
+      estimate: calculateVehiclePrice('sedan')
+    },
+    {
+      id: 'van',
+      name: 'Van VIP',
+      desc: 'Mercedes Classe V ou similaire',
+      capacity: 'Jusqu\'à 7 passagers',
+      luggage: 'Bagages multiples',
+      price: calculateVehiclePrice('van').exactPrice,
+      estimate: calculateVehiclePrice('van')
+    }
+  ];
+}
+
+// Fonction pour estimer le prix pour un véhicule spécifique (version rapide)
+const estimatePriceForVehicle = (vehicleType, data) => {
+  // Tarifs selon votre barème
+  const BASE_FARES = {
+    'green': 10,
+    'premium': 18,
+    'sedan': 45,
+    'van': 28
+  };
+  
+  const PER_KM_RATES = {
+    'green': 2.30,
+    'premium': 2.90,
+    'sedan': 3.80,
+    'van': 3.10
+  };
+  
+  const MIN_DISTANCE_KM = {
+    'green': 0,
+    'premium': 0,
+    'sedan': 10,  // Minimum 10km pour la Classe S
+    'van': 0
+  };
+  
+  // Estimation approximative de distance (à remplacer par calcul réel)
+  const estimatedDistance = 25; // 25km en moyenne
+  const chargeableDistance = Math.max(estimatedDistance, MIN_DISTANCE_KM[vehicleType] || 0);
+  
+  const baseFare = BASE_FARES[vehicleType] || BASE_FARES.premium;
+  const distanceCharge = chargeableDistance * (PER_KM_RATES[vehicleType] || PER_KM_RATES.premium);
+  
+  let price = baseFare + distanceCharge;
+  
+  if (data.roundTrip) {
+    price *= 2;
+  }
+  
+  return Math.round(price * 100) / 100;
+};
+
+// Fonction pour calculer le prix complet pour un véhicule (version détaillée)
+const calculatePriceForVehicle = async (vehicleType, data) => {
+  try {
+    const response = await api.post('/price/estimate', {
+      pickupPlaceId: data.pickupAddressPlaceId,
+      dropoffPlaceId: data.dropoffAddressPlaceId,
+      pickupDateTime: `${data.pickupDate}T${data.pickupTime}`,
+      passengers: parseInt(data.passengers),
+      luggage: parseInt(data.luggage),
+      roundTrip: data.roundTrip,
+      returnDateTime: data.roundTrip && data.returnDate ? `${data.returnDate}T${data.returnTime}` : null,
+      vehicleType: vehicleType
+    });
+    
+    if (response.data && response.data.success) {
+      return response.data.data.estimate;
+    }
+  } catch (error) {
+    console.error(`Erreur calcul prix pour ${vehicleType}:`, error);
+  }
+  
+  // Fallback avec votre barème
+  return createDefaultEstimate(vehicleType, data);
+};
+
+// Fonction fallback pour créer une estimation par défaut
+const createDefaultEstimate = (vehicleType, data) => {
+  const BASE_FARES = {
+    'green': 10,
+    'premium': 18,
+    'sedan': 45,
+    'van': 28
+  };
+  
+  const PER_KM_RATES = {
+    'green': 2.30,
+    'premium': 2.90,
+    'sedan': 3.80,
+    'van': 3.10
+  };
+  
+  const MIN_DISTANCE_KM = {
+    'green': 0,
+    'premium': 0,
+    'sedan': 10,
+    'van': 0
+  };
+  
+  const defaultDistance = 25;
+  const chargeableDistance = Math.max(defaultDistance, MIN_DISTANCE_KM[vehicleType] || 0);
+  
+  const baseFare = BASE_FARES[vehicleType] || BASE_FARES.premium;
+  const perKmRate = PER_KM_RATES[vehicleType] || PER_KM_RATES.premium;
+  const distanceCharge = chargeableDistance * perKmRate;
+  
+  let exactPrice = baseFare + distanceCharge;
+  
+  if (data.roundTrip) {
+    exactPrice *= 2;
+  }
+  
+  exactPrice = Math.round(exactPrice * 100) / 100;
+  
+  return {
+    exactPrice,
+    minPrice: Math.round(exactPrice * 0.95 * 100) / 100,
+    maxPrice: Math.round(exactPrice * 1.05 * 100) / 100,
+    currency: 'EUR',
+    breakdown: {
+      baseFare,
+      distanceCharge,
+      actualDistance: defaultDistance,
+      chargeableDistance,
+      pricePerKm: perKmRate,
+      roundTrip: data.roundTrip,
+      vehicleType
+    },
+    details: {
+      distanceInKm: defaultDistance,
+      chargeableDistanceInKm: chargeableDistance,
+      durationInMinutes: 40,
+      formattedDistance: `${defaultDistance} km`,
+      formattedDuration: "40 min"
+    }
+  };
+};
   
   const onFirstStepSubmit = (data) => {
     calculatePrice();
