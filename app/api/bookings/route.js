@@ -261,7 +261,7 @@ export async function POST(request) {
                   ${roundTrip ? `<p style="margin: 3px 0;"><strong>Retour :</strong> ${returnDateTime.toLocaleString('fr-FR')}</p>` : ''}
                 </div>
                 
-                <p><a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://elysian-luxury-chauffeurs.com'}/admin/bookings/${bookingId}" style="background-color: #d4af37; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; display: inline-block;">Accéder au tableau de bord</a></p>
+                <p><a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.elysian-luxury-chauffeurs.com'}/admin/bookings/${bookingId}" style="background-color: #d4af37; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; display: inline-block;">Accéder au tableau de bord</a></p>
               </div>
             </div>
           `,

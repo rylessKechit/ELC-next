@@ -1,5 +1,5 @@
 # robots.txt pour Elysian Luxury Chauffeurs
-# https://elysian-luxury-chauffeurs.com/
+# https://www.elysian-luxury-chauffeurs.com/
 
 User-agent: *
 Allow: /
@@ -66,4 +66,4 @@ User-agent: DuckDuckBot
 Allow: /
 
 # Sitemap
-Sitemap: https://elysian-luxury-chauffeurs.com/sitemap.xml
+Sitemap: https://www.elysian-luxury-chauffeurs.com/sitemap.xml

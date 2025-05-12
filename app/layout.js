@@ -21,18 +21,18 @@ export const metadata = {
   description: 'Elysian Luxury Chauffeurs - Service de chauffeur privé de luxe. Réservez votre course en quelques clics pour tous vos trajets professionnels et privés.',
   keywords: 'chauffeur privé, limousine, transport VIP, service chauffeur luxe, événements VIP, aéroport VIP',
   alternates: {
-    canonical: 'https://elysian-luxury-chauffeurs.com',
+    canonical: 'https://www.elysian-luxury-chauffeurs.com',
   },
   openGraph: {
     title: 'Elysian Luxury Chauffeurs - Service de chauffeur privé de luxe',
     description: 'Service de chauffeur privé de luxe pour tous vos déplacements professionnels et privés. Réservez en quelques clics.',
-    url: 'https://elysian-luxury-chauffeurs.com',
+    url: 'https://www.elysian-luxury-chauffeurs.com',
     siteName: 'Elysian Luxury Chauffeurs',
     locale: 'fr_FR',
     type: 'website',
     images: [
       {
-        url: 'https://elysian-luxury-chauffeurs.com/images/og-image.webp', 
+        url: 'https://www.elysian-luxury-chauffeurs.com/images/og-image.webp', 
         width: 1200,
         height: 630,
         alt: 'Elysian Luxury Chauffeurs',
@@ -57,7 +57,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'Elysian Luxury Chauffeurs - Service de chauffeur privé de luxe',
     description: 'Service de chauffeur privé de luxe pour tous vos déplacements.',
-    images: ['https://elysian-luxury-chauffeurs.com/images/twitter-card.webp'],
+    images: ['https://www.elysian-luxury-chauffeurs.com/images/twitter-card.webp'],
   },
   viewport: 'width=device-width, initial-scale=1, maximum-scale=5',
   themeColor: '#d4af37',
@@ -182,8 +182,8 @@ export default function RootLayout({ children }) {
               "@context": "https://schema.org",
               "@type": "LimousineService",
               "name": "Elysian Luxury Chauffeurs",
-              "image": "https://elysian-luxury-chauffeurs.com/assets/images/logo.webp",
-              "url": "https://elysian-luxury-chauffeurs.com",
+              "image": "https://www.elysian-luxury-chauffeurs.com/assets/images/logo.webp",
+              "url": "https://www.elysian-luxury-chauffeurs.com",
               "telephone": "+33600000000",
               "address": {
                 "@type": "PostalAddress",
@@ -208,7 +208,7 @@ export default function RootLayout({ children }) {
                 "@type": "ReserveAction",
                 "target": {
                   "@type": "EntryPoint",
-                  "urlTemplate": "https://elysian-luxury-chauffeurs.com/#booking",
+                  "urlTemplate": "https://www.elysian-luxury-chauffeurs.com/#booking",
                   "actionPlatform": [
                     "http://schema.org/DesktopWebPlatform",
                     "http://schema.org/MobileWebPlatform"
