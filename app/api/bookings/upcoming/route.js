@@ -1,3 +1,4 @@
+// app/api/bookings/upcoming/route.js
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb-client';
 import { getServerSession } from 'next-auth/next';
@@ -32,19 +33,26 @@ export async function GET(request) {
     // Calculer la date actuelle
     const now = new Date();
     
-    // Filtrer par chauffeur si l'utilisateur est un chauffeur
-    const baseQuery = session.user.role === 'driver' 
-      ? { 
-          assignedDriver: session.user.id, 
-          pickupDateTime: { $gte: now },
-          status: { $in: ['pending', 'confirmed', 'in_progress'] }
-        }
-      : { 
-          pickupDateTime: { $gte: now },
-          status: { $in: ['pending', 'confirmed', 'in_progress'] }
-        };
+    // Construire la query de base
+    let baseQuery = {
+      pickupDateTime: { $gte: now },
+      status: { $in: ['pending', 'confirmed', 'in_progress'] }
+    };
     
-    console.log('Query for upcoming bookings:', baseQuery);
+    // Filtrer par chauffeur si l'utilisateur est un chauffeur
+    if (session.user.role === 'driver') {
+      // Convertir l'ID utilisateur en ObjectId si nécessaire
+      try {
+        const { ObjectId } = await import('mongodb');
+        baseQuery.assignedDriver = new ObjectId(session.user.id);
+      } catch (error) {
+        console.error('Erreur conversion ObjectId:', error);
+        // Si la conversion échoue, utiliser l'ID tel quel
+        baseQuery.assignedDriver = session.user.id;
+      }
+    }
+    
+    console.log('Query for upcoming bookings:', JSON.stringify(baseQuery, null, 2));
     
     // Récupérer les prochaines réservations, triées par date de pickup
     const upcomingBookings = await db.collection('bookings')

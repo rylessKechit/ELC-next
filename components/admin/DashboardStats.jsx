@@ -1,6 +1,6 @@
+// components/admin/DashboardStats.jsx
 import React from 'react';
 import Link from 'next/link';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 /**
  * Composant de statistiques pour le tableau de bord admin
@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
  * @param {Object} props
  * @param {string} props.title - Titre de la statistique
  * @param {number} props.value - Valeur à afficher
- * @param {Object} props.icon - Icône FontAwesome à afficher
+ * @param {string} props.icon - Icône FontAwesome className (ex: 'fas fa-calendar-check')
  * @param {string} props.color - Classe Tailwind pour la couleur de fond (ex: bg-blue-500)
  * @param {string} props.link - Lien vers la page détaillée (optionnel)
  */
@@ -17,7 +17,7 @@ const DashboardStats = ({ title, value, icon, color, link }) => {
     <div className="bg-white p-4 rounded-lg shadow hover:shadow-md transition-shadow duration-300">
       <div className="flex items-center">
         <div className={`w-10 h-10 rounded-full ${color} flex items-center justify-center text-white mr-3`}>
-          <FontAwesomeIcon icon={icon} className="h-5 w-5" />
+          <i className={`${icon} h-5 w-5`}></i>
         </div>
         <div>
           <h3 className="text-sm font-medium text-gray-600">{title}</h3>

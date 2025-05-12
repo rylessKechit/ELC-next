@@ -1,3 +1,4 @@
+// app/api/dashboard/chart-data/route.js
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb-client';
 import { getServerSession } from 'next-auth/next';
@@ -122,7 +123,7 @@ async function getDailyData(db, additionalFilter = {}) {
   const endOfDay = new Date();
   endOfDay.setHours(23, 59, 59, 999);
   
-  // Préparer la requête
+  // Préparer la requête avec ObjectId si nécessaire
   const query = {
     pickupDateTime: { 
       $gte: startOfDay, 
@@ -130,6 +131,12 @@ async function getDailyData(db, additionalFilter = {}) {
     },
     ...additionalFilter
   };
+  
+  // Si additionalFilter contient assignedDriver, le convertir en ObjectId
+  if (query.assignedDriver && typeof query.assignedDriver === 'string') {
+    const { ObjectId } = await import('mongodb');
+    query.assignedDriver = new ObjectId(query.assignedDriver);
+  }
   
   // Récupérer toutes les réservations de la journée
   const bookings = await db.collection('bookings').find(query).toArray();
@@ -179,7 +186,7 @@ async function getWeeklyData(db, additionalFilter = {}) {
   endOfWeek.setDate(startOfWeek.getDate() + 6);
   endOfWeek.setHours(23, 59, 59, 999);
   
-  // Préparer la requête
+  // Préparer la requête avec ObjectId si nécessaire
   const query = {
     pickupDateTime: { 
       $gte: startOfWeek, 
@@ -187,6 +194,12 @@ async function getWeeklyData(db, additionalFilter = {}) {
     },
     ...additionalFilter
   };
+  
+  // Si additionalFilter contient assignedDriver, le convertir en ObjectId
+  if (query.assignedDriver && typeof query.assignedDriver === 'string') {
+    const { ObjectId } = await import('mongodb');
+    query.assignedDriver = new ObjectId(query.assignedDriver);
+  }
   
   // Récupérer toutes les réservations de la semaine
   const bookings = await db.collection('bookings').find(query).toArray();
@@ -245,7 +258,7 @@ async function getMonthlyData(db, additionalFilter = {}) {
   // Dernier jour du mois
   const endOfMonth = new Date(year, month + 1, 0, 23, 59, 59, 999);
   
-  // Préparer la requête
+  // Préparer la requête avec ObjectId si nécessaire
   const query = {
     pickupDateTime: { 
       $gte: startOfMonth, 
@@ -253,6 +266,12 @@ async function getMonthlyData(db, additionalFilter = {}) {
     },
     ...additionalFilter
   };
+  
+  // Si additionalFilter contient assignedDriver, le convertir en ObjectId
+  if (query.assignedDriver && typeof query.assignedDriver === 'string') {
+    const { ObjectId } = await import('mongodb');
+    query.assignedDriver = new ObjectId(query.assignedDriver);
+  }
   
   // Récupérer toutes les réservations du mois
   const bookings = await db.collection('bookings').find(query).toArray();
@@ -304,7 +323,7 @@ async function getYearlyData(db, additionalFilter = {}) {
   // Dernier jour de l'année
   const endOfYear = new Date(year, 11, 31, 23, 59, 59, 999);
   
-  // Préparer la requête
+  // Préparer la requête avec ObjectId si nécessaire
   const query = {
     pickupDateTime: { 
       $gte: startOfYear, 
@@ -312,6 +331,12 @@ async function getYearlyData(db, additionalFilter = {}) {
     },
     ...additionalFilter
   };
+  
+  // Si additionalFilter contient assignedDriver, le convertir en ObjectId
+  if (query.assignedDriver && typeof query.assignedDriver === 'string') {
+    const { ObjectId } = await import('mongodb');
+    query.assignedDriver = new ObjectId(query.assignedDriver);
+  }
   
   // Récupérer toutes les réservations de l'année
   const bookings = await db.collection('bookings').find(query).toArray();

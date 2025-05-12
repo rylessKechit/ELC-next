@@ -22,9 +22,12 @@ export default function AdminLayout({ children }) {
   
   return (
     <SessionProvider>
-      {/* Cette div avec la classe relative isole complètement cette interface du reste du site */}
-      <div className="min-h-screen h-screen w-full bg-gray-50 absolute top-0 left-0 z-50">
-        <div className="flex h-full w-full overflow-hidden">
+      {/* Cette div couvre tout l'écran et cache le reste du site */}
+      <div 
+        className="fixed inset-0 w-full h-full bg-gray-50 z-50 overflow-hidden"
+        style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
+      >
+        <div className="flex h-full w-full">
           {/* Sidebar pour mobile */}
           <div className={`fixed inset-0 z-20 transition-opacity ease-linear duration-300 ${
             sidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
@@ -36,9 +39,9 @@ export default function AdminLayout({ children }) {
           <AdminSidebar sidebarOpen={sidebarOpen} closeSidebar={() => setSidebarOpen(false)} />
           
           {/* Contenu principal */}
-          <div className="flex-1 flex flex-col overflow-hidden">
+          <div className="flex-1 flex flex-col h-full">
             {/* Barre simple avec bouton de déconnexion */}
-            <div className="bg-white shadow-sm h-16 flex items-center z-10 px-4">
+            <div className="bg-white shadow-sm h-16 flex items-center z-10 px-4 flex-shrink-0">
               <div className="flex-1 flex justify-between items-center">
                 {/* Bouton hamburger pour mobile */}
                 <button
@@ -56,22 +59,25 @@ export default function AdminLayout({ children }) {
                 {/* Bouton de déconnexion */}
                 <button
                   onClick={() => signOut({ callbackUrl: '/admin/login' })}
-                  className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors duration-300"
+                  className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors duration-300 flex items-center"
                 >
+                  <i className="fas fa-sign-out-alt mr-2"></i>
                   Déconnexion
                 </button>
               </div>
             </div>
             
-            {/* Contenu principal */}
-            <main className="flex-1 overflow-y-auto bg-gray-100 p-4 md:p-6">
-              <Suspense fallback={
-                <div className="flex items-center justify-center h-full">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-                </div>
-              }>
-                {children}
-              </Suspense>
+            {/* Contenu principal avec scroll interne */}
+            <main className="flex-1 overflow-y-auto bg-gray-100">
+              <div className="p-4 md:p-6 min-h-full">
+                <Suspense fallback={
+                  <div className="flex items-center justify-center h-64">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                  </div>
+                }>
+                  {children}
+                </Suspense>
+              </div>
             </main>
           </div>
         </div>

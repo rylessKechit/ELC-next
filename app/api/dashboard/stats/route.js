@@ -1,3 +1,4 @@
+// app/api/dashboard/stats/route.js
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb-client';
 import { getServerSession } from 'next-auth/next';
@@ -15,74 +16,120 @@ export async function GET(request) {
     const client = await clientPromise;
     const db = client.db();
     
-    // Récupérer les statistiques des réservations depuis la collection 'bookings'
-    const totalBookings = await db.collection('bookings').countDocuments();
-    const pendingBookings = await db.collection('bookings').countDocuments({ status: 'pending' });
-    const confirmedBookings = await db.collection('bookings').countDocuments({ status: 'confirmed' });
-    const inProgressBookings = await db.collection('bookings').countDocuments({ status: 'in_progress' });
-    const completedBookings = await db.collection('bookings').countDocuments({ status: 'completed' });
-    const cancelledBookings = await db.collection('bookings').countDocuments({ status: 'cancelled' });
+    // Vérifier que les collections existent
+    const collections = await db.listCollections().toArray();
+    const collectionNames = collections.map(col => col.name);
     
-    // Réservations du jour
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
+    console.log('Collections disponibles:', collectionNames);
     
-    const endOfDay = new Date();
-    endOfDay.setHours(23, 59, 59, 999);
+    // Initialiser les statistiques
+    let stats = {
+      totalBookings: 0,
+      pendingBookings: 0,
+      confirmedBookings: 0,
+      inProgressBookings: 0,
+      completedBookings: 0,
+      cancelledBookings: 0,
+      todayBookings: 0,
+      totalUsers: 0,
+      totalDrivers: 0,
+      totalRevenue: 0
+    };
     
-    const todayBookings = await db.collection('bookings').countDocuments({
-      pickupDateTime: { $gte: startOfDay, $lte: endOfDay }
-    });
-    
-    let totalUsers = 0;
-    let totalDrivers = 0;
-    let totalRevenue = 0;
+    // Statistiques des réservations si la collection existe
+    if (collectionNames.includes('bookings')) {
+      console.log('Récupération des stats de réservations...');
+      
+      // Statistiques générales
+      stats.totalBookings = await db.collection('bookings').countDocuments();
+      stats.pendingBookings = await db.collection('bookings').countDocuments({ status: 'pending' });
+      stats.confirmedBookings = await db.collection('bookings').countDocuments({ status: 'confirmed' });
+      stats.inProgressBookings = await db.collection('bookings').countDocuments({ status: 'in_progress' });
+      stats.completedBookings = await db.collection('bookings').countDocuments({ status: 'completed' });
+      stats.cancelledBookings = await db.collection('bookings').countDocuments({ status: 'cancelled' });
+      
+      // Réservations du jour
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+      
+      const endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
+      
+      stats.todayBookings = await db.collection('bookings').countDocuments({
+        pickupDateTime: { $gte: startOfDay, $lte: endOfDay }
+      });
+      
+      console.log('Stats de réservations récupérées:', {
+        total: stats.totalBookings,
+        pending: stats.pendingBookings,
+        today: stats.todayBookings
+      });
+    }
     
     // Statistiques supplémentaires pour les administrateurs
     if (session.user.role === 'admin') {
-      // Compter le nombre d'utilisateurs
-      totalUsers = await db.collection('users').countDocuments();
-      totalDrivers = await db.collection('users').countDocuments({ role: 'driver' });
+      // Statistiques des utilisateurs si la collection existe
+      if (collectionNames.includes('users')) {
+        console.log('Récupération des stats utilisateurs...');
+        stats.totalUsers = await db.collection('users').countDocuments();
+        stats.totalDrivers = await db.collection('users').countDocuments({ role: 'driver' });
+        
+        console.log('Stats utilisateurs récupérées:', {
+          total: stats.totalUsers,
+          drivers: stats.totalDrivers
+        });
+      }
       
-      // Calculer le revenu total (somme des prix de toutes les réservations confirmées, en cours et terminées)
-      const revenueAggregation = await db.collection('bookings').aggregate([
-        { 
-          $match: { 
-            status: { $in: ['confirmed', 'in_progress', 'completed'] } 
-          } 
-        },
-        { 
-          $group: { 
-            _id: null, 
-            total: { $sum: { $toDouble: "$price.amount" } } 
-          } 
+      // Calculer le revenu total si la collection bookings existe
+      if (collectionNames.includes('bookings')) {
+        console.log('Calcul du revenu total...');
+        try {
+          const revenueAggregation = await db.collection('bookings').aggregate([
+            { 
+              $match: { 
+                status: { $in: ['confirmed', 'in_progress', 'completed'] } 
+              } 
+            },
+            { 
+              $group: { 
+                _id: null, 
+                total: { 
+                  $sum: { 
+                    $cond: {
+                      if: { $isNumber: "$price.amount" },
+                      then: "$price.amount",
+                      else: { $toDouble: "$price.amount" }
+                    }
+                  }
+                } 
+              } 
+            }
+          ]).toArray();
+          
+          stats.totalRevenue = revenueAggregation.length > 0 ? revenueAggregation[0].total : 0;
+          console.log('Revenu total calculé:', stats.totalRevenue);
+        } catch (revenueError) {
+          console.error('Erreur lors du calcul du revenu:', revenueError);
+          stats.totalRevenue = 0;
         }
-      ]).toArray();
-      
-      totalRevenue = revenueAggregation.length > 0 ? revenueAggregation[0].total : 0;
+      }
     }
+    
+    console.log('Stats finales:', stats);
     
     return NextResponse.json({
       success: true,
-      data: {
-        totalBookings,
-        pendingBookings,
-        confirmedBookings,
-        inProgressBookings,
-        completedBookings,
-        cancelledBookings,
-        todayBookings,
-        totalUsers,
-        totalDrivers,
-        totalRevenue
-      }
+      data: stats
     });
     
   } catch (error) {
     console.error('Erreur lors de la récupération des statistiques:', error);
     
     return NextResponse.json(
-      { error: 'Une erreur est survenue lors de la récupération des statistiques.', details: error.message },
+      { 
+        error: 'Une erreur est survenue lors de la récupération des statistiques.', 
+        details: error.message 
+      },
       { status: 500 }
     );
   }

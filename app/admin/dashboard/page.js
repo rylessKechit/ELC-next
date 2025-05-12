@@ -22,6 +22,8 @@ export default function Dashboard() {
   const [bookingData, setBookingData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [chartError, setChartError] = useState(null);
+  const [chartLoading, setChartLoading] = useState(false);
   
   // Récupérer les statistiques et les réservations à venir
   useEffect(() => {
@@ -30,13 +32,16 @@ export default function Dashboard() {
         setLoading(true);
         
         // Récupérer les statistiques
+        console.log('Fetching stats...');
         const statsResponse = await fetch('/api/dashboard/stats');
         
         if (!statsResponse.ok) {
-          throw new Error(`Erreur lors de la récupération des statistiques: ${statsResponse.statusText}`);
+          throw new Error(`Erreur lors de la récupération des statistiques: ${statsResponse.status} - ${statsResponse.statusText}`);
         }
         
         const statsData = await statsResponse.json();
+        console.log('Stats received:', statsData);
+        
         if (statsData.success) {
           setStats(statsData.data);
         } else {
@@ -44,13 +49,16 @@ export default function Dashboard() {
         }
         
         // Récupérer les réservations à venir
+        console.log('Fetching upcoming bookings...');
         const bookingsResponse = await fetch('/api/bookings/upcoming?limit=5');
         
         if (!bookingsResponse.ok) {
-          throw new Error(`Erreur lors de la récupération des réservations: ${bookingsResponse.statusText}`);
+          throw new Error(`Erreur lors de la récupération des réservations: ${bookingsResponse.status} - ${bookingsResponse.statusText}`);
         }
         
         const bookingsData = await bookingsResponse.json();
+        console.log('Upcoming bookings received:', bookingsData);
+        
         if (bookingsData.success) {
           setUpcomingBookings(bookingsData.data);
         } else {
@@ -58,23 +66,7 @@ export default function Dashboard() {
         }
         
         // Récupérer les données pour le graphique
-        const chartResponse = await fetch('/api/dashboard/chart-data');
-        
-        if (!chartResponse.ok) {
-          throw new Error(`Erreur lors de la récupération des données du graphique: ${chartResponse.statusText}`);
-        }
-        
-        const chartData = await chartResponse.json();
-        
-        if (chartData.success) {
-          setBookingData(chartData.data);
-        } else {
-          throw new Error(chartData.error || 'Erreur inconnue lors de la récupération des données du graphique');
-        }
-        
-        if (!chartResponse.ok) {
-          throw new Error(`Erreur lors de la récupération des données du graphique: ${chartResponse.statusText}`);
-        }
+        await fetchChartData('week');
         
         setLoading(false);
       } catch (error) {
@@ -86,6 +78,36 @@ export default function Dashboard() {
     
     fetchDashboardData();
   }, []);
+  
+  const fetchChartData = async (period = 'week') => {
+    try {
+      setChartLoading(true);
+      setChartError(null);
+      
+      console.log(`Fetching chart data for period: ${period}`);
+      const chartResponse = await fetch(`/api/dashboard/chart-data?period=${period}`);
+      
+      if (!chartResponse.ok) {
+        throw new Error(`Erreur lors de la récupération des données du graphique: ${chartResponse.status} - ${chartResponse.statusText}`);
+      }
+      
+      const chartData = await chartResponse.json();
+      console.log('Chart data received:', chartData);
+      
+      if (chartData.success) {
+        setBookingData(chartData.data);
+      } else {
+        throw new Error(chartData.error || 'Erreur inconnue lors de la récupération des données du graphique');
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des données du graphique:', error);
+      setChartError(error.message);
+      // En cas d'erreur, afficher des données vides
+      setBookingData([]);
+    } finally {
+      setChartLoading(false);
+    }
+  };
   
   // Données pour les statistiques
   const statsItems = [
@@ -156,25 +178,7 @@ export default function Dashboard() {
             <select 
               className="rounded-md border-gray-300 text-sm focus:ring-primary focus:border-primary"
               defaultValue="week"
-              onChange={async (e) => {
-                try {
-                  setLoading(true);
-                  const period = e.target.value;
-                  const response = await fetch(`/api/dashboard/chart-data?period=${period}`);
-                  const data = await response.json();
-                  if (data.success) {
-                    setBookingData(data.data);
-                  } else {
-                    console.error('Erreur:', data.error);
-                    setError(data.error);
-                  }
-                } catch (err) {
-                  console.error("Erreur lors du changement de période:", err);
-                  setError(err.message);
-                } finally {
-                  setLoading(false);
-                }
-              }}
+              onChange={(e) => fetchChartData(e.target.value)}
             >
               <option value="day">Aujourd'hui</option>
               <option value="week">Cette semaine</option>
@@ -183,14 +187,21 @@ export default function Dashboard() {
             </select>
           </div>
           
-          {loading ? (
+          {chartLoading ? (
             <div className="flex items-center justify-center h-64">
               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
             </div>
-          ) : error ? (
+          ) : chartError ? (
             <div className="flex items-center justify-center h-64 text-red-500">
               <i className="fas fa-exclamation-triangle mr-2"></i>
-              {error}
+              {chartError}
+            </div>
+          ) : bookingData.length === 0 ? (
+            <div className="flex items-center justify-center h-64 text-gray-500">
+              <div className="text-center">
+                <i className="fas fa-chart-line text-4xl mb-4"></i>
+                <p>Aucune donnée disponible pour le graphique</p>
+              </div>
             </div>
           ) : (
             <div className="h-64">
@@ -224,6 +235,7 @@ export default function Dashboard() {
             <div className="flex flex-col items-center justify-center h-64 text-gray-500">
               <i className="fas fa-calendar-check text-4xl mb-2"></i>
               <p>Aucune réservation à venir</p>
+              <p className="text-sm mt-2">Créez une nouvelle réservation ou vérifiez vos filtres</p>
             </div>
           ) : (
             <UpcomingBookings bookings={upcomingBookings} />
@@ -251,6 +263,32 @@ export default function Dashboard() {
                   currency: 'EUR'
                 }).format(stats.totalRevenue)}
               </p>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Message d'aide si aucune donnée */}
+      {!loading && !error && stats.totalBookings === 0 && (
+        <div className="bg-blue-50 rounded-lg p-4">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <i className="fas fa-info-circle text-blue-400"></i>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-blue-800">Premiers pas</h3>
+              <div className="mt-2 text-sm text-blue-700">
+                <p>Il semble que vous n'ayez pas encore de réservations dans votre système.</p>
+                <p className="mt-1">
+                  Commencez par créer votre première réservation ou vérifiez que votre base de données est correctement configurée.
+                </p>
+                <Link 
+                  href="/admin/bookings/new"
+                  className="inline-block mt-3 bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 transition-colors"
+                >
+                  Créer une réservation
+                </Link>
+              </div>
             </div>
           </div>
         </div>
