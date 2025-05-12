@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/mongodb';
-import Booking from '@/models/Booking';
+import clientPromise from '@/lib/mongodb-client';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 
@@ -12,30 +11,44 @@ export async function GET(request) {
       return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
     }
     
-    await dbConnect();
-    
     // Récupérer les paramètres de requête
     const { searchParams } = new URL(request.url);
     const period = searchParams.get('period') || 'week';
     
+    // Connexion à MongoDB
+    const client = await clientPromise;
+    const db = client.db();
+    
+    // Vérifier que la collection bookings existe
+    const collections = await db.listCollections({ name: 'bookings' }).toArray();
+    if (collections.length === 0) {
+      // Si pas de collection, retourner des données vides
+      return NextResponse.json({
+        success: true,
+        data: getEmptyData(period)
+      });
+    }
+    
     let data;
     
     // Filtrer par chauffeur si l'utilisateur est un chauffeur
-    const driverFilter = session.user.role === 'driver' ? { assignedDriver: session.user.id } : {};
+    const driverFilter = session.user.role === 'driver' 
+      ? { assignedDriver: session.user.id } 
+      : {};
     
     switch (period) {
       case 'day':
-        data = await getDailyData(driverFilter);
+        data = await getDailyData(db, driverFilter);
         break;
       case 'month':
-        data = await getMonthlyData(driverFilter);
+        data = await getMonthlyData(db, driverFilter);
         break;
       case 'year':
-        data = await getYearlyData(driverFilter);
+        data = await getYearlyData(db, driverFilter);
         break;
       case 'week':
       default:
-        data = await getWeeklyData(driverFilter);
+        data = await getWeeklyData(db, driverFilter);
         break;
     }
     
@@ -48,14 +61,61 @@ export async function GET(request) {
     console.error('Erreur lors de la récupération des données du graphique:', error);
     
     return NextResponse.json(
-      { error: 'Une erreur est survenue lors de la récupération des données du graphique.' },
+      { 
+        error: 'Une erreur est survenue lors de la récupération des données du graphique.',
+        details: error.message
+      },
       { status: 500 }
     );
   }
 }
 
+// Fonction pour retourner des données vides selon la période
+function getEmptyData(period) {
+  switch (period) {
+    case 'day':
+      return Array(24).fill().map((_, i) => ({
+        hour: `${i}h`,
+        confirmées: 0,
+        enAttente: 0,
+        annulées: 0
+      }));
+    case 'month':
+      const date = new Date();
+      const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+      return Array(daysInMonth).fill().map((_, i) => ({
+        date: `${(i + 1).toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}`,
+        confirmées: 0,
+        enAttente: 0,
+        annulées: 0
+      }));
+    case 'year':
+      const monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+      return monthNames.map(month => ({
+        month,
+        confirmées: 0,
+        enAttente: 0,
+        annulées: 0
+      }));
+    case 'week':
+    default:
+      const dayNames = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+      const today = new Date();
+      return Array(7).fill().map((_, i) => {
+        const date = new Date(today);
+        date.setDate(today.getDate() - today.getDay() + i + 1);
+        return {
+          date: `${dayNames[i]} ${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}`,
+          confirmées: 0,
+          enAttente: 0,
+          annulées: 0
+        };
+      });
+  }
+}
+
 // Données quotidiennes (heures de la journée)
-async function getDailyData(additionalFilter = {}) {
+async function getDailyData(db, additionalFilter = {}) {
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
   
@@ -64,12 +124,15 @@ async function getDailyData(additionalFilter = {}) {
   
   // Préparer la requête
   const query = {
-    pickupDateTime: { $gte: startOfDay, $lte: endOfDay },
+    pickupDateTime: { 
+      $gte: startOfDay, 
+      $lte: endOfDay 
+    },
     ...additionalFilter
   };
   
   // Récupérer toutes les réservations de la journée
-  const bookings = await Booking.find(query);
+  const bookings = await db.collection('bookings').find(query).toArray();
   
   // Grouper par heure
   const hourlyData = Array(24).fill().map((_, i) => ({
@@ -80,7 +143,8 @@ async function getDailyData(additionalFilter = {}) {
   }));
   
   bookings.forEach(booking => {
-    const hour = new Date(booking.pickupDateTime).getHours();
+    const bookingDate = new Date(booking.pickupDateTime);
+    const hour = bookingDate.getHours();
     
     switch (booking.status) {
       case 'confirmed':
@@ -101,7 +165,7 @@ async function getDailyData(additionalFilter = {}) {
 }
 
 // Données hebdomadaires (jours de la semaine)
-async function getWeeklyData(additionalFilter = {}) {
+async function getWeeklyData(db, additionalFilter = {}) {
   // Trouver le premier jour de la semaine (lundi)
   const today = new Date();
   const currentDay = today.getDay(); // 0 pour dimanche, 1 pour lundi, etc.
@@ -117,12 +181,15 @@ async function getWeeklyData(additionalFilter = {}) {
   
   // Préparer la requête
   const query = {
-    pickupDateTime: { $gte: startOfWeek, $lte: endOfWeek },
+    pickupDateTime: { 
+      $gte: startOfWeek, 
+      $lte: endOfWeek 
+    },
     ...additionalFilter
   };
   
   // Récupérer toutes les réservations de la semaine
-  const bookings = await Booking.find(query);
+  const bookings = await db.collection('bookings').find(query).toArray();
   
   // Noms des jours de la semaine en français
   const dayNames = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
@@ -167,7 +234,7 @@ async function getWeeklyData(additionalFilter = {}) {
 }
 
 // Données mensuelles (jours du mois)
-async function getMonthlyData(additionalFilter = {}) {
+async function getMonthlyData(db, additionalFilter = {}) {
   const date = new Date();
   const year = date.getFullYear();
   const month = date.getMonth();
@@ -180,12 +247,15 @@ async function getMonthlyData(additionalFilter = {}) {
   
   // Préparer la requête
   const query = {
-    pickupDateTime: { $gte: startOfMonth, $lte: endOfMonth },
+    pickupDateTime: { 
+      $gte: startOfMonth, 
+      $lte: endOfMonth 
+    },
     ...additionalFilter
   };
   
   // Récupérer toutes les réservations du mois
-  const bookings = await Booking.find(query);
+  const bookings = await db.collection('bookings').find(query).toArray();
   
   // Nombre de jours dans le mois
   const daysInMonth = endOfMonth.getDate();
@@ -200,20 +270,23 @@ async function getMonthlyData(additionalFilter = {}) {
   
   // Remplir les données
   bookings.forEach(booking => {
-    const day = new Date(booking.pickupDateTime).getDate() - 1; // -1 car les tableaux commencent à 0
+    const bookingDay = new Date(booking.pickupDateTime).getDate();
+    const dayIndex = bookingDay - 1; // -1 car les tableaux commencent à 0
     
-    switch (booking.status) {
-      case 'confirmed':
-      case 'completed':
-      case 'in_progress':
-        monthlyData[day].confirmées += 1;
-        break;
-      case 'pending':
-        monthlyData[day].enAttente += 1;
-        break;
-      case 'cancelled':
-        monthlyData[day].annulées += 1;
-        break;
+    if (dayIndex >= 0 && dayIndex < daysInMonth) {
+      switch (booking.status) {
+        case 'confirmed':
+        case 'completed':
+        case 'in_progress':
+          monthlyData[dayIndex].confirmées += 1;
+          break;
+        case 'pending':
+          monthlyData[dayIndex].enAttente += 1;
+          break;
+        case 'cancelled':
+          monthlyData[dayIndex].annulées += 1;
+          break;
+      }
     }
   });
   
@@ -221,7 +294,7 @@ async function getMonthlyData(additionalFilter = {}) {
 }
 
 // Données annuelles (mois de l'année)
-async function getYearlyData(additionalFilter = {}) {
+async function getYearlyData(db, additionalFilter = {}) {
   const date = new Date();
   const year = date.getFullYear();
   
@@ -233,12 +306,15 @@ async function getYearlyData(additionalFilter = {}) {
   
   // Préparer la requête
   const query = {
-    pickupDateTime: { $gte: startOfYear, $lte: endOfYear },
+    pickupDateTime: { 
+      $gte: startOfYear, 
+      $lte: endOfYear 
+    },
     ...additionalFilter
   };
   
   // Récupérer toutes les réservations de l'année
-  const bookings = await Booking.find(query);
+  const bookings = await db.collection('bookings').find(query).toArray();
   
   // Noms des mois en français
   const monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];

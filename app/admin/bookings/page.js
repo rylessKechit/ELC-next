@@ -30,125 +30,45 @@ export default function BookingsPage() {
       try {
         setLoading(true);
         
-        // Si nous sommes en mode développement, utiliser des données simulées
-        if (process.env.NODE_ENV === 'development') {
-          // Simuler un délai réseau
-          await new Promise((resolve) => setTimeout(resolve, 800));
-          
-          // Générer des données simulées
-          const mockBookings = [];
-          const statuses = ['pending', 'confirmed', 'in_progress', 'completed', 'cancelled'];
-          
-          for (let i = 0; i < 20; i++) {
-            const today = new Date();
-            const futureDate = new Date(today);
-            futureDate.setDate(today.getDate() + Math.floor(Math.random() * 14));
-            
-            mockBookings.push({
-              _id: `mock-id-${i}`,
-              bookingId: `ELC-${100000 + i}`,
-              status: statuses[Math.floor(Math.random() * statuses.length)],
-              pickupAddress: `Adresse de départ ${i}`,
-              dropoffAddress: `Adresse d'arrivée ${i}`,
-              pickupDateTime: futureDate.toISOString(),
-              customerInfo: {
-                name: `Client ${i}`,
-                email: `client${i}@example.com`,
-                phone: `+3361234567${i}`
-              }
-            });
-          }
-          
-          // Appliquer les filtres
-          let filteredBookings = [...mockBookings];
-          
-          if (statusFilter) {
-            filteredBookings = filteredBookings.filter(booking => booking.status === statusFilter);
-          }
-          
-          if (searchTerm) {
-            const term = searchTerm.toLowerCase();
-            filteredBookings = filteredBookings.filter(booking => 
-              booking.bookingId.toLowerCase().includes(term) ||
-              booking.customerInfo.name.toLowerCase().includes(term) ||
-              booking.customerInfo.email.toLowerCase().includes(term) ||
-              booking.pickupAddress.toLowerCase().includes(term) ||
-              booking.dropoffAddress.toLowerCase().includes(term)
-            );
-          }
-          
-          if (dateRange.startDate) {
-            const startDate = new Date(dateRange.startDate);
-            startDate.setHours(0, 0, 0, 0);
-            
-            filteredBookings = filteredBookings.filter(booking => {
-              const bookingDate = new Date(booking.pickupDateTime);
-              return bookingDate >= startDate;
-            });
-          }
-          
-          if (dateRange.endDate) {
-            const endDate = new Date(dateRange.endDate);
-            endDate.setHours(23, 59, 59, 999);
-            
-            filteredBookings = filteredBookings.filter(booking => {
-              const bookingDate = new Date(booking.pickupDateTime);
-              return bookingDate <= endDate;
-            });
-          }
-          
-          // Trier par date
-          filteredBookings.sort((a, b) => new Date(a.pickupDateTime) - new Date(b.pickupDateTime));
-          
-          // Pagination
-          const total = filteredBookings.length;
-          const totalPages = Math.ceil(total / bookingsPerPage);
-          const start = (currentPage - 1) * bookingsPerPage;
-          const end = start + bookingsPerPage;
-          
-          setBookings(filteredBookings.slice(start, end));
-          setTotalBookings(total);
-          setTotalPages(totalPages);
-          setLoading(false);
-        } else {
-          // Construire l'URL avec les paramètres de requête
-          let url = `/api/bookings?skip=${(currentPage - 1) * bookingsPerPage}&limit=${bookingsPerPage}`;
-          
-          if (statusFilter) {
-            url += `&status=${statusFilter}`;
-          }
-          
-          // Ajouter la plage de dates si définie
-          if (dateRange.startDate) {
-            url += `&startDate=${dateRange.startDate}`;
-          }
-          
-          if (dateRange.endDate) {
-            url += `&endDate=${dateRange.endDate}`;
-          }
-          
-          // Ajouter la recherche si elle existe
-          if (searchTerm) {
-            url += `&search=${encodeURIComponent(searchTerm)}`;
-          }
-          
-          const response = await fetch(url);
-          
-          if (!response.ok) {
-            throw new Error(`Erreur lors de la récupération des réservations: ${response.statusText}`);
-          }
-          
-          const data = await response.json();
-          
-          if (!data.success) {
-            throw new Error(data.error || "Erreur inconnue");
-          }
-          
-          setBookings(data.data);
-          setTotalBookings(data.meta.total);
-          setTotalPages(Math.ceil(data.meta.total / bookingsPerPage));
-          setLoading(false);
+        // Construire l'URL avec les paramètres de requête
+        let url = `/api/bookings?skip=${(currentPage - 1) * bookingsPerPage}&limit=${bookingsPerPage}`;
+        
+        if (statusFilter) {
+          url += `&status=${statusFilter}`;
         }
+        
+        // Ajouter la plage de dates si définie
+        if (dateRange.startDate) {
+          url += `&startDate=${dateRange.startDate}`;
+        }
+        
+        if (dateRange.endDate) {
+          url += `&endDate=${dateRange.endDate}`;
+        }
+        
+        // Ajouter la recherche si elle existe
+        if (searchTerm) {
+          url += `&search=${encodeURIComponent(searchTerm)}`;
+        }
+        
+        console.log('Fetching bookings from:', url);
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+          throw new Error(`Erreur lors de la récupération des réservations: ${response.status} ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        if (!data.success) {
+          throw new Error(data.error || "Erreur inconnue");
+        }
+        
+        console.log('Received bookings data:', data);
+        setBookings(data.data || []);
+        setTotalBookings(data.meta ? data.meta.total : 0);
+        setTotalPages(data.meta ? Math.ceil(data.meta.total / bookingsPerPage) : 1);
+        setLoading(false);
       } catch (error) {
         console.error('Erreur:', error);
         setError(error.message);
@@ -183,23 +103,6 @@ export default function BookingsPage() {
         }
       }
       
-      // En mode développement, simuler une mise à jour
-      if (process.env.NODE_ENV === 'development') {
-        // Simuler un délai réseau
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        
-        // Mettre à jour l'état des réservations
-        setBookings(bookings.map(booking => 
-          (booking._id === bookingId || booking.bookingId === bookingId)
-            ? { ...booking, status: newStatus }
-            : booking
-        ));
-        
-        // Message de confirmation
-        alert(`La réservation a été mise à jour avec le statut: ${newStatus}`);
-        return;
-      }
-      
       const response = await fetch(`/api/bookings/${encodeURIComponent(bookingId)}`, {
         method: 'PUT',
         headers: {
@@ -209,7 +112,8 @@ export default function BookingsPage() {
       });
       
       if (!response.ok) {
-        throw new Error('Erreur lors de la mise à jour du statut');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Erreur lors de la mise à jour du statut');
       }
       
       // Mettre à jour l'état des réservations
@@ -224,7 +128,7 @@ export default function BookingsPage() {
     } catch (error) {
       console.error('Erreur:', error);
       // Afficher un message d'erreur à l'utilisateur
-      alert('Erreur lors de la mise à jour du statut. Veuillez réessayer.');
+      alert(`Erreur lors de la mise à jour du statut: ${error.message}`);
     }
   };
   
@@ -233,6 +137,9 @@ export default function BookingsPage() {
     if (!dateString) return 'Non spécifié';
     
     const date = new Date(dateString);
+    
+    // Vérifier si la date est valide
+    if (isNaN(date.getTime())) return 'Date invalide';
     
     // Formater la date
     const dateFormatted = date.toLocaleDateString('fr-FR', {
@@ -397,9 +304,15 @@ export default function BookingsPage() {
           </div>
         ) : bookings.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-12 text-gray-500">
-            <i className="fas fa-exclamation-triangle text-5xl mb-4"></i>
+            <i className="fas fa-calendar-times text-5xl mb-4"></i>
             <h3 className="text-lg font-medium mb-2">Aucune réservation trouvée</h3>
             <p>Essayez de modifier vos filtres ou de créer une nouvelle réservation.</p>
+            <Link 
+              href="/admin/bookings/new"
+              className="mt-4 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors duration-300"
+            >
+              Créer une réservation
+            </Link>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -460,6 +373,26 @@ export default function BookingsPage() {
                           >
                             <i className="fas fa-check-circle mr-1"></i>
                             Confirmer
+                          </button>
+                        )}
+                        
+                        {booking.status === 'confirmed' && (
+                          <button 
+                            onClick={() => handleStatusChange(booking._id || booking.bookingId, 'in_progress')}
+                            className="text-blue-600 hover:text-blue-900"
+                          >
+                            <i className="fas fa-play-circle mr-1"></i>
+                            Démarrer
+                          </button>
+                        )}
+                        
+                        {booking.status === 'in_progress' && (
+                          <button 
+                            onClick={() => handleStatusChange(booking._id || booking.bookingId, 'completed')}
+                            className="text-purple-600 hover:text-purple-900"
+                          >
+                            <i className="fas fa-check-circle mr-1"></i>
+                            Terminer
                           </button>
                         )}
                         

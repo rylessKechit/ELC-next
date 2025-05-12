@@ -29,130 +29,56 @@ export default function Dashboard() {
       try {
         setLoading(true);
         
-        // En mode développement, utiliser des données simulées
-        if (process.env.NODE_ENV === 'development') {
-          // Simuler un délai de chargement
-          await new Promise(resolve => setTimeout(resolve, 800));
-          
-          // Statistiques simulées
-          setStats({
-            totalBookings: 157,
-            pendingBookings: 12,
-            confirmedBookings: 89,
-            cancelledBookings: 8,
-            completedBookings: 48,
-            todayBookings: 5,
-            totalUsers: 42,
-            totalRevenue: 12540
-          });
-          
-          // Réservations à venir simulées
-          setUpcomingBookings([
-            {
-              _id: '1',
-              bookingId: 'ELC-123456',
-              status: 'confirmed',
-              pickupAddress: 'Gare de Lyon, Paris',
-              dropoffAddress: 'Aéroport Charles de Gaulle',
-              pickupDateTime: new Date(Date.now() + 3600000).toISOString(),
-              customerInfo: {
-                name: 'Jean Dupont',
-                email: 'jean@example.com',
-                phone: '+33612345678'
-              }
-            },
-            {
-              _id: '2',
-              bookingId: 'ELC-123457',
-              status: 'pending',
-              pickupAddress: 'Hôtel Ritz Paris',
-              dropoffAddress: 'Château de Versailles',
-              pickupDateTime: new Date(Date.now() + 86400000).toISOString(),
-              customerInfo: {
-                name: 'Marie Lambert',
-                email: 'marie@example.com',
-                phone: '+33687654321'
-              }
-            },
-            {
-              _id: '3',
-              bookingId: 'ELC-123458',
-              status: 'confirmed',
-              pickupAddress: 'Aéroport d\'Orly',
-              dropoffAddress: 'Tour Eiffel',
-              pickupDateTime: new Date(Date.now() + 172800000).toISOString(),
-              customerInfo: {
-                name: 'Pierre Martin',
-                email: 'pierre@example.com',
-                phone: '+33698765432'
-              }
-            }
-          ]);
-          
-          // Données du graphique simulées
-          const demoData = [];
-          const today = new Date();
-          
-          for (let i = 6; i >= 0; i--) {
-            const date = new Date();
-            date.setDate(today.getDate() - i);
-            
-            const formattedDate = date.toLocaleDateString('fr-FR', {
-              weekday: 'short',
-              day: '2-digit',
-              month: '2-digit'
-            });
-            
-            demoData.push({
-              date: formattedDate,
-              confirmées: Math.floor(Math.random() * 8) + 1,
-              enAttente: Math.floor(Math.random() * 5),
-              annulées: Math.floor(Math.random() * 3)
-            });
-          }
-          
-          setBookingData(demoData);
-        } else {
-          // Dans un environnement de production, récupérer les données réelles
-          const statsResponse = await fetch('/api/dashboard/stats');
-          
-          if (!statsResponse.ok) {
-            throw new Error('Erreur lors de la récupération des statistiques');
-          }
-          
-          const statsData = await statsResponse.json();
+        // Récupérer les statistiques
+        const statsResponse = await fetch('/api/dashboard/stats');
+        
+        if (!statsResponse.ok) {
+          throw new Error(`Erreur lors de la récupération des statistiques: ${statsResponse.statusText}`);
+        }
+        
+        const statsData = await statsResponse.json();
+        if (statsData.success) {
           setStats(statsData.data);
-          
-          // Récupérer les réservations à venir
-          const today = new Date();
-          const startOfDay = new Date(today.setHours(0, 0, 0, 0)).toISOString();
-          const endOfWeek = new Date(today);
-          endOfWeek.setDate(today.getDate() + 7);
-          endOfWeek.setHours(23, 59, 59, 999);
-          
-          const bookingsResponse = await fetch(`/api/bookings?startDate=${startOfDay}&endDate=${endOfWeek.toISOString()}&limit=5`);
-          
-          if (!bookingsResponse.ok) {
-            throw new Error('Erreur lors de la récupération des réservations');
-          }
-          
-          const bookingsData = await bookingsResponse.json();
+        } else {
+          throw new Error(statsData.error || 'Erreur inconnue lors de la récupération des statistiques');
+        }
+        
+        // Récupérer les réservations à venir
+        const bookingsResponse = await fetch('/api/bookings/upcoming?limit=5');
+        
+        if (!bookingsResponse.ok) {
+          throw new Error(`Erreur lors de la récupération des réservations: ${bookingsResponse.statusText}`);
+        }
+        
+        const bookingsData = await bookingsResponse.json();
+        if (bookingsData.success) {
           setUpcomingBookings(bookingsData.data);
-          
-          // Récupérer les données pour le graphique
-          const chartResponse = await fetch('/api/dashboard/chart-data');
-          
-          if (!chartResponse.ok) {
-            throw new Error('Erreur lors de la récupération des données du graphique');
-          }
-          
-          const chartData = await chartResponse.json();
+        } else {
+          throw new Error(bookingsData.error || 'Erreur inconnue lors de la récupération des réservations');
+        }
+        
+        // Récupérer les données pour le graphique
+        const chartResponse = await fetch('/api/dashboard/chart-data');
+        
+        if (!chartResponse.ok) {
+          throw new Error(`Erreur lors de la récupération des données du graphique: ${chartResponse.statusText}`);
+        }
+        
+        const chartData = await chartResponse.json();
+        
+        if (chartData.success) {
           setBookingData(chartData.data);
+        } else {
+          throw new Error(chartData.error || 'Erreur inconnue lors de la récupération des données du graphique');
+        }
+        
+        if (!chartResponse.ok) {
+          throw new Error(`Erreur lors de la récupération des données du graphique: ${chartResponse.statusText}`);
         }
         
         setLoading(false);
       } catch (error) {
-        console.error('Erreur:', error);
+        console.error('Erreur lors de la récupération des données du tableau de bord:', error);
         setError(error.message);
         setLoading(false);
       }
@@ -229,12 +155,31 @@ export default function Dashboard() {
             <h3 className="text-lg font-semibold text-gray-800">Activité des réservations</h3>
             <select 
               className="rounded-md border-gray-300 text-sm focus:ring-primary focus:border-primary"
-              defaultValue="thisWeek"
+              defaultValue="week"
+              onChange={async (e) => {
+                try {
+                  setLoading(true);
+                  const period = e.target.value;
+                  const response = await fetch(`/api/dashboard/chart-data?period=${period}`);
+                  const data = await response.json();
+                  if (data.success) {
+                    setBookingData(data.data);
+                  } else {
+                    console.error('Erreur:', data.error);
+                    setError(data.error);
+                  }
+                } catch (err) {
+                  console.error("Erreur lors du changement de période:", err);
+                  setError(err.message);
+                } finally {
+                  setLoading(false);
+                }
+              }}
             >
-              <option value="today">Aujourd'hui</option>
-              <option value="thisWeek">Cette semaine</option>
-              <option value="thisMonth">Ce mois</option>
-              <option value="lastMonth">Mois dernier</option>
+              <option value="day">Aujourd'hui</option>
+              <option value="week">Cette semaine</option>
+              <option value="month">Ce mois</option>
+              <option value="year">Cette année</option>
             </select>
           </div>
           
@@ -293,15 +238,6 @@ export default function Dashboard() {
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-800">Revenus</h3>
-              <select 
-                className="rounded-md border-gray-300 text-sm focus:ring-primary focus:border-primary"
-                defaultValue="thisMonth"
-              >
-                <option value="today">Aujourd'hui</option>
-                <option value="thisWeek">Cette semaine</option>
-                <option value="thisMonth">Ce mois</option>
-                <option value="lastMonth">Mois dernier</option>
-              </select>
             </div>
             
             <div className="bg-green-50 rounded-lg p-6 text-center">

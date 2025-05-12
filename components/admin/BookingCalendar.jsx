@@ -230,97 +230,28 @@ const BookingCalendar = ({ statusFilter = 'all' }) => {
           endDate.setHours(23, 59, 59, 999);
         }
 
-        // Si en mode développement, simuler des données
-        if (process.env.NODE_ENV === 'development') {
-          // Simuler un délai de chargement
-          await new Promise(resolve => setTimeout(resolve, 800));
-          
-          // Générer des réservations fictives pour la période
-          const mockBookings = [];
-          const statuses = ['pending', 'confirmed', 'in_progress', 'completed', 'cancelled'];
-          const addresses = [
-            'Aéroport Charles de Gaulle',
-            'Aéroport d\'Orly',
-            'Gare de Lyon, Paris',
-            'Tour Eiffel, Paris',
-            'Château de Versailles',
-            'Disneyland Paris',
-            'Place Vendôme, Paris',
-            'Le Louvre, Paris',
-            'Avenue des Champs-Élysées, Paris',
-            'La Défense, Paris'
-          ];
-          
-          // Nombre de réservations à générer
-          const numBookings = Math.floor(Math.random() * 20) + 10;
-          
-          // Période entre startDate et endDate
-          const periodRange = endDate.getTime() - startDate.getTime();
-          
-          for (let i = 0; i < numBookings; i++) {
-            // Générer une date aléatoire dans la période
-            const randomOffset = Math.random() * periodRange;
-            const bookingDate = new Date(startDate.getTime() + randomOffset);
-            
-            // S'assurer que les heures sont entre 6h et 23h
-            bookingDate.setHours(Math.floor(Math.random() * 17) + 6, Math.floor(Math.random() * 60), 0, 0);
-            
-            // Sélectionner des adresses aléatoires
-            const pickupIndex = Math.floor(Math.random() * addresses.length);
-            let dropoffIndex;
-            do {
-              dropoffIndex = Math.floor(Math.random() * addresses.length);
-            } while (dropoffIndex === pickupIndex); // Éviter les mêmes adresses
-            
-            // Sélectionner un statut aléatoire
-            let status = statuses[Math.floor(Math.random() * statuses.length)];
-            
-            // Si un filtre de statut est appliqué, respecter ce filtre
-            if (statusFilter !== 'all') {
-              status = statusFilter;
-            }
-            
-            mockBookings.push({
-              _id: `mock-${i}`,
-              bookingId: `ELC-${Math.floor(10000 + Math.random() * 90000)}`,
-              status: status,
-              pickupDateTime: bookingDate.toISOString(),
-              pickupAddress: addresses[pickupIndex],
-              dropoffAddress: addresses[dropoffIndex],
-              customerInfo: {
-                name: `Client ${i+1}`,
-                phone: `+336${Math.floor(10000000 + Math.random() * 90000000)}`
-              }
-            });
-          }
-          
-          // Trier par date
-          mockBookings.sort((a, b) => new Date(a.pickupDateTime) - new Date(b.pickupDateTime));
-          
-          setBookings(mockBookings);
-        } else {
-          // En production, appel à l'API réelle
-          let url = `/api/bookings?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}&limit=100`;
-          
-          if (statusFilter !== 'all') {
-            url += `&status=${statusFilter}`;
-          }
-          
-          const response = await fetch(url);
-          
-          if (!response.ok) {
-            throw new Error(`Erreur lors de la récupération des réservations: ${response.statusText}`);
-          }
-          
-          const data = await response.json();
-          
-          if (!data.success) {
-            throw new Error(data.error || "Erreur inconnue");
-          }
-          
-          setBookings(data.data);
+        // Appel à l'API pour récupérer les vraies données
+        let url = `/api/bookings?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}&limit=500`;
+        
+        if (statusFilter !== 'all') {
+          url += `&status=${statusFilter}`;
         }
         
+        console.log('Fetching calendar bookings from:', url);
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+          throw new Error(`Erreur lors de la récupération des réservations: ${response.status} ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        if (!data.success) {
+          throw new Error(data.error || "Erreur inconnue");
+        }
+        
+        console.log('Received calendar bookings:', data);
+        setBookings(data.data || []);
         setLoading(false);
       } catch (error) {
         console.error('Erreur:', error);

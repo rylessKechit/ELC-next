@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
+import { hash, compare } from 'bcrypt';
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -10,7 +10,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    lowercase: true,
+    lowercase: true, // Attention: ne touche pas au mot de passe!
   },
   password: {
     type: String,
@@ -65,14 +65,16 @@ const UserSchema = new mongoose.Schema({
 
 // Middleware pré-sauvegarde pour hacher le mot de passe
 UserSchema.pre('save', async function(next) {
+  // Mettre à jour la date de modification
   this.updatedAt = Date.now();
   
   // Hacher le mot de passe uniquement s'il a été modifié ou est nouveau
   if (!this.isModified('password')) return next();
   
   try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
+    // Utiliser un salt de 10 (recommandé)
+    const salt = 10;
+    this.password = await hash(this.password, salt);
     next();
   } catch (error) {
     next(error);
@@ -81,7 +83,13 @@ UserSchema.pre('save', async function(next) {
 
 // Méthode pour comparer les mots de passe
 UserSchema.methods.comparePassword = async function(candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password);
+  try {
+    return await compare(candidatePassword, this.password);
+  } catch (error) {
+    console.error("Erreur lors de la comparaison des mots de passe:", error);
+    throw error;
+  }
 };
 
+// Définir le modèle uniquement s'il n'existe pas déjà
 export default mongoose.models.User || mongoose.model('User', UserSchema);
