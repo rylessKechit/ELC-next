@@ -9,7 +9,8 @@ import { useInView } from 'react-intersection-observer'
 
 // Images
 import teslaModel3 from '@/public/assets/images/tesla-model-3.webp'
-import mercedesClassS from '@/public/assets/images/mercedes-classe-s.webp'
+import mercedesClasseE from '@/public/assets/images/mercedes-classe-e.webp'
+mercedesClasseE
 import bmwSerie7 from '@/public/assets/images/bmw-7-series.webp'
 import mercedesVClass from '@/public/assets/images/mercedes-v-class.webp'
 
@@ -87,6 +88,25 @@ export default function FlotteVehiculesPage() {
   // Données de notre flotte
   const vehicles = [
     {
+      id: 'green',
+      name: 'Véhicule Green',
+      model: 'Tesla Model 3',
+      description: 'Conjuguez luxe et démarche écologique avec notre option 100% électrique. Profitez d\'une expérience silencieuse, confortable et respectueuse de l\'environnement.',
+      capacity: 'Jusqu\'à 4 passagers',
+      luggage: 'Jusqu\'à 3 bagages',
+      features: [
+        'Zéro émission',
+        'Conduite silencieuse',
+        'Intérieur végan',
+        'Écran tactile central',
+        'WiFi haute vitesse',
+        'Toit panoramique en verre',
+        'Autopilot avancé'
+      ],
+      image: teslaModel3,
+      ideal: 'Idéal pour: Clients éco-responsables, zones à faibles émissions, trajets urbains'
+    },
+    {
       id: 'sedan',
       name: 'Berline de Luxe',
       model: 'Mercedes-Benz Classe E',
@@ -101,7 +121,7 @@ export default function FlotteVehiculesPage() {
         'Bouteilles d\'eau offertes',
         'Espace de travail confortable'
       ],
-      image: mercedesClassS,
+      image: mercedesClasseE,
       ideal: 'Idéal pour: Trajets d\'affaires, transferts aéroport, déplacements urbains'
     },
     {
@@ -122,25 +142,6 @@ export default function FlotteVehiculesPage() {
       ],
       image: bmwSerie7,
       ideal: 'Idéal pour: Événements VIP, délégations importantes, clients exigeants'
-    },
-    {
-      id: 'green',
-      name: 'Véhicule Green',
-      model: 'Tesla Model 3',
-      description: 'Conjuguez luxe et démarche écologique avec notre option 100% électrique. Profitez d\'une expérience silencieuse, confortable et respectueuse de l\'environnement.',
-      capacity: 'Jusqu\'à 4 passagers',
-      luggage: 'Jusqu\'à 3 bagages',
-      features: [
-        'Zéro émission',
-        'Conduite silencieuse',
-        'Intérieur végan',
-        'Écran tactile central',
-        'WiFi haute vitesse',
-        'Toit panoramique en verre',
-        'Autopilot avancé'
-      ],
-      image: teslaModel3,
-      ideal: 'Idéal pour: Clients éco-responsables, zones à faibles émissions, trajets urbains'
     },
     {
       id: 'van',
