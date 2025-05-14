@@ -1,48 +1,71 @@
-// services/emailService.js
+// services/emailService.js - Version optimisée anti-spam
 import nodemailer from 'nodemailer'
 
-/**
- * Service pour l'envoi d'emails
- */
 export const emailService = {
   /**
-   * Créer un transporteur d'email
-   * @returns {Object} - Transporteur NodeMailer configuré
+   * Créer un transporteur d'email optimisé pour éviter le spam
    */
   createTransporter() {
-    // Récupérer les paramètres SMTP depuis les variables d'environnement
-    const host = process.env.EMAIL_HOST || 'smtp.example.com'
+    const host = process.env.EMAIL_HOST || 'smtp.gmail.com'
     const port = parseInt(process.env.EMAIL_PORT || '587', 10)
     const secure = process.env.EMAIL_SECURE === 'true'
     const user = process.env.EMAIL_USER || 'user@example.com'
     const pass = process.env.EMAIL_PASSWORD || 'password'
     
-    return nodemailer.createTransport({
+    return nodemailer.createTransporter({
       host,
       port,
       secure,
       auth: {
         user,
         pass
+      },
+      // Configuration anti-spam
+      tls: {
+        rejectUnauthorized: false,
+        ciphers: 'SSLv3'
+      },
+      // Headers de réputation
+      headers: {
+        'X-Priority': '1',
+        'X-MSMail-Priority': 'High',
+        'X-Mailer': 'Elysian Luxury Chauffeurs'
       }
     })
   },
 
   /**
-   * Envoyer un email
-   * @param {Object} options - Options d'envoi
-   * @returns {Promise<Object>} - Résultat de l'envoi
+   * Envoyer un email avec optimisations anti-spam
    */
   async sendEmail(options) {
     try {
       const transporter = this.createTransporter()
       
       const mailOptions = {
-        from: options.from || process.env.EMAIL_FROM || '"Elysian Luxury Chauffeurs" <contact@elysian-luxury-chauffeurs.com>',
+        from: `"Elysian Luxury Chauffeurs" <${process.env.EMAIL_FROM || process.env.EMAIL_USER}>`,
         to: options.to,
         subject: options.subject,
         text: options.text,
-        html: options.html
+        html: options.html,
+        // Headers anti-spam
+        headers: {
+          'X-Entity-Ref-ID': `elysian-${Date.now()}`,
+          'X-Priority': '1',
+          'Return-Path': process.env.EMAIL_FROM || process.env.EMAIL_USER,
+          'Reply-To': process.env.EMAIL_FROM || process.env.EMAIL_USER,
+          'Message-ID': `<${Date.now()}-${Math.random().toString(36).substr(2, 9)}@elysian-luxury-chauffeurs.com>`,
+          'List-Unsubscribe': `<mailto:unsubscribe@elysian-luxury-chauffeurs.com>`,
+          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click'
+        },
+        // Encodage pour éviter les problèmes d'affichage
+        encoding: 'utf8',
+        textEncoding: 'base64',
+        // Signature DKIM (si configurée)
+        dkim: {
+          domainName: 'elysian-luxury-chauffeurs.com',
+          keySelector: 'default',
+          privateKey: process.env.DKIM_PRIVATE_KEY
+        }
       }
       
       // Ajouter des pièces jointes si fournies
@@ -50,12 +73,10 @@ export const emailService = {
         mailOptions.attachments = options.attachments
       }
       
-      // Vérifier si on est en mode test ou sans configuration SMTP
+      // Vérifier si on est en mode test
       if (!process.env.EMAIL_HOST || process.env.EMAIL_HOST === 'smtp.example.com') {
         console.log('⚠️ Configuration SMTP incomplète. Simulation d\'envoi d\'email:')
         console.log(mailOptions)
-        
-        // Retourner un ID de message simulé pour le développement
         return { 
           messageId: `dev-${Date.now()}`,
           simulated: true,
@@ -63,7 +84,7 @@ export const emailService = {
         }
       }
       
-      // Envoyer l'email réellement
+      // Envoyer l'email
       console.log(`📧 Envoi d'email à ${options.to}`)
       const info = await transporter.sendMail(mailOptions)
       console.log(`📧 Email envoyé: ${info.messageId}`)
@@ -75,15 +96,12 @@ export const emailService = {
   },
 
   /**
-   * Envoyer un email de confirmation de réservation
-   * @param {Object} booking - Détails de la réservation
-   * @returns {Promise<Object>} - Résultat de l'envoi
+   * Email de confirmation optimisé
    */
   async sendBookingConfirmation(booking) {
-    // Formater la date et l'heure pour l'affichage
+    // Formatage des dates
     const formatDate = (dateTimeStr) => {
       if (!dateTimeStr) return 'Non spécifié'
-      
       const date = new Date(dateTimeStr)
       return date.toLocaleString('fr-FR', {
         weekday: 'long',
@@ -95,7 +113,6 @@ export const emailService = {
       })
     }
     
-    // Formater le prix
     const formatPrice = (price) => {
       return new Intl.NumberFormat('fr-FR', {
         style: 'currency',
@@ -103,7 +120,6 @@ export const emailService = {
       }).format(price)
     }
     
-    // Récupérer le nom du véhicule
     const getVehicleName = (type) => {
       const vehicleTypes = {
         'sedan': 'Berline de Luxe',
@@ -112,275 +128,238 @@ export const emailService = {
         'suv': 'SUV de Luxe',
         'van': 'Van VIP'
       }
-      
       return vehicleTypes[type] || 'Véhicule non spécifié'
     }
     
-    // Construire le contenu de l'email
+    // Template HTML optimisé pour éviter le spam
     const htmlContent = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <div style="background-color: #1c2938; padding: 20px; text-align: center; color: white;">
-          <h1 style="margin: 0; color: #d4af37;">Elysian Luxury Chauffeurs</h1>
-          <p style="margin-top: 10px;">Confirmation de votre réservation</p>
-        </div>
-        
-        <div style="padding: 20px; border: 1px solid #e5e5e5; border-top: none;">
-          <p>Bonjour <strong>${booking.customerName}</strong>,</p>
-          
-          <p>Nous avons le plaisir de confirmer votre réservation. Voici les détails :</p>
-          
-          <div style="background-color: #f9f9f9; padding: 15px; margin: 20px 0; border-left: 4px solid #d4af37;">
-            <p style="margin: 5px 0;"><strong>Numéro de réservation :</strong> ${booking.bookingId}</p>
-            <p style="margin: 5px 0;"><strong>Date et heure :</strong> ${formatDate(booking.pickupDateTime)}</p>
-            <p style="margin: 5px 0;"><strong>Adresse de départ :</strong> ${booking.pickupAddress}</p>
-            <p style="margin: 5px 0;"><strong>Adresse d'arrivée :</strong> ${booking.dropoffAddress}</p>
-            <p style="margin: 5px 0;"><strong>Véhicule :</strong> ${getVehicleName(booking.vehicleType)}</p>
-            <p style="margin: 5px 0;"><strong>Nombre de passagers :</strong> ${booking.passengers}</p>
-            <p style="margin: 5px 0;"><strong>Nombre de bagages :</strong> ${booking.luggage}</p>
-            ${booking.flightNumber ? `<p style="margin: 5px 0;"><strong>Numéro de vol :</strong> ${booking.flightNumber}</p>` : ''}
-            ${booking.trainNumber ? `<p style="margin: 5px 0;"><strong>Numéro de train :</strong> ${booking.trainNumber}</p>` : ''}
-            ${booking.roundTrip ? `<p style="margin: 5px 0;"><strong>Retour prévu le :</strong> ${formatDate(booking.returnDateTime)}</p>` : ''}
-            <p style="margin: 5px 0;"><strong>Prix total :</strong> ${formatPrice(booking.price)}</p>
-          </div>
-          
-          <p>Notre chauffeur vous contactera environ 2 heures avant l'heure prévue pour confirmer sa présence.</p>
-          
-          <h3 style="color: #1c2938;">Informations importantes</h3>
-          <ul>
-            <li>Annulation gratuite jusqu'à 24h avant le départ</li>
-            <li>Le paiement s'effectuera auprès du chauffeur (espèces, carte bancaire)</li>
-            <li>En cas d'urgence, contactez-nous au 01 23 45 67 89</li>
-          </ul>
-          
-          <p>Pour toute question ou modification concernant votre réservation, n'hésitez pas à nous contacter par email à contact@elysian-luxury-chauffeurs.com ou par téléphone au 01 23 45 67 89.</p>
-          
-          <p>Nous vous remercions de votre confiance et vous souhaitons un agréable trajet.</p>
-          
-          <p>Cordialement,<br>L'équipe Elysian Luxury Chauffeurs</p>
-        </div>
-        
-        <div style="background-color: #f5f5f5; padding: 15px; text-align: center; font-size: 12px; color: #666;">
-          <p>Elysian Luxury Chauffeurs<br>123 Avenue des Champs, 91000 Évry-Courcouronnes<br>Tel: 01 23 45 67 89</p>
-          <p>© ${new Date().getFullYear()} Elysian Luxury Chauffeurs - Tous droits réservés</p>
-        </div>
-      </div>
+<!DOCTYPE html>
+<html lang="fr" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="x-apple-disable-message-reformatting">
+    <title>Confirmation de réservation - Elysian Luxury Chauffeurs</title>
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+</head>
+<body style="margin:0;padding:0;font-family:Arial,sans-serif;background-color:#f4f4f4">
+    <table role="presentation" style="width:100%;border-collapse:collapse;border:0;border-spacing:0;background:#f4f4f4">
+        <tr>
+            <td align="center" style="padding:0">
+                <table role="presentation" style="width:600px;border-collapse:collapse;border:0;border-spacing:0;background:#ffffff;margin-top:20px;margin-bottom:20px;border-radius:8px;box-shadow:0 4px 6px rgba(0,0,0,0.1)">
+                    <!-- En-tête -->
+                    <tr>
+                        <td style="padding:0">
+                            <table role="presentation" style="width:100%;border-collapse:collapse;border:0;border-spacing:0;background:#1c2938;border-radius:8px 8px 0 0">
+                                <tr>
+                                    <td align="center" style="padding:30px 40px 30px 40px;color:#ffffff">
+                                        <h1 style="margin:0;font-size:24px;font-weight:bold;color:#d4af37">
+                                            Elysian Luxury Chauffeurs
+                                        </h1>
+                                        <p style="margin-top:10px;font-size:16px;color:#ffffff">
+                                            Confirmation de votre réservation
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    
+                    <!-- Contenu principal -->
+                    <tr>
+                        <td style="padding:40px 40px 40px 40px">
+                            <h2 style="margin:0 0 20px 0;font-size:18px;color:#333">
+                                Bonjour ${booking.customerName},
+                            </h2>
+                            
+                            <p style="margin:0 0 20px 0;font-size:16px;line-height:1.5;color:#333">
+                                Nous avons le plaisir de confirmer votre réservation. Voici les détails :
+                            </p>
+                            
+                            <!-- Détails de la réservation -->
+                            <table role="presentation" style="width:100%;border-collapse:collapse;border:1px solid #e5e5e5;background:#f9f9f9;margin:20px 0">
+                                <tr>
+                                    <td style="padding:20px;border-left:4px solid #d4af37">
+                                        <table role="presentation" style="width:100%;border-collapse:collapse">
+                                            <tr>
+                                                <td style="padding:5px 0;font-weight:bold;color:#333">Numéro de réservation :</td>
+                                                <td style="padding:5px 0;color:#333">${booking.bookingId}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:5px 0;font-weight:bold;color:#333">Date et heure :</td>
+                                                <td style="padding:5px 0;color:#333">${formatDate(booking.pickupDateTime)}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:5px 0;font-weight:bold;color:#333">Adresse de départ :</td>
+                                                <td style="padding:5px 0;color:#333">${booking.pickupAddress}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:5px 0;font-weight:bold;color:#333">Adresse d'arrivée :</td>
+                                                <td style="padding:5px 0;color:#333">${booking.dropoffAddress}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:5px 0;font-weight:bold;color:#333">Véhicule :</td>
+                                                <td style="padding:5px 0;color:#333">${getVehicleName(booking.vehicleType)}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:5px 0;font-weight:bold;color:#333">Nombre de passagers :</td>
+                                                <td style="padding:5px 0;color:#333">${booking.passengers}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:5px 0;font-weight:bold;color:#333">Nombre de bagages :</td>
+                                                <td style="padding:5px 0;color:#333">${booking.luggage}</td>
+                                            </tr>
+                                            ${booking.flightNumber ? `
+                                            <tr>
+                                                <td style="padding:5px 0;font-weight:bold;color:#333">Numéro de vol :</td>
+                                                <td style="padding:5px 0;color:#333">${booking.flightNumber}</td>
+                                            </tr>
+                                            ` : ''}
+                                            ${booking.trainNumber ? `
+                                            <tr>
+                                                <td style="padding:5px 0;font-weight:bold;color:#333">Numéro de train :</td>
+                                                <td style="padding:5px 0;color:#333">${booking.trainNumber}</td>
+                                            </tr>
+                                            ` : ''}
+                                            ${booking.roundTrip ? `
+                                            <tr>
+                                                <td style="padding:5px 0;font-weight:bold;color:#333">Retour prévu le :</td>
+                                                <td style="padding:5px 0;color:#333">${formatDate(booking.returnDateTime)}</td>
+                                            </tr>
+                                            ` : ''}
+                                            <tr>
+                                                <td style="padding:5px 0;font-weight:bold;color:#333">Prix total :</td>
+                                                <td style="padding:5px 0;color:#d4af37;font-weight:bold">${formatPrice(booking.price)}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <p style="margin:20px 0;font-size:16px;line-height:1.5;color:#333">
+                                Notre chauffeur vous contactera environ 2 heures avant l'heure prévue pour confirmer sa présence.
+                            </p>
+                            
+                            <!-- Informations importantes -->
+                            <table role="presentation" style="width:100%;border-collapse:collapse;background:#e8f4fd;border-radius:5px;margin:20px 0">
+                                <tr>
+                                    <td style="padding:20px">
+                                        <h3 style="margin:0 0 15px 0;font-size:16px;color:#1c2938">Informations importantes</h3>
+                                        <ul style="margin:0;padding-left:20px;color:#333;line-height:1.6">
+                                            <li>Annulation gratuite jusqu'à 24h avant le départ</li>
+                                            <li>Le paiement s'effectuera auprès du chauffeur (espèces, carte bancaire)</li>
+                                            <li>En cas d'urgence, contactez-nous au 01 23 45 67 89</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <p style="margin:20px 0;font-size:16px;line-height:1.5;color:#333">
+                                Pour toute question ou modification concernant votre réservation, n'hésitez pas à nous contacter par email à 
+                                <a href="mailto:contact@elysian-luxury-chauffeurs.com" style="color:#d4af37;text-decoration:none">contact@elysian-luxury-chauffeurs.com</a> 
+                                ou par téléphone au 01 23 45 67 89.
+                            </p>
+                            
+                            <p style="margin:20px 0;font-size:16px;line-height:1.5;color:#333">
+                                Nous vous remercions de votre confiance et vous souhaitons un agréable trajet.
+                            </p>
+                            
+                            <p style="margin:30px 0 0 0;font-size:16px;color:#333">
+                                Cordialement,<br>
+                                <strong>L'équipe Elysian Luxury Chauffeurs</strong>
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Pied de page -->
+                    <tr>
+                        <td style="padding:0">
+                            <table role="presentation" style="width:100%;border-collapse:collapse;border:0;border-spacing:0;background:#f5f5f5;border-radius:0 0 8px 8px">
+                                <tr>
+                                    <td align="center" style="padding:20px;color:#666;font-size:12px">
+                                        <p style="margin:0 0 10px 0">
+                                            <strong>Elysian Luxury Chauffeurs</strong><br>
+                                            123 Avenue des Champs, 91000 Évry-Courcouronnes<br>
+                                            Tél: 01 23 45 67 89
+                                        </p>
+                                        <p style="margin:0">
+                                            © ${new Date().getFullYear()} Elysian Luxury Chauffeurs - Tous droits réservés
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
     `
     
-    // Texte alternatif pour les clients sans HTML
+    // Version texte optimisée
     const textContent = `
-      Elysian Luxury Chauffeurs - Confirmation de votre réservation
-      
-      Bonjour ${booking.customerName},
-      
-      Nous avons le plaisir de confirmer votre réservation. Voici les détails :
-      
-      Numéro de réservation : ${booking.bookingId}
-      Date et heure : ${formatDate(booking.pickupDateTime)}
-      Adresse de départ : ${booking.pickupAddress}
-      Adresse d'arrivée : ${booking.dropoffAddress}
-      Véhicule : ${getVehicleName(booking.vehicleType)}
-      Nombre de passagers : ${booking.passengers}
-      Nombre de bagages : ${booking.luggage}
-      ${booking.flightNumber ? `Numéro de vol : ${booking.flightNumber}` : ''}
-      ${booking.trainNumber ? `Numéro de train : ${booking.trainNumber}` : ''}
-      ${booking.roundTrip ? `Retour prévu le : ${formatDate(booking.returnDateTime)}` : ''}
-      Prix total : ${formatPrice(booking.price)}
-      
-      Notre chauffeur vous contactera environ 2 heures avant l'heure prévue pour confirmer sa présence.
-      
-      Informations importantes :
-      - Annulation gratuite jusqu'à 24h avant le départ
-      - Le paiement s'effectuera auprès du chauffeur (espèces, carte bancaire)
-      - En cas d'urgence, contactez-nous au 01 23 45 67 89
-      
-      Pour toute question ou modification concernant votre réservation, n'hésitez pas à nous contacter par email à contact@elysian-luxury-chauffeurs.com ou par téléphone au 01 23 45 67 89.
-      
-      Nous vous remercions de votre confiance et vous souhaitons un agréable trajet.
-      
-      Cordialement,
-      L'équipe Elysian Luxury Chauffeurs
-      
-      -----------------------------------------------
-      Elysian Luxury Chauffeurs
-      123 Avenue des Champs, 91000 Évry-Courcouronnes
-      Tel: 01 23 45 67 89
-      © ${new Date().getFullYear()} Elysian Luxury Chauffeurs - Tous droits réservés
+ELYSIAN LUXURY CHAUFFEURS
+Confirmation de votre réservation
+
+Bonjour ${booking.customerName},
+
+Nous avons le plaisir de confirmer votre réservation.
+
+DÉTAILS DE VOTRE RÉSERVATION:
+════════════════════════════════════════════
+
+Numéro de réservation : ${booking.bookingId}
+Date et heure : ${formatDate(booking.pickupDateTime)}
+Départ : ${booking.pickupAddress}
+Arrivée : ${booking.dropoffAddress}
+Véhicule : ${getVehicleName(booking.vehicleType)}
+Passagers : ${booking.passengers}
+Bagages : ${booking.luggage}
+${booking.flightNumber ? `Numéro de vol : ${booking.flightNumber}` : ''}
+${booking.trainNumber ? `Numéro de train : ${booking.trainNumber}` : ''}
+${booking.roundTrip ? `Retour prévu le : ${formatDate(booking.returnDateTime)}` : ''}
+Prix total : ${formatPrice(booking.price)}
+
+════════════════════════════════════════════
+
+Notre chauffeur vous contactera environ 2 heures avant l'heure prévue pour confirmer sa présence.
+
+INFORMATIONS IMPORTANTES:
+- Annulation gratuite jusqu'à 24h avant le départ
+- Le paiement s'effectuera auprès du chauffeur (espèces, carte bancaire)  
+- En cas d'urgence, contactez-nous au 01 23 45 67 89
+
+Pour toute question ou modification, contactez-nous :
+Email: contact@elysian-luxury-chauffeurs.com
+Téléphone: 01 23 45 67 89
+
+Nous vous remercions de votre confiance et vous souhaitons un agréable trajet.
+
+Cordialement,
+L'équipe Elysian Luxury Chauffeurs
+
+--
+Elysian Luxury Chauffeurs
+123 Avenue des Champs, 91000 Évry-Courcouronnes
+Tél: 01 23 45 67 89
+© ${new Date().getFullYear()} Elysian Luxury Chauffeurs - Tous droits réservés
     `
     
     return this.sendEmail({
       to: booking.customerEmail,
-      subject: `Confirmation de réservation #${booking.bookingId} - Elysian Luxury Chauffeurs`,
+      subject: `✅ Confirmation réservation #${booking.bookingId} - Elysian Luxury Chauffeurs`,
       text: textContent,
-      html: htmlContent
-    })
-  },
-
-  /**
-   * Envoyer une notification de réservation à l'administrateur
-   * @param {Object} booking - Détails de la réservation
-   * @returns {Promise<Object>} - Résultat de l'envoi
-   */
-  async sendBookingNotification(booking) {
-    // Le contenu de l'email serait similaire à celui de confirmation
-    // mais adapté pour les administrateurs
-    
-    const adminEmail = process.env.ADMIN_EMAIL || 'admin@elysian-luxury-chauffeurs.com'
-    
-    // Formater la date
-    const formatDate = (dateTimeStr) => {
-      if (!dateTimeStr) return 'Non spécifié'
-      
-      const date = new Date(dateTimeStr)
-      return date.toLocaleString('fr-FR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      })
-    }
-    
-    const htmlContent = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <div style="background-color: #1c2938; padding: 15px; text-align: center; color: white;">
-          <h1 style="margin: 0; color: #d4af37; font-size: 20px;">Nouvelle Réservation</h1>
-        </div>
-        
-        <div style="padding: 20px; border: 1px solid #e5e5e5; border-top: none;">
-          <p>Une nouvelle réservation a été effectuée :</p>
-          
-          <div style="background-color: #f9f9f9; padding: 15px; margin: 20px 0;">
-            <p style="margin: 3px 0;"><strong>Référence :</strong> ${booking.bookingId}</p>
-            <p style="margin: 3px 0;"><strong>Client :</strong> ${booking.customerName}</p>
-            <p style="margin: 3px 0;"><strong>Tél :</strong> ${booking.customerPhone}</p>
-            <p style="margin: 3px 0;"><strong>Email :</strong> ${booking.customerEmail}</p>
-            <p style="margin: 3px 0;"><strong>Date :</strong> ${formatDate(booking.pickupDateTime)}</p>
-            <p style="margin: 3px 0;"><strong>Départ :</strong> ${booking.pickupAddress}</p>
-            <p style="margin: 3px 0;"><strong>Arrivée :</strong> ${booking.dropoffAddress}</p>
-            <p style="margin: 3px 0;"><strong>Véhicule :</strong> ${booking.vehicleType}</p>
-            <p style="margin: 3px 0;"><strong>Passagers :</strong> ${booking.passengers}</p>
-            <p style="margin: 3px 0;"><strong>Bagages :</strong> ${booking.luggage}</p>
-            ${booking.flightNumber ? `<p style="margin: 3px 0;"><strong>Vol :</strong> ${booking.flightNumber}</p>` : ''}
-            ${booking.trainNumber ? `<p style="margin: 3px 0;"><strong>Train :</strong> ${booking.trainNumber}</p>` : ''}
-            ${booking.roundTrip ? `<p style="margin: 3px 0;"><strong>Retour :</strong> ${formatDate(booking.returnDateTime)}</p>` : ''}
-          </div>
-          
-          <p><a href="#" style="background-color: #d4af37; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; display: inline-block;">Accéder au tableau de bord</a></p>
-        </div>
-      </div>
-    `
-    
-    return this.sendEmail({
-      to: adminEmail,
-      subject: `Nouvelle réservation #${booking.bookingId}`,
-      html: htmlContent
-    })
-  },
-
-  /**
-   * Envoyer une confirmation de réception du message de contact
-   * @param {Object} contactMessage - Détails du message de contact
-   * @returns {Promise<Object>} - Résultat de l'envoi
-   */
-  async sendContactConfirmation(contactMessage) {
-    const htmlContent = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <div style="background-color: #1c2938; padding: 20px; text-align: center; color: white;">
-          <h1 style="margin: 0; color: #d4af37;">Elysian Luxury Chauffeurs</h1>
-          <p style="margin-top: 10px;">Confirmation de réception de votre message</p>
-        </div>
-        
-        <div style="padding: 20px; border: 1px solid #e5e5e5; border-top: none;">
-          <p>Bonjour <strong>${contactMessage.name}</strong>,</p>
-          
-          <p>Nous avons bien reçu votre message concernant "${contactMessage.subject}" et vous remercions de nous avoir contactés.</p>
-          
-          <p>Un membre de notre équipe vous répondra dans les plus brefs délais.</p>
-          
-          <div style="background-color: #f9f9f9; padding: 15px; margin: 20px 0; border-left: 4px solid #d4af37;">
-            <p style="margin: 5px 0;"><strong>Votre message :</strong></p>
-            <p style="margin: 5px 0;">${contactMessage.message}</p>
-          </div>
-          
-          <p>Cordialement,<br>L'équipe Elysian Luxury Chauffeurs</p>
-        </div>
-        
-        <div style="background-color: #f5f5f5; padding: 15px; text-align: center; font-size: 12px; color: #666;">
-          <p>Elysian Luxury Chauffeurs<br>123 Avenue des Champs, 91000 Évry-Courcouronnes<br>Tel: 01 23 45 67 89</p>
-          <p>© ${new Date().getFullYear()} Elysian Luxury Chauffeurs - Tous droits réservés</p>
-        </div>
-      </div>
-    `
-    
-    const textContent = `
-      Elysian Luxury Chauffeurs - Confirmation de réception de votre message
-      
-      Bonjour ${contactMessage.name},
-      
-      Nous avons bien reçu votre message concernant "${contactMessage.subject}" et vous remercions de nous avoir contactés.
-      
-      Un membre de notre équipe vous répondra dans les plus brefs délais.
-      
-      Votre message :
-      ${contactMessage.message}
-      
-      Cordialement,
-      L'équipe Elysian Luxury Chauffeurs
-      
-      -----------------------------------------------
-      Elysian Luxury Chauffeurs
-      123 Avenue des Champs, 91000 Évry-Courcouronnes
-      Tel: 01 23 45 67 89
-      © ${new Date().getFullYear()} Elysian Luxury Chauffeurs - Tous droits réservés
-    `
-    
-    return this.sendEmail({
-      to: contactMessage.email,
-      subject: `Confirmation de réception de votre message - Elysian Luxury Chauffeurs`,
-      text: textContent,
-      html: htmlContent
-    })
-  },
-
-  /**
-   * Envoyer une notification de message de contact à l'administrateur
-   * @param {Object} contactMessage - Détails du message de contact
-   * @returns {Promise<Object>} - Résultat de l'envoi
-   */
-  async sendContactNotification(contactMessage) {
-    const adminEmail = process.env.ADMIN_EMAIL || 'admin@elysian-luxury-chauffeurs.com'
-    
-    const htmlContent = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <div style="background-color: #1c2938; padding: 20px; text-align: center; color: white;">
-          <h1 style="margin: 0; color: #d4af37;">Elysian Luxury Chauffeurs</h1>
-          <p style="margin-top: 10px;">Nouveau message de contact</p>
-        </div>
-        
-        <div style="padding: 20px; border: 1px solid #e5e5e5; border-top: none;">
-          <p>Un nouveau message de contact a été reçu via le site web :</p>
-          
-          <div style="background-color: #f9f9f9; padding: 15px; margin: 20px 0; border-left: 4px solid #d4af37;">
-            <p style="margin: 5px 0;"><strong>Nom :</strong> ${contactMessage.name}</p>
-            <p style="margin: 5px 0;"><strong>Email :</strong> ${contactMessage.email}</p>
-            <p style="margin: 5px 0;"><strong>Téléphone :</strong> ${contactMessage.phone || 'Non renseigné'}</p>
-            <p style="margin: 5px 0;"><strong>Sujet :</strong> ${contactMessage.subject}</p>
-            <p style="margin: 5px 0;"><strong>Message :</strong></p>
-            <p style="margin: 5px 0;">${contactMessage.message}</p>
-            <p style="margin: 5px 0;"><strong>Date d'envoi :</strong> ${new Date(contactMessage.submittedAt).toLocaleString('fr-FR')}</p>
-          </div>
-          
-          <p>Veuillez répondre à ce client dès que possible.</p>
-        </div>
-      </div>
-    `
-    
-    return this.sendEmail({
-      to: adminEmail,
-      subject: `Nouveau message de contact - ${contactMessage.subject}`,
       html: htmlContent
     })
   }
 }
-
-export default emailService

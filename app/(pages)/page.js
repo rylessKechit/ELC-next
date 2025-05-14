@@ -332,6 +332,89 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Booking Section */}
+      <section 
+        id="booking" 
+        ref={bookingRef} 
+        className="py-24 bg-gray-50"
+      >
+        <div className="container-custom">
+          <div className="text-center mb-16">
+            <h2>RÉSERVEZ VOTRE CHAUFFEUR PRIVÉ EN ESSONNE</h2>
+            <p className="subtitle">Un service de chauffeurs sur-mesure pour répondre à toutes vos exigences dans le 91</p>
+          </div>
+          
+          <motion.div
+            initial="hidden"
+            animate={bookingControls}
+            variants={fadeInVariant}
+            className="max-w-4xl mx-auto bg-white rounded-xl shadow-xl p-8 lg:p-12"
+          >
+            <BookingForm />
+          </motion.div>
+        </div>
+      </section>
+      
+      {/* Fleet Section */}
+      <section 
+        id="fleet" 
+        ref={fleetRef} 
+        className="py-24 bg-white relative overflow-hidden"
+      >
+        <div className="container-custom">
+          <div className="text-center mb-16">
+            <h2>NOTRE FLOTTE DE VÉHICULES AVEC CHAUFFEUR</h2>
+            <p className="subtitle">Des véhicules d'exception avec chauffeur pour une expérience inoubliable en Essonne</p>
+          </div>
+          
+          <div className="space-y-16">
+            {fleetItems.map((item, index) => (
+              <motion.div 
+                key={index} 
+                initial="hidden"
+                animate={fleetControls}
+                variants={fadeInVariant}
+                custom={index}
+                transition={{ delay: index * 0.2 }}
+                className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col md:flex-row"
+              >
+                <div className="w-full md:w-2/5 relative h-[300px] md:h-auto overflow-hidden">
+                  <Image 
+                    src={item.image}
+                    alt={`${item.name} avec chauffeur privé dans l'Essonne`}
+                    fill
+                    className="object-cover transition-transform duration-500 hover:scale-105"
+                    priority={index === 0}
+                  />
+                </div>
+                <div className="w-full md:w-3/5 p-8 md:p-10">
+                  <h3 className="text-2xl mb-4">{item.name}</h3>
+                  <p className="text-gray-600 mb-6">{item.description}</p>
+                  <ul className="mb-8 space-y-4">
+                    {item.features.map((feature, i) => (
+                      <li key={i} className="flex items-center">
+                        <i className="fas fa-check text-primary mr-3"></i>
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Link href="/flotte-vehicules" className="btn btn-primary">
+                    Réserver ce véhicule avec chauffeur
+                  </Link>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          
+          <div className="text-center mt-16">
+            <Link href="/flotte-vehicules" className="inline-flex items-center text-primary text-lg font-medium hover:text-primary-dark transition-colors">
+              Découvrir toute notre flotte avec chauffeur
+              <i className="fas fa-arrow-right ml-2"></i>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Zones d'intervention - Nouvelle section */}
       <section 
         id="locations" 
@@ -421,66 +504,6 @@ export default function HomePage() {
             <a href="#booking" className="inline-block py-3 px-6 bg-primary text-white font-medium rounded-full hover:bg-primary-dark transition-colors duration-300">
               Réserver un chauffeur
             </a>
-          </div>
-        </div>
-      </section>
-      
-      {/* Fleet Section */}
-      <section 
-        id="fleet" 
-        ref={fleetRef} 
-        className="py-24 bg-white relative overflow-hidden"
-      >
-        <div className="container-custom">
-          <div className="text-center mb-16">
-            <h2>NOTRE FLOTTE DE VÉHICULES AVEC CHAUFFEUR</h2>
-            <p className="subtitle">Des véhicules d'exception avec chauffeur pour une expérience inoubliable en Essonne</p>
-          </div>
-          
-          <div className="space-y-16">
-            {fleetItems.map((item, index) => (
-              <motion.div 
-                key={index} 
-                initial="hidden"
-                animate={fleetControls}
-                variants={fadeInVariant}
-                custom={index}
-                transition={{ delay: index * 0.2 }}
-                className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col md:flex-row"
-              >
-                <div className="w-full md:w-2/5 relative h-[300px] md:h-auto overflow-hidden">
-                  <Image 
-                    src={item.image}
-                    alt={`${item.name} avec chauffeur privé dans l'Essonne`}
-                    fill
-                    className="object-cover transition-transform duration-500 hover:scale-105"
-                    priority={index === 0}
-                  />
-                </div>
-                <div className="w-full md:w-3/5 p-8 md:p-10">
-                  <h3 className="text-2xl mb-4">{item.name}</h3>
-                  <p className="text-gray-600 mb-6">{item.description}</p>
-                  <ul className="mb-8 space-y-4">
-                    {item.features.map((feature, i) => (
-                      <li key={i} className="flex items-center">
-                        <i className="fas fa-check text-primary mr-3"></i>
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Link href="/flotte-vehicules" className="btn btn-primary">
-                    Réserver ce véhicule avec chauffeur
-                  </Link>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-          
-          <div className="text-center mt-16">
-            <Link href="/flotte-vehicules" className="inline-flex items-center text-primary text-lg font-medium hover:text-primary-dark transition-colors">
-              Découvrir toute notre flotte avec chauffeur
-              <i className="fas fa-arrow-right ml-2"></i>
-            </Link>
           </div>
         </div>
       </section>
@@ -626,29 +649,6 @@ export default function HomePage() {
               </button>
             ))}
           </div>
-        </div>
-      </section>
-      
-      {/* Booking Section */}
-      <section 
-        id="booking" 
-        ref={bookingRef} 
-        className="py-24 bg-gray-50"
-      >
-        <div className="container-custom">
-          <div className="text-center mb-16">
-            <h2>RÉSERVEZ VOTRE CHAUFFEUR PRIVÉ EN ESSONNE</h2>
-            <p className="subtitle">Un service de chauffeurs sur-mesure pour répondre à toutes vos exigences dans le 91</p>
-          </div>
-          
-          <motion.div
-            initial="hidden"
-            animate={bookingControls}
-            variants={fadeInVariant}
-            className="max-w-4xl mx-auto bg-white rounded-xl shadow-xl p-8 lg:p-12"
-          >
-            <BookingForm />
-          </motion.div>
         </div>
       </section>
       
