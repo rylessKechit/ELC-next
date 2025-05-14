@@ -5,11 +5,13 @@ const BookingSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    index: true // Index pour les recherches rapides
   },
   status: {
     type: String,
-    enum: ['pending', 'confirmed', 'in_progress', 'completed', 'cancelled'],
-    default: 'pending',
+    enum: ['confirmed', 'in_progress', 'completed', 'cancelled'],
+    default: 'confirmed', // Statut par défaut "confirmed" - plus de pending
+    index: true
   },
   pickupAddress: {
     type: String,
@@ -22,18 +24,24 @@ const BookingSchema = new mongoose.Schema({
   pickupDateTime: {
     type: Date,
     required: true,
+    index: true
   },
   passengers: {
     type: Number,
     required: true,
     min: 1,
-    max: 7,
+    max: 10,
   },
   luggage: {
     type: Number,
     required: true,
     min: 0,
-    max: 7,
+    max: 10,
+  },
+  vehicleType: {
+    type: String,
+    required: true,
+    enum: ['green', 'premium', 'sedan', 'van']
   },
   roundTrip: {
     type: Boolean,
@@ -41,6 +49,13 @@ const BookingSchema = new mongoose.Schema({
   },
   returnDateTime: {
     type: Date,
+    validate: {
+      validator: function(v) {
+        // Si roundTrip est true, returnDateTime doit être défini
+        return !this.roundTrip || v != null;
+      },
+      message: 'Return date/time is required for round trips'
+    }
   },
   flightNumber: {
     type: String,
@@ -55,6 +70,7 @@ const BookingSchema = new mongoose.Schema({
     amount: {
       type: Number,
       required: true,
+      min: 0
     },
     currency: {
       type: String,
@@ -69,6 +85,13 @@ const BookingSchema = new mongoose.Schema({
     email: {
       type: String,
       required: true,
+      lowercase: true,
+      validate: {
+        validator: function(v) {
+          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+        },
+        message: 'Invalid email format'
+      }
     },
     phone: {
       type: String,
@@ -99,6 +122,11 @@ const BookingSchema = new mongoose.Schema({
   },
 });
 
+// Index composé pour optimiser les requêtes
+BookingSchema.index({ 'customerInfo.email': 1, pickupDateTime: -1 });
+BookingSchema.index({ status: 1, pickupDateTime: -1 });
+BookingSchema.index({ assignedDriver: 1, pickupDateTime: -1 });
+
 // Middleware pre-save pour mettre à jour le champ updatedAt
 BookingSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
@@ -115,5 +143,68 @@ BookingSchema.pre('save', function(next) {
   
   next();
 });
+
+// Méthode pour formatter la réservation pour l'affichage
+BookingSchema.methods.toDisplayFormat = function() {
+  return {
+    id: this.bookingId,
+    _id: this._id,
+    status: this.status,
+    pickupAddress: this.pickupAddress,
+    dropoffAddress: this.dropoffAddress,
+    pickupDateTime: this.pickupDateTime,
+    returnDateTime: this.returnDateTime,
+    passengers: this.passengers,
+    luggage: this.luggage,
+    vehicleType: this.vehicleType,
+    roundTrip: this.roundTrip,
+    price: this.price,
+    customerInfo: this.customerInfo,
+    createdAt: this.createdAt,
+    flightNumber: this.flightNumber,
+    trainNumber: this.trainNumber,
+    specialRequests: this.specialRequests,
+    notes: this.notes,
+    adminNotes: this.adminNotes,
+    assignedDriver: this.assignedDriver
+  };
+};
+
+// Méthode statique pour obtenir les statistiques
+BookingSchema.statics.getStats = async function(filters = {}) {
+  const pipeline = [
+    { $match: filters },
+    {
+      $group: {
+        _id: '$status',
+        count: { $sum: 1 },
+        totalRevenue: { $sum: '$price.amount' }
+      }
+    }
+  ];
+  
+  return this.aggregate(pipeline);
+};
+
+// Méthode statique pour rechercher des réservations
+BookingSchema.statics.search = function(searchTerm, filters = {}) {
+  const searchRegex = new RegExp(searchTerm, 'i');
+  
+  const searchQuery = {
+    ...filters,
+    $or: [
+      { bookingId: searchRegex },
+      { 'customerInfo.name': searchRegex },
+      { 'customerInfo.email': searchRegex },
+      { 'customerInfo.phone': searchRegex },
+      { pickupAddress: searchRegex },
+      { dropoffAddress: searchRegex },
+      { flightNumber: searchRegex },
+      { trainNumber: searchRegex }
+    ]
+  };
+  
+  return this.find(searchQuery);
+};
 
 export default mongoose.models.Booking || mongoose.model('Booking', BookingSchema);

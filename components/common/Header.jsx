@@ -14,15 +14,15 @@ const Header = () => {
   const [prevScrollPos, setPrevScrollPos] = useState(0);
   const pathname = usePathname();
 
-  // Scroll handler with header hide/show functionality
+  // Scroll handler avec fonctionnalité hide/show
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollPos = window.pageYOffset;
       
-      // Determine if scrolling up or down
+      // Déterminer si on scroll vers le bas ou vers le haut
       const isScrollingDown = currentScrollPos > prevScrollPos;
       
-      // Visibility logic - hide header when scrolling down, show when scrolling up
+      // Logique de visibilité - cacher quand on scroll vers le bas, montrer vers le haut
       if (currentScrollPos > 100) {
         setVisible(!isScrollingDown);
         setScrolled(true);
@@ -41,21 +41,26 @@ const Header = () => {
   // Fermer le menu mobile lors du changement de page
   useEffect(() => {
     setMobileMenuOpen(false);
-    if (mobileMenuOpen) {
-      document.body.classList.remove('overflow-hidden');
-    }
-  }, [pathname, mobileMenuOpen]);
+    // Réactiver le scroll du body si nécessaire
+    document.body.classList.remove('overflow-hidden');
+  }, [pathname]);
 
   // Toggle mobile menu
   const toggleMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
     
-    // Prevent body scrolling when menu is open
+    // Empêcher le scroll du body quand le menu est ouvert
     if (!mobileMenuOpen) {
       document.body.classList.add('overflow-hidden');
     } else {
       document.body.classList.remove('overflow-hidden');
     }
+  };
+
+  // Fermer le menu mobile quand on clique sur un lien
+  const handleLinkClick = () => {
+    setMobileMenuOpen(false);
+    document.body.classList.remove('overflow-hidden');
   };
 
   return (
@@ -80,7 +85,7 @@ const Header = () => {
             </Link>
           </div>
 
-          {/* CTA Buttons */}
+          {/* CTA Buttons - Desktop */}
           <div className="flex items-center gap-3">
             <Link 
               href="/contact" 
@@ -98,9 +103,28 @@ const Header = () => {
               <span className="font-medium">Réserver maintenant</span>
             </Link>
             
-            {/* Mobile menu button */}
+            {/* Icônes mobiles - Contact et Réservation */}
+            <div className="flex md:hidden items-center gap-4">
+              <Link 
+                href="/contact" 
+                className="w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/15 transition-all flex items-center justify-center"
+                aria-label="Réservation téléphonique"
+              >
+                <i className="fas fa-phone text-sm"></i>
+              </Link>
+              
+              <Link 
+                href="/#booking" 
+                className="w-10 h-10 rounded-full bg-primary text-white hover:bg-primary-dark transition-all flex items-center justify-center shadow-md hover:shadow-lg"
+                aria-label="Réserver maintenant"
+              >
+                <i className="fas fa-calendar-alt text-sm"></i>
+              </Link>
+            </div>
+            
+            {/* Bouton hamburger mobile */}
             <button 
-              className="flex md:hidden flex-col justify-center items-center w-8 h-6 relative z-50"
+              className="flex md:hidden flex-col justify-center items-center w-8 h-6 relative z-50 ml-4"
               onClick={toggleMenu}
               aria-label="Menu principal"
               aria-expanded={mobileMenuOpen}
@@ -115,7 +139,7 @@ const Header = () => {
       </div>
       
       {/* Navbar Component */}
-      <Navbar mobileMenuOpen={mobileMenuOpen} onLinkClick={() => setMobileMenuOpen(false)} />
+      <Navbar mobileMenuOpen={mobileMenuOpen} onLinkClick={handleLinkClick} />
     </header>
   );
 };
