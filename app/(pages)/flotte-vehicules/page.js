@@ -9,7 +9,7 @@ import { useInView } from 'react-intersection-observer'
 
 // Images
 import teslaModel3 from '@/public/assets/images/tesla-model-3.webp'
-import mercedesClasseE from '@/public/assets/images/mercedes-classe-e.webp'
+import mercedesClasseE from '@/public/assets/images/mercedes-class-e.webp'
 mercedesClasseE
 import bmwSerie7 from '@/public/assets/images/bmw-7-series.webp'
 import mercedesVClass from '@/public/assets/images/mercedes-v-class.webp'
