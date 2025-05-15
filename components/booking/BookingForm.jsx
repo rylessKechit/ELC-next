@@ -56,6 +56,21 @@ const BookingForm = () => {
   const passengers = watch('passengers');
   const luggage = watch('luggage');
 
+  useEffect(() => {
+  // Diagnostic des variables d'environnement
+  console.log('🔍 === DIAGNOSTIC ENVIRONNEMENT ===');
+  console.log('NODE_ENV:', process.env.NODE_ENV);
+  console.log('NEXT_PUBLIC_GOOGLE_MAPS_API_KEY présente:', !!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY);
+  console.log('Longueur clé API:', process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY?.length);
+  
+  // Test de la configuration
+  if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
+    console.error('❌ Clé API Google Maps manquante côté client !');
+  } else {
+    console.log('✅ Clé API Google Maps configurée côté client');
+  }
+}, []);
+
   // Initialiser les champs de date et heure
   useEffect(() => {
     // Date de demain

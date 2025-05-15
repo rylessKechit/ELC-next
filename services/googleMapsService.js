@@ -1,18 +1,18 @@
-// services/googleMapsService.js - Version avec validation des inputs
+// services/googleMapsService.js - Version qui bypasse le proxy en production
 import axios from 'axios'
 
 export const googleMapsService = {
   /**
-   * Utilise l'API Next.js comme proxy pour éviter les problèmes CORS
+   * Version qui utilise toujours l'API directe (pas de proxy)
+   * Cela devrait fonctionner si votre clé API est bien configurée
    */
   async getRouteDetails(originPlaceId, destinationPlaceId) {
     try {
-      // VALIDATION DES INPUTS - CRUCIAL
+      // Validation des inputs
       if (!originPlaceId || !destinationPlaceId) {
         throw new Error('Les IDs de lieux d\'origine et de destination sont requis')
       }
 
-      // Vérifier que les Place IDs sont valides (pas juste des chaînes vides)
       if (typeof originPlaceId !== 'string' || originPlaceId.trim() === '') {
         throw new Error('ID du lieu d\'origine invalide')
       }
@@ -23,37 +23,49 @@ export const googleMapsService = {
 
       console.log('🚗 [GoogleMaps] Calcul de route:', { 
         originPlaceId: originPlaceId.substring(0, 20) + '...', 
-        destinationPlaceId: destinationPlaceId.substring(0, 20) + '...' 
+        destinationPlaceId: destinationPlaceId.substring(0, 20) + '...',
+        env: process.env.NODE_ENV
       })
 
-      // En production, utiliser l'API Next.js comme proxy
-      if (process.env.NODE_ENV === 'production') {
-        const response = await axios.post('/api/maps/route-details', {
-          originPlaceId,
-          destinationPlaceId
-        })
-
-        if (response.data && response.data.success) {
-          return response.data.data
-        } else {
-          throw new Error(response.data?.error || 'Erreur lors du calcul de route')
-        }
-      }
-
-      // Version directe pour le développement avec validation de la clé API
-      const apiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+      // CHANGEMENT : Toujours utiliser l'approche directe (même en production)
+      // Cela évitera les problèmes avec l'API proxy
+      
+      // Utiliser côté client avec NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+      
+      console.log('🔑 [GoogleMaps] Utilisation de la clé API client:', !!apiKey)
       
       if (!apiKey) {
+        console.error('❌ [GoogleMaps] Clé API manquante')
         throw new Error('Clé API Google Maps non configurée')
       }
 
-      console.log('🔑 [GoogleMaps] Utilisation de la clé API directe')
-
-      const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=place_id:${encodeURIComponent(originPlaceId)}&destinations=place_id:${encodeURIComponent(destinationPlaceId)}&mode=driving&language=fr&key=${apiKey}`
+      // Construire l'URL avec validation
+      const baseUrl = 'https://maps.googleapis.com/maps/api/distancematrix/json'
+      const params = new URLSearchParams({
+        origins: `place_id:${originPlaceId}`,
+        destinations: `place_id:${destinationPlaceId}`,
+        mode: 'driving',
+        language: 'fr',
+        key: apiKey
+      })
       
-      console.log('🌐 [GoogleMaps] URL construite (sans clé):', url.replace(apiKey, 'XXX'))
+      const url = `${baseUrl}?${params.toString()}`
+      console.log('🌐 [GoogleMaps] URL construite (longueur):', url.length)
 
-      const response = await axios.get(url)
+      // Faire l'appel direct
+      const response = await axios.get(url, {
+        timeout: 10000, // 10 secondes de timeout
+        headers: {
+          'Accept': 'application/json',
+        }
+      })
+
+      console.log('📥 [GoogleMaps] Réponse reçue:', {
+        status: response.data?.status,
+        hasRows: !!response.data?.rows,
+        firstElementStatus: response.data?.rows?.[0]?.elements?.[0]?.status
+      })
 
       if (
         response.data &&
@@ -66,9 +78,11 @@ export const googleMapsService = {
       ) {
         const result = response.data.rows[0].elements[0]
         
-        console.log('✅ [GoogleMaps] Route calculée:', {
+        console.log('✅ [GoogleMaps] Route calculée avec succès:', {
           distance: result.distance?.text,
-          duration: result.duration?.text
+          duration: result.duration?.text,
+          distanceValue: result.distance?.value,
+          durationValue: result.duration?.value
         })
         
         return {
@@ -78,22 +92,29 @@ export const googleMapsService = {
           destination: response.data.destination_addresses[0]
         }
       } else {
-        console.error('❌ [GoogleMaps] Réponse invalide:', response.data)
-        throw new Error(`Erreur API Google Maps: ${response.data.status}`)
+        console.error('❌ [GoogleMaps] Réponse API invalide:', {
+          status: response.data?.status,
+          error_message: response.data?.error_message
+        })
+        throw new Error(`Erreur API Google Maps: ${response.data?.status || 'Unknown'} - ${response.data?.error_message || ''}`)
       }
     } catch (error) {
-      console.error('❌ [GoogleMaps] Erreur:', error.message)
+      console.error('❌ [GoogleMaps] Erreur complète:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      })
+      
       // Fallback avec estimation
+      console.log('🔄 [GoogleMaps] Utilisation du fallback')
       return this.getFallbackRouteDetails(originPlaceId, destinationPlaceId)
     }
   },
 
   /**
-   * Fallback avec estimation raisonnable
+   * Fallback avec estimation
    */
   getFallbackRouteDetails(originPlaceId, destinationPlaceId) {
-    console.log('🔄 [GoogleMaps] Utilisation du fallback')
-    
     return {
       distance: {
         text: "25 km",
@@ -109,7 +130,7 @@ export const googleMapsService = {
   },
 
   /**
-   * Utilise l'API Next.js comme proxy pour les détails de lieu
+   * Pour les détails de lieu (si nécessaire)
    */
   async getPlaceDetails(placeId) {
     try {
@@ -117,18 +138,7 @@ export const googleMapsService = {
         throw new Error('L\'ID du lieu est requis')
       }
 
-      // En production, utiliser l'API Next.js comme proxy
-      if (process.env.NODE_ENV === 'production') {
-        const response = await axios.post('/api/maps/place-details', {
-          placeId
-        })
-
-        if (response.data && response.data.success) {
-          return response.data.data
-        }
-      }
-
-      // Fallback direct ou simulation
+      // Fallback simple pour les détails de lieu
       return {
         formatted_address: `Adresse pour l'ID ${placeId}`,
         geometry: {
