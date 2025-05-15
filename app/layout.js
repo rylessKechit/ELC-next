@@ -184,7 +184,7 @@ export default function RootLayout({ children }) {
               "name": "Elysian Luxury Chauffeurs",
               "image": "https://www.elysian-luxury-chauffeurs.com/assets/images/logo.webp",
               "url": "https://www.elysian-luxury-chauffeurs.com",
-              "telephone": "+33600000000",
+              "telephone": "+33643537653",
               "address": {
                 "@type": "PostalAddress",
                 "streetAddress": "123 Avenue des Champs",

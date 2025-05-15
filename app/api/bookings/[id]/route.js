@@ -165,7 +165,7 @@ export async function PUT(request, { params }) {
               </div>
               
               <p style="background-color: #fff3cd; padding: 10px; border-left: 4px solid #ffc107; margin: 15px 0;">
-                Pour toute question, veuillez nous contacter au <a href="tel:+33600000000">+33 6 00 00 00 00</a>.
+                Pour toute question, veuillez nous contacter au <a href="tel:+33643537653">+33 6 43 53 76 53</a>.
               </p>
               
               <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; text-align: center; color: #666; font-size: 14px;">

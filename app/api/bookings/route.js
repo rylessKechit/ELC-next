@@ -224,7 +224,7 @@ export async function POST(request) {
               </div>
               
               <div style="background-color: #f5f5f5; padding: 15px; text-align: center; font-size: 12px; color: #666;">
-                <p>Elysian Luxury Chauffeurs<br>123 Avenue des Champs, 91000 Évry-Courcouronnes<br>Tel: +33 6 00 00 00 00</p>
+                <p>Elysian Luxury Chauffeurs<br>123 Avenue des Champs, 91000 Évry-Courcouronnes<br>Tel: +33 6 43 53 76 53</p>
                 <p>© ${new Date().getFullYear()} Elysian Luxury Chauffeurs - Tous droits réservés</p>
               </div>
             </div>

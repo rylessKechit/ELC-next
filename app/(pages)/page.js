@@ -702,7 +702,7 @@ export default function HomePage() {
               <div className="bg-white p-6 rounded-lg shadow-md">
                 <h3 className="text-xl font-medium mb-3">Comment réserver un chauffeur à Longjumeau et dans l'Essonne ?</h3>
                 <p className="text-gray-600">
-                  Vous pouvez réserver un chauffeur pour Longjumeau et toute l'Essonne en quelques clics via notre formulaire en ligne, en appelant notre service client au 01 23 45 67 89 ou par email. Nos chauffeurs sont disponibles 24h/24 et 7j/7 dans tout le département 91.
+                  Vous pouvez réserver un chauffeur pour Longjumeau et toute l'Essonne en quelques clics via notre formulaire en ligne, en appelant notre service client au +33 6 43 53 76 53 ou par email. Nos chauffeurs sont disponibles 24h/24 et 7j/7 dans tout le département 91.
                 </p>
               </div>
               
@@ -749,7 +749,7 @@ export default function HomePage() {
               <Link href="/contact" className="btn btn-primary">
                 Nous contacter
               </Link>
-              <a href="tel:+33600000000" className="btn btn-outline text-white border-white hover:bg-white hover:text-secondary">
+              <a href="tel:+33643537653" className="btn btn-outline text-white border-white hover:bg-white hover:text-secondary">
                 <i className="fas fa-phone mr-2"></i>
                 Appeler directement
               </a>

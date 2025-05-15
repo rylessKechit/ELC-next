@@ -274,7 +274,7 @@ export const emailService = {
                                             <li><strong>Paiement :</strong> Payable directement au chauffeur (espèces, carte bancaire)</li>
                                             <li><strong>Annulation :</strong> Gratuite jusqu'à 24h avant le départ</li>
                                             <li><strong>Modification :</strong> Contactez-nous au plus vite si besoin</li>
-                                            <li><strong>Urgence :</strong> 01 23 45 67 89 (disponible 24h/24)</li>
+                                            <li><strong>Urgence :</strong> +33 6 43 53 76 53 (disponible 24h/24)</li>
                                         </ul>
                                     </td>
                                 </tr>
@@ -283,7 +283,7 @@ export const emailService = {
                             <p style="margin:20px 0;font-size:16px;line-height:1.5;color:#333">
                                 Pour toute question ou modification concernant votre réservation, n'hésitez pas à nous contacter par email à 
                                 <a href="mailto:contact@elysian-luxury-chauffeurs.com" style="color:#d4af37;text-decoration:none;font-weight:bold">contact@elysian-luxury-chauffeurs.com</a> 
-                                ou par téléphone au <strong style="color:#d4af37">01 23 45 67 89</strong>.
+                                ou par téléphone au <strong style="color:#d4af37">+33 6 43 53 76 53</strong>.
                             </p>
                             
                             <p style="margin:30px 0 0 0;font-size:16px;color:#333">
@@ -302,7 +302,7 @@ export const emailService = {
                                         <p style="margin:0 0 10px 0">
                                             <strong>Elysian Luxury Chauffeurs</strong><br>
                                             123 Avenue des Champs, 91000 Évry-Courcouronnes<br>
-                                            Tél: 01 23 45 67 89 | Email: contact@elysian-luxury-chauffeurs.com
+                                            Tél: +33 6 43 53 76 53 | Email: contact@elysian-luxury-chauffeurs.com
                                         </p>
                                         <p style="margin:0">
                                             © ${new Date().getFullYear()} Elysian Luxury Chauffeurs - Tous droits réservés
@@ -361,11 +361,11 @@ INFORMATIONS IMPORTANTES:
 - Paiement : Payable directement au chauffeur (espèces, carte bancaire)
 - Annulation : Gratuite jusqu'à 24h avant le départ
 - Modification : Contactez-nous au plus vite si besoin
-- Urgence : 01 23 45 67 89 (disponible 24h/24)
+- Urgence : +33 6 43 53 76 53 (disponible 24h/24)
 
 Pour toute question ou modification, contactez-nous :
 Email: contact@elysian-luxury-chauffeurs.com
-Téléphone: 01 23 45 67 89
+Téléphone: +33 6 43 53 76 53
 
 Nous vous remercions de votre confiance et vous souhaitons un excellent voyage !
 

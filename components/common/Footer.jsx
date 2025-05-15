@@ -30,7 +30,7 @@ const Footer = () => {
               <span className="mt-2 font-medium tracking-wide">ME TROUVER</span>
             </Link>
             
-            <Link href="tel:+33600000000" className="flex flex-col items-center group">
+            <Link href="tel:+33643537653" className="flex flex-col items-center group">
               <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-primary transition-all duration-300">
                 <i className="fas fa-phone text-lg"></i>
               </div>

@@ -45,10 +45,10 @@ export default function ContactPage() {
                     </div>
                     <div className="ml-4">
                       <h3 className="text-xl font-semibold text-gray-800 mb-2">Téléphone</h3>
-                      <p className="text-primary font-semibold text-lg">+33 (0)1 23 45 67 89</p>
+                      <p className="text-primary font-semibold text-lg">+33 6 43 53 76 53</p>
                       <p className="text-gray-600 text-sm mt-1">Disponible 7j/7, de 7h à 22h</p>
                       <a 
-                        href="tel:+33123456789" 
+                        href="tel:+33643537653" 
                         className="inline-flex items-center text-primary hover:text-primary-dark font-medium mt-3 transition-colors"
                       >
                         Appeler maintenant <i className="fas fa-phone ml-2"></i>
