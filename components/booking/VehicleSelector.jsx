@@ -1,4 +1,4 @@
-// components/booking/VehicleSelector.jsx
+// components/booking/VehicleSelector.jsx - Version corrigée
 "use client"
 
 import { useState } from 'react'
@@ -23,7 +23,7 @@ const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, lugg
     }
   }
 
-  if (vehicles.length === 0) {
+  if (!vehicles || vehicles.length === 0) {
     return (
       <div className="p-8 text-center bg-gray-50 rounded-lg">
         <p className="text-gray-500">Aucun véhicule disponible pour {passengers} passagers et {luggage} bagages.</p>
@@ -37,15 +37,21 @@ const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, lugg
   return (
     <div className="space-y-4">
       {vehicles.map((vehicle) => {
+        // Vérification de sécurité pour éviter les erreurs
+        if (!vehicle || !vehicle.estimate) {
+          console.warn('Véhicule ou estimation manquante:', vehicle);
+          return null;
+        }
+
         // Extraire les données du breakdown avec des valeurs par défaut
-        const breakdown = vehicle.estimate?.breakdown || {};
+        const breakdown = vehicle.estimate.breakdown || {};
         const baseFare = breakdown.baseFare || 0;
         const distanceCharge = breakdown.distanceCharge || 0;
         const pricePerKm = breakdown.pricePerKm || 0;
         const chargeableDistance = breakdown.chargeableDistance || breakdown.distanceInKm || 0;
         const actualDistance = breakdown.actualDistance || breakdown.distanceInKm || chargeableDistance;
-        const exactPrice = vehicle.estimate?.exactPrice || vehicle.price || 0;
-        const isRoundTrip = breakdown.roundTrip || false;
+        const exactPrice = vehicle.estimate.exactPrice || vehicle.price || 0;
+        const isRoundTrip = breakdown.roundTrip || false; // CORRECTION ICI
         
         return (
           <div key={vehicle.id} className="space-y-4">
@@ -72,11 +78,17 @@ const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, lugg
                 </div>
                 
                 <div className="md:flex-1 text-center md:text-left mb-4 md:mb-0">
-                  <h4 className="font-bold text-gray-800">{vehicle.name}</h4>
-                  <p className="text-sm text-gray-500">{vehicle.desc}</p>
+                  <h4 className="font-bold text-gray-800">{vehicle.name || 'Véhicule'}</h4>
+                  <p className="text-sm text-gray-500">{vehicle.desc || 'Description non disponible'}</p>
                   <div className="mt-2 flex flex-wrap gap-3 justify-center md:justify-start">
-                    <span className="text-xs text-gray-600"><i className="fas fa-users mr-1"></i> {vehicle.capacity}</span>
-                    <span className="text-xs text-gray-600"><i className="fas fa-suitcase mr-1"></i> {vehicle.luggage}</span>
+                    <span className="text-xs text-gray-600">
+                      <i className="fas fa-users mr-1"></i> 
+                      {vehicle.capacity || 'Non spécifié'}
+                    </span>
+                    <span className="text-xs text-gray-600">
+                      <i className="fas fa-suitcase mr-1"></i> 
+                      {vehicle.luggage || 'Non spécifié'}
+                    </span>
                   </div>
                 </div>
                 
@@ -139,8 +151,8 @@ const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, lugg
                 <div>
                   <h4 className="font-semibold text-gray-800 mb-3">Caractéristiques du véhicule</h4>
                   <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> {vehicle.capacity}</li>
-                    <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> {vehicle.luggage}</li>
+                    <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> {vehicle.capacity || 'Capacité non spécifiée'}</li>
+                    <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> {vehicle.luggage || 'Bagages non spécifiés'}</li>
                     <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Wifi gratuit à bord</li>
                     <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Bouteille d'eau offerte</li>
                     <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Sièges en cuir</li>

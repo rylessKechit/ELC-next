@@ -1,3 +1,4 @@
+// services/googleMapsService.js - Version avec validation des inputs
 import axios from 'axios'
 
 export const googleMapsService = {
@@ -6,9 +7,24 @@ export const googleMapsService = {
    */
   async getRouteDetails(originPlaceId, destinationPlaceId) {
     try {
+      // VALIDATION DES INPUTS - CRUCIAL
       if (!originPlaceId || !destinationPlaceId) {
         throw new Error('Les IDs de lieux d\'origine et de destination sont requis')
       }
+
+      // Vérifier que les Place IDs sont valides (pas juste des chaînes vides)
+      if (typeof originPlaceId !== 'string' || originPlaceId.trim() === '') {
+        throw new Error('ID du lieu d\'origine invalide')
+      }
+
+      if (typeof destinationPlaceId !== 'string' || destinationPlaceId.trim() === '') {
+        throw new Error('ID du lieu de destination invalide')
+      }
+
+      console.log('🚗 [GoogleMaps] Calcul de route:', { 
+        originPlaceId: originPlaceId.substring(0, 20) + '...', 
+        destinationPlaceId: destinationPlaceId.substring(0, 20) + '...' 
+      })
 
       // En production, utiliser l'API Next.js comme proxy
       if (process.env.NODE_ENV === 'production') {
@@ -24,16 +40,20 @@ export const googleMapsService = {
         }
       }
 
-      // Version directe pour le développement
+      // Version directe pour le développement avec validation de la clé API
       const apiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
       
       if (!apiKey) {
         throw new Error('Clé API Google Maps non configurée')
       }
 
-      const response = await axios.get(
-        `https://maps.googleapis.com/maps/api/distancematrix/json?origins=place_id:${originPlaceId}&destinations=place_id:${destinationPlaceId}&mode=driving&language=fr&key=${apiKey}`
-      )
+      console.log('🔑 [GoogleMaps] Utilisation de la clé API directe')
+
+      const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=place_id:${encodeURIComponent(originPlaceId)}&destinations=place_id:${encodeURIComponent(destinationPlaceId)}&mode=driving&language=fr&key=${apiKey}`
+      
+      console.log('🌐 [GoogleMaps] URL construite (sans clé):', url.replace(apiKey, 'XXX'))
+
+      const response = await axios.get(url)
 
       if (
         response.data &&
@@ -46,6 +66,11 @@ export const googleMapsService = {
       ) {
         const result = response.data.rows[0].elements[0]
         
+        console.log('✅ [GoogleMaps] Route calculée:', {
+          distance: result.distance?.text,
+          duration: result.duration?.text
+        })
+        
         return {
           distance: result.distance,
           duration: result.duration,
@@ -53,18 +78,22 @@ export const googleMapsService = {
           destination: response.data.destination_addresses[0]
         }
       } else {
+        console.error('❌ [GoogleMaps] Réponse invalide:', response.data)
         throw new Error(`Erreur API Google Maps: ${response.data.status}`)
       }
     } catch (error) {
+      console.error('❌ [GoogleMaps] Erreur:', error.message)
       // Fallback avec estimation
       return this.getFallbackRouteDetails(originPlaceId, destinationPlaceId)
     }
   },
 
   /**
-   * Fallback en cas d'erreur avec estimation raisonnable
+   * Fallback avec estimation raisonnable
    */
   getFallbackRouteDetails(originPlaceId, destinationPlaceId) {
+    console.log('🔄 [GoogleMaps] Utilisation du fallback')
+    
     return {
       distance: {
         text: "25 km",
@@ -111,6 +140,7 @@ export const googleMapsService = {
         name: `Lieu pour l'ID ${placeId}`
       }
     } catch (error) {
+      console.error('❌ [GoogleMaps] Erreur place details:', error)
       return {
         formatted_address: `Adresse simulée pour l'ID ${placeId}`,
         geometry: {
