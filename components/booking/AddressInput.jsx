@@ -1,4 +1,4 @@
-// components/booking/AddressInput.jsx
+// components/booking/AddressInput.jsx - Version propre
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
@@ -9,7 +9,6 @@ const AddressInput = ({ id, value, onChange, onSelect, placeholder }) => {
   const inputRef = useRef(null);
   const autocompleteRef = useRef(null);
   
-  // Initialiser l'API Google Maps uniquement lorsque l'input est focalisé
   useEffect(() => {
     const handleFocus = () => {
       if (!isLoaded && !isLoading) {
@@ -28,12 +27,9 @@ const AddressInput = ({ id, value, onChange, onSelect, placeholder }) => {
     };
   }, [isLoaded, isLoading]);
   
-  // Initialiser l'API Google Maps
   const loadGoogleMapsScript = () => {
-    // Variable pour suivre si le composant est toujours monté
     let isMounted = true;
     
-    // Vérifier si l'API est déjà chargée
     if (window.google && window.google.maps && window.google.maps.places) {
       if (isMounted) {
         setIsLoaded(true);
@@ -41,9 +37,7 @@ const AddressInput = ({ id, value, onChange, onSelect, placeholder }) => {
       return;
     }
     
-    // Vérifier si le script est déjà en cours de chargement
     if (window.googleMapsScriptLoading) {
-      // Attendre que le script soit chargé
       const checkLoaded = setInterval(() => {
         if (window.google && window.google.maps && window.google.maps.places) {
           clearInterval(checkLoaded);
@@ -55,10 +49,8 @@ const AddressInput = ({ id, value, onChange, onSelect, placeholder }) => {
       return;
     }
     
-    // Marquer le script comme en cours de chargement
     window.googleMapsScriptLoading = true;
     
-    // Créer une fonction de callback globale
     window.initGoogleMapsAutocomplete = () => {
       window.googleMapsScriptLoading = false;
       if (isMounted) {
@@ -66,18 +58,21 @@ const AddressInput = ({ id, value, onChange, onSelect, placeholder }) => {
       }
     };
     
-    // Charger le script
     setIsLoading(true);
     const script = document.createElement('script');
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-    // Charger uniquement les bibliothèques nécessaires
+    
+    if (!apiKey) {
+      setIsLoading(false);
+      return;
+    }
+    
     script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initGoogleMapsAutocomplete&loading=async`;
     script.async = true;
     script.defer = true;
     
     script.onerror = () => {
       if (isMounted) {
-        console.error('Erreur lors du chargement de l\'API Google Maps');
         setIsLoading(false);
       }
       window.googleMapsScriptLoading = false;
@@ -86,39 +81,38 @@ const AddressInput = ({ id, value, onChange, onSelect, placeholder }) => {
     document.head.appendChild(script);
   };
   
-  // Initialiser l'autocomplete quand l'API est chargée
   useEffect(() => {
     if (isLoaded && inputRef.current && !autocompleteRef.current) {
       try {
-        // Créer l'autocomplete
         autocompleteRef.current = new window.google.maps.places.Autocomplete(inputRef.current, {
           componentRestrictions: { country: 'fr' },
           fields: ['address_components', 'formatted_address', 'place_id', 'geometry']
         });
         
-        // Ajouter l'événement de sélection
         autocompleteRef.current.addListener('place_changed', () => {
           const place = autocompleteRef.current.getPlace();
-          if (place && place.place_id) {
-            onChange(place.formatted_address || '');
-            onSelect(place.formatted_address || '', place.place_id);
+          
+          if (place && place.place_id && place.formatted_address) {
+            onChange(place.formatted_address);
+            onSelect(place.formatted_address, place.place_id);
           }
         });
         
         setIsLoading(false);
       } catch (error) {
-        console.error('Erreur lors de l\'initialisation de l\'autocomplete:', error);
         setIsLoading(false);
       }
     }
-  }, [isLoaded, onChange, onSelect]);
+  }, [isLoaded, onChange, onSelect, id]);
   
-  // Réinitialisation de l'autocomplete si la valeur est effacée
   useEffect(() => {
     if (value === '' && inputRef.current) {
       inputRef.current.value = '';
+      if (onSelect) {
+        onSelect('', '');
+      }
     }
-  }, [value]);
+  }, [value, onSelect]);
 
   return (
     <div className="relative">
@@ -131,9 +125,16 @@ const AddressInput = ({ id, value, onChange, onSelect, placeholder }) => {
           ref={inputRef}
           type="text"
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => {
+            const newValue = e.target.value;
+            onChange(newValue);
+            if (newValue !== value && onSelect) {
+              onSelect(newValue, '');
+            }
+          }}
           placeholder={placeholder}
           className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+          autoComplete="address-line1"
         />
         {isLoading && (
           <div className="absolute inset-y-0 right-3 flex items-center">

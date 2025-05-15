@@ -163,7 +163,7 @@ export const emailService = {
                         <td style="padding:20px 40px">
                             <div style="background-color:#d4f7dc;border-left:4px solid #4CAF50;padding:15px;text-align:center">
                                 <h2 style="margin:0;color:#2e7d32;font-size:18px">
-                                    🎉 Excellente nouvelle ! Votre réservation est automatiquement confirmée et acceptée
+                                    🎉 Excellente nouvelle ! Votre réservation est automatiquement confirmée
                                 </h2>
                                 <p style="margin:10px 0 0 0;color:#2e7d32;font-weight:500">
                                     Un chauffeur professionnel a été assigné à votre course
@@ -180,7 +180,7 @@ export const emailService = {
                             </h2>
                             
                             <p style="margin:0 0 20px 0;font-size:16px;line-height:1.5;color:#333">
-                                Nous sommes ravis de vous informer que votre réservation a été <strong>immédiatement confirmée et acceptée</strong> ! 
+                                Nous sommes ravis de vous informer que votre réservation a été <strong>immédiatement confirmée</strong> ! 
                                 Aucune attente nécessaire, votre course est garantie.
                             </p>
                             
@@ -195,7 +195,7 @@ export const emailService = {
                                             </tr>
                                             <tr>
                                                 <td style="padding:5px 0;font-weight:bold;color:#333">Statut :</td>
-                                                <td style="padding:5px 0;color:#4CAF50;font-weight:bold">✅ CONFIRMÉE ET ACCEPTÉE</td>
+                                                <td style="padding:5px 0;color:#4CAF50;font-weight:bold">✅ CONFIRMÉE</td>
                                             </tr>
                                             <tr>
                                                 <td style="padding:5px 0;font-weight:bold;color:#333">Date et heure :</td>
@@ -325,19 +325,19 @@ export const emailService = {
 ELYSIAN LUXURY CHAUFFEURS
 ✅ RÉSERVATION CONFIRMÉE
 
-🎉 Excellente nouvelle ! Votre réservation est automatiquement confirmée et acceptée
+🎉 Excellente nouvelle ! Votre réservation est automatiquement confirmée
 Un chauffeur professionnel a été assigné à votre course
 
 Bonjour ${booking.customerName},
 
-Nous sommes ravis de vous informer que votre réservation a été IMMÉDIATEMENT CONFIRMÉE ET ACCEPTÉE !
+Nous sommes ravis de vous informer que votre réservation a été IMMÉDIATEMENT CONFIRMÉE !
 Aucune attente nécessaire, votre course est garantie.
 
 DÉTAILS DE VOTRE RÉSERVATION:
 ════════════════════════════════════════════
 
 Numéro de réservation : ${booking.bookingId}
-Statut : ✅ CONFIRMÉE ET ACCEPTÉE
+Statut : ✅ CONFIRMÉE
 Date et heure : ${formatDate(booking.pickupDateTime)}
 Départ : ${booking.pickupAddress}
 Arrivée : ${booking.dropoffAddress}

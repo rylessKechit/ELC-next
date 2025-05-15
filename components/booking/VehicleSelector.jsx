@@ -1,4 +1,4 @@
-// components/booking/VehicleSelector.jsx - Version corrigée
+// components/booking/VehicleSelector.jsx - Version propre
 "use client"
 
 import { useState } from 'react'
@@ -7,7 +7,6 @@ const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, lugg
   const [showDetails, setShowDetails] = useState(null)
   const formValues = { vehicleType: selectedVehicle };
 
-  // Fonction pour formater le prix
   const formatPrice = (price) => {
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
@@ -31,19 +30,15 @@ const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, lugg
     )
   }
 
-  // Déterminer le véhicule recommandé (généralement le premium)
   const recommendedVehicle = vehicles.find(v => v.id === 'premium')?.id || vehicles[0]?.id;
 
   return (
     <div className="space-y-4">
       {vehicles.map((vehicle) => {
-        // Vérification de sécurité pour éviter les erreurs
         if (!vehicle || !vehicle.estimate) {
-          console.warn('Véhicule ou estimation manquante:', vehicle);
           return null;
         }
 
-        // Extraire les données du breakdown avec des valeurs par défaut
         const breakdown = vehicle.estimate.breakdown || {};
         const baseFare = breakdown.baseFare || 0;
         const distanceCharge = breakdown.distanceCharge || 0;
@@ -51,7 +46,7 @@ const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, lugg
         const chargeableDistance = breakdown.chargeableDistance || breakdown.distanceInKm || 0;
         const actualDistance = breakdown.actualDistance || breakdown.distanceInKm || chargeableDistance;
         const exactPrice = vehicle.estimate.exactPrice || vehicle.price || 0;
-        const isRoundTrip = breakdown.roundTrip || false; // CORRECTION ICI
+        const isRoundTrip = breakdown.roundTrip || false;
         
         return (
           <div key={vehicle.id} className="space-y-4">
@@ -126,7 +121,6 @@ const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, lugg
                     <span>{formatPrice(distanceCharge)}</span>
                   </div>
                   
-                  {/* Afficher info sur distance minimale si applicable */}
                   {chargeableDistance > actualDistance && (
                     <div className="bg-blue-50 p-3 rounded text-sm text-blue-700">
                       <i className="fas fa-info-circle mr-2"></i>
@@ -134,7 +128,6 @@ const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, lugg
                     </div>
                   )}
                   
-                  {/* Afficher info aller-retour si applicable */}
                   {isRoundTrip && (
                     <div className="bg-green-50 p-3 rounded text-sm text-green-700">
                       <i className="fas fa-info-circle mr-2"></i>
@@ -199,7 +192,6 @@ const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, lugg
                       className="w-full py-2 px-4 bg-primary text-white font-medium rounded-md hover:bg-primary-dark transition-colors duration-300"
                       onClick={(e) => {
                         e.stopPropagation();
-                        // La fonction onSelect est déjà appelée lors du clic sur la div parente
                       }}
                     >
                       Véhicule sélectionné
