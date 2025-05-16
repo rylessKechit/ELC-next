@@ -4,26 +4,24 @@ import { getToken } from 'next-auth/jwt';
 export async function middleware(request) {
   const pathname = request.nextUrl.pathname;
   
-  // Ajouter des logs pour le débogage
-  console.log("Middleware exécuté pour le chemin:", pathname);
+  // Ne pas appliquer le middleware aux ressources statiques
+  if (pathname.startsWith('/_next') || pathname.startsWith('/api/auth') || pathname.includes('.')) {
+    return NextResponse.next();
+  }
   
   // Vérifier si la page est une page d'administration
   if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
     try {
-      console.log("Vérification du token pour l'accès à l'administration");
       const token = await getToken({ 
         req: request, 
-        secret: process.env.NEXTAUTH_SECRET || "un-secret-temporaire-pour-dev"
+        secret: process.env.NEXTAUTH_SECRET
       });
-      
-      console.log("Token obtenu:", token ? "Oui" : "Non");
       
       // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
       if (!token) {
-        console.log("Utilisateur non autorisé, redirection vers /admin/login");
         const url = new URL('/admin/login', request.url);
-        // Ajouter l'URL de redirection pour revenir à la page d'origine après la connexion
-        url.searchParams.set('callbackUrl', encodeURI(request.url));
+        // Ajouter l'URL de redirection SANS encoder doublement
+        url.searchParams.set('callbackUrl', request.url);
         return NextResponse.redirect(url);
       }
       
@@ -32,7 +30,6 @@ export async function middleware(request) {
         pathname.startsWith('/admin/users') || 
         pathname.startsWith('/admin/settings')
       )) {
-        console.log("Chauffeur tente d'accéder à une page admin, redirection vers /admin/dashboard");
         // Rediriger vers le tableau de bord
         return NextResponse.redirect(new URL('/admin/dashboard', request.url));
       }
@@ -44,13 +41,20 @@ export async function middleware(request) {
   }
 
   // Si tout est en ordre, continuer
-  console.log("Accès autorisé pour:", pathname);
   return NextResponse.next();
 }
 
 // Ne pas appliquer le middleware à ces chemins
 export const config = {
   matcher: [
-    '/admin/:path*',
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api/auth (NextAuth.js routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - robots.txt, sitemap.xml, etc.
+     */
+    '/((?!api/auth|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)',
   ],
 };
