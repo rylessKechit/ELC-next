@@ -1,26 +1,21 @@
+// components/common/FontLoader.jsx - Version simplifiée pour Next.js
 "use client";
 
 import { useEffect } from 'react';
 
 export default function FontLoader() {
   useEffect(() => {
-    // Fonction pour optimiser le chargement des polices
-    const optimizeFontLoading = () => {
-      // Vérifier si la police a déjà été chargée
-      if (document.fonts && document.fonts.check('1em Montserrat') && document.fonts.check('1em "Playfair Display"')) {
-        document.documentElement.classList.add('fonts-loaded');
-        return;
-      }
-
-      // Ajouter un écouteur pour savoir quand les polices sont chargées
+    // Marquer les polices comme chargées
+    // (Next.js gère automatiquement le chargement des polices)
+    if (document.fonts) {
       document.fonts.ready.then(() => {
         document.documentElement.classList.add('fonts-loaded');
       });
-    };
-
-    optimizeFontLoading();
+    } else {
+      // Fallback pour les anciens navigateurs
+      document.documentElement.classList.add('fonts-loaded');
+    }
   }, []);
 
-  // Ce composant ne rend rien
   return null;
 }

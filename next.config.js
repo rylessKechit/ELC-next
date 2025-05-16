@@ -1,15 +1,24 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  experimental: {
+    optimizeCss: true,
+    scrollRestoration: true,
+  },
+  
+  // Configuration des images
   images: {
     domains: ['example.com'],
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60,
   },
+  
+  // Variables d'environnement publiques
   env: {
-    GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
+    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   },
-  // Configuration spécifique pour la production
+  
+  // Headers pour la sécurité et CORS
   async headers() {
     return [
       {
@@ -23,19 +32,18 @@ const nextConfig = {
       },
     ]
   },
+  
+  // Configuration API
   api: {
     bodyParser: {
       sizeLimit: '1mb',
     },
     responseLimit: '8mb',
   },
-  experimental: {
-    optimizeCss: true,
-    scrollRestoration: true,
-  },
-  poweredByHeader: false,
-  productionBrowserSourceMaps: false,
+  
+  // Optimisations webpack pour la production
   webpack: (config, { dev, isServer }) => {
+    // Optimisations pour la production uniquement
     if (!dev && !isServer) {
       config.optimization.splitChunks.cacheGroups = {
         ...config.optimization.splitChunks.cacheGroups,
@@ -49,6 +57,12 @@ const nextConfig = {
     }
     return config;
   },
+  
+  // Désactiver le header "X-Powered-By"
+  poweredByHeader: false,
+  
+  // Désactiver les source maps en production pour la sécurité
+  productionBrowserSourceMaps: false,
 }
 
 module.exports = nextConfig

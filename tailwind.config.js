@@ -10,26 +10,27 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#d4af37', // Or élégant - couleur d'origine d'ELC
-          dark: '#b8860b',    // Or foncé - couleur d'origine d'ELC
-          light: '#f1e5ac',   // Or clair - couleur d'origine d'ELC
+          DEFAULT: '#d4af37',
+          dark: '#b8860b',
+          light: '#f1e5ac',
         },
         secondary: {
-          DEFAULT: '#1c2938', // Bleu profond - couleur d'origine d'ELC
-          dark: '#141e2a',    // Version plus foncée pour les hovers
+          DEFAULT: '#1c2938',
+          dark: '#141e2a',
         },
-        tertiary: '#242424',  // Noir légèrement plus clair pour contraste
-        dark: '#1c2938',      // Base du header/footer - même que secondary
-        light: '#f8f9fa',     // Couleur pour sections alternées
+        tertiary: '#242424',
+        dark: '#1c2938',
+        light: '#f8f9fa',
         "text-dark": '#333333',
         "text-light": '#666666',
       },
       fontFamily: {
-        primary: ['Montserrat', 'sans-serif'],
-        secondary: ['Playfair Display', 'serif'],
-        tertiary: ['Cormorant Garamond', 'serif'],
-        sans: ['Montserrat', 'system-ui', 'sans-serif'],
-        serif: ['Playfair Display', 'Georgia', 'serif'],
+        // Utiliser les variables CSS des polices Next.js
+        primary: ['var(--font-montserrat)', 'sans-serif'],
+        secondary: ['var(--font-playfair)', 'serif'],
+        tertiary: ['var(--font-cormorant)', 'serif'], // Si vous l'ajoutez plus tard
+        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        serif: ['var(--font-playfair)', 'Georgia', 'serif'],
       },
       boxShadow: {
         'sm': '0 2px 4px rgba(0, 0, 0, 0.08)',
