@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { signIn, getSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 export default function AdminLogin() {
@@ -12,27 +12,47 @@ export default function AdminLogin() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  
   const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  // Obtenir l'URL de callback
+  const callbackUrl = searchParams.get('callbackUrl') || '/admin/dashboard';
 
   // Vérifier si l'utilisateur est déjà connecté
   useEffect(() => {
-    const checkSession = async () => {
-      const session = await getSession();
-      if (session) {
-        router.push('/admin/dashboard');
+    const checkExistingAuth = async () => {
+      try {
+        setIsCheckingAuth(true);
+        const session = await getSession();
+        
+        if (session && session.user) {
+          console.log('Utilisateur déjà connecté, redirection vers:', callbackUrl);
+          router.replace(callbackUrl);
+          return;
+        }
+      } catch (error) {
+        console.error('Erreur lors de la vérification de session:', error);
+      } finally {
+        setIsCheckingAuth(false);
       }
     };
-    checkSession();
-  }, [router]);
+    
+    checkExistingAuth();
+  }, [callbackUrl, router]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setCredentials({
-      ...credentials,
+    setCredentials(prev => ({
+      ...prev,
       [name]: value,
-    });
+    }));
+    
     // Effacer l'erreur quand l'utilisateur tape
-    if (error) setError('');
+    if (error) {
+      setError('');
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -48,29 +68,59 @@ export default function AdminLogin() {
     
     try {
       console.log('Tentative de connexion avec:', credentials.email);
+      console.log('CallbackUrl:', callbackUrl);
       
       const result = await signIn('credentials', {
-        email: credentials.email,
+        email: credentials.email.trim(),
         password: credentials.password,
-        redirect: false,
+        redirect: false, // Important: ne pas rediriger automatiquement
       });
       
-      console.log('Résultat de connexion:', result);
+      console.log('Résultat de la connexion:', result);
       
       if (result?.error) {
         console.error('Erreur de connexion:', result.error);
-        setError(`Échec de connexion. Vérifiez vos identifiants.`);
+        setError('Identifiants incorrects. Veuillez vérifier votre email et mot de passe.');
         setLoading(false);
       } else if (result?.ok) {
-        console.log('Connexion réussie, redirection...');
-        router.push('/admin/dashboard');
+        console.log('Connexion réussie, vérification de la session...');
+        
+        // Attendre un peu et vérifier la session
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        const session = await getSession();
+        console.log('Session après connexion:', session);
+        
+        if (session && session.user) {
+          console.log('Session confirmée, redirection vers:', callbackUrl);
+          // Force le rechargement de la page de destination
+          window.location.href = callbackUrl;
+        } else {
+          setError('Erreur lors de la création de la session. Veuillez réessayer.');
+          setLoading(false);
+        }
+      } else {
+        setError('Une erreur inattendue est survenue. Veuillez réessayer.');
+        setLoading(false);
       }
     } catch (error) {
-      console.error('Erreur lors de la connexion:', error);
-      setError('Une erreur est survenue lors de la connexion. Veuillez réessayer.');
+      console.error('Exception lors de la connexion:', error);
+      setError('Une erreur de connexion est survenue. Vérifiez votre connexion internet et réessayez.');
       setLoading(false);
     }
   };
+
+  // État de chargement initial
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-gray-600">Vérification de la session...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
@@ -88,6 +138,14 @@ export default function AdminLogin() {
             Connectez-vous pour accéder au système
           </p>
         </div>
+        
+        {/* Debug info en développement */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="bg-blue-50 border border-blue-200 rounded p-3 text-xs">
+            <p><strong>CallbackUrl:</strong> {callbackUrl}</p>
+            <p><strong>Mode:</strong> {process.env.NODE_ENV}</p>
+          </div>
+        )}
         
         {error && (
           <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
