@@ -1,5 +1,6 @@
+// src/models/User.js
 import mongoose from 'mongoose';
-import { hash, compare } from 'bcrypt';
+import bcrypt from 'bcrypt';
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -10,7 +11,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    lowercase: true, // Attention: ne touche pas au mot de passe!
+    lowercase: true,
   },
   password: {
     type: String,
@@ -23,32 +24,12 @@ const UserSchema = new mongoose.Schema({
   role: {
     type: String,
     enum: ['admin', 'driver'],
-    default: 'driver',
+    default: 'admin',
   },
   status: {
     type: String,
     enum: ['active', 'inactive'],
     default: 'active',
-  },
-  driverInfo: {
-    licenseNumber: String,
-    vehicleInfo: {
-      make: String,
-      model: String,
-      year: Number,
-      licensePlate: String,
-      color: String,
-    },
-    availability: {
-      type: [{ 
-        date: Date, 
-        slots: [{ 
-          start: String, 
-          end: String 
-        }] 
-      }],
-      default: [],
-    },
   },
   lastLogin: {
     type: Date,
@@ -65,16 +46,14 @@ const UserSchema = new mongoose.Schema({
 
 // Middleware pré-sauvegarde pour hacher le mot de passe
 UserSchema.pre('save', async function(next) {
-  // Mettre à jour la date de modification
   this.updatedAt = Date.now();
   
   // Hacher le mot de passe uniquement s'il a été modifié ou est nouveau
   if (!this.isModified('password')) return next();
   
   try {
-    // Utiliser un salt de 10 (recommandé)
-    const salt = 10;
-    this.password = await hash(this.password, salt);
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
     next();
   } catch (error) {
     next(error);
@@ -83,13 +62,7 @@ UserSchema.pre('save', async function(next) {
 
 // Méthode pour comparer les mots de passe
 UserSchema.methods.comparePassword = async function(candidatePassword) {
-  try {
-    return await compare(candidatePassword, this.password);
-  } catch (error) {
-    console.error("Erreur lors de la comparaison des mots de passe:", error);
-    throw error;
-  }
+  return bcrypt.compare(candidatePassword, this.password);
 };
 
-// Définir le modèle uniquement s'il n'existe pas déjà
 export default mongoose.models.User || mongoose.model('User', UserSchema);
