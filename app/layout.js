@@ -32,7 +32,7 @@ export const metadata = {
     type: 'website',
     images: [
       {
-        url: 'https://www.elysian-luxury-chauffeurs.com/images/og-image.webp', 
+        url: 'https://www.elysian-luxury-chauffeurs.com/assets/images/vip-customized-service.webp', 
         width: 1200,
         height: 630,
         alt: 'Elysian Luxury Chauffeurs',
