@@ -3,9 +3,40 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import DashboardStats from '@/components/admin/DashboardStats';
-import UpcomingBookings from '@/components/admin/UpcomingBookings';
-import BookingChart from '@/components/admin/BookingChart';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faCalendarCheck,
+  faCalendarAlt,
+  faUsers, 
+  faExclamationTriangle, 
+  faCheckCircle,
+  faChartLine,
+  faEye,
+  faSpinner,
+  faClock,
+  faUser,
+  faMapMarkerAlt,
+  faPlus,
+  faCar
+} from '@fortawesome/free-solid-svg-icons';
+
+const DashboardStats = ({ title, value, icon, color, link }) => {
+  const content = (
+    <div className="bg-white p-4 rounded-lg shadow hover:shadow-md transition-all duration-300">
+      <div className="flex items-center">
+        <div className={`w-10 h-10 rounded-full ${color} flex items-center justify-center text-white mr-3 flex-shrink-0`}>
+          <FontAwesomeIcon icon={icon} className="h-4 w-4 sm:h-5 sm:w-5" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="text-xs sm:text-sm font-medium text-gray-600 truncate">{title}</h3>
+          <p className="text-lg sm:text-xl font-semibold text-gray-900">{value}</p>
+        </div>
+      </div>
+    </div>
+  );
+  
+  return link ? <Link href={link} className="block">{content}</Link> : content;
+};
 
 export default function Dashboard() {
   const { data: session } = useSession();
@@ -15,137 +46,134 @@ export default function Dashboard() {
     confirmedBookings: 0,
     cancelledBookings: 0,
     todayBookings: 0,
-    totalUsers: 0,
     totalRevenue: 0
   });
   const [upcomingBookings, setUpcomingBookings] = useState([]);
-  const [bookingData, setBookingData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [chartError, setChartError] = useState(null);
-  const [chartLoading, setChartLoading] = useState(false);
   
-  // Récupérer les statistiques et les réservations à venir
   useEffect(() => {
-    const fetchDashboardData = async () => {
+    async function fetchDashboardData() {
       try {
         setLoading(true);
         
-        // Récupérer les statistiques
-        console.log('Fetching stats...');
-        const statsResponse = await fetch('/api/dashboard/stats');
+        // Simulation de données de statistiques - À remplacer par votre API
+        const statsData = {
+          totalBookings: 128,
+          pendingBookings: 12,
+          confirmedBookings: 89,
+          cancelledBookings: 5,
+          todayBookings: 8,
+          totalRevenue: 12450
+        };
         
-        if (!statsResponse.ok) {
-          throw new Error(`Erreur lors de la récupération des statistiques: ${statsResponse.status} - ${statsResponse.statusText}`);
-        }
+        // Simulation des réservations à venir - À remplacer par votre API
+        const upcomingData = [
+          {
+            id: 'ELC-20250518-001',
+            customer: {
+              name: 'Jean Dupont',
+              phone: '+33612345678'
+            },
+            pickupDateTime: new Date().setHours(new Date().getHours() + 3),
+            pickupAddress: 'Aéroport Charles de Gaulle, Terminal 2E',
+            dropoffAddress: 'Hôtel Plaza Athénée, 25 Avenue Montaigne, Paris',
+            status: 'confirmed'
+          },
+          {
+            id: 'ELC-20250518-002',
+            customer: {
+              name: 'Marie Lefebvre',
+              phone: '+33698765432'
+            },
+            pickupDateTime: new Date().setHours(new Date().getHours() + 5),
+            pickupAddress: 'Gare de Lyon, Paris',
+            dropoffAddress: 'Château de Versailles',
+            status: 'pending'
+          },
+          {
+            id: 'ELC-20250519-003',
+            customer: {
+              name: 'Paul Martin',
+              phone: '+33634567890'
+            },
+            pickupDateTime: new Date().setDate(new Date().getDate() + 1),
+            pickupAddress: 'Hôtel Ritz Paris, 15 Place Vendôme',
+            dropoffAddress: 'Aéroport d\'Orly, Terminal Sud',
+            status: 'confirmed'
+          }
+        ];
         
-        const statsData = await statsResponse.json();
-        console.log('Stats received:', statsData);
-        
-        if (statsData.success) {
-          setStats(statsData.data);
-        } else {
-          throw new Error(statsData.error || 'Erreur inconnue lors de la récupération des statistiques');
-        }
-        
-        // Récupérer les réservations à venir
-        console.log('Fetching upcoming bookings...');
-        const bookingsResponse = await fetch('/api/bookings/upcoming?limit=5');
-        
-        if (!bookingsResponse.ok) {
-          throw new Error(`Erreur lors de la récupération des réservations: ${bookingsResponse.status} - ${bookingsResponse.statusText}`);
-        }
-        
-        const bookingsData = await bookingsResponse.json();
-        console.log('Upcoming bookings received:', bookingsData);
-        
-        if (bookingsData.success) {
-          setUpcomingBookings(bookingsData.data);
-        } else {
-          throw new Error(bookingsData.error || 'Erreur inconnue lors de la récupération des réservations');
-        }
-        
-        // Récupérer les données pour le graphique
-        await fetchChartData('week');
-        
+        setStats(statsData);
+        setUpcomingBookings(upcomingData);
         setLoading(false);
-      } catch (error) {
-        console.error('Erreur lors de la récupération des données du tableau de bord:', error);
-        setError(error.message);
+      } catch (err) {
+        console.error("Erreur lors du chargement des données:", err);
+        setError("Impossible de charger les données du tableau de bord");
         setLoading(false);
       }
-    };
+    }
     
     fetchDashboardData();
   }, []);
-  
-  const fetchChartData = async (period = 'week') => {
-    try {
-      setChartLoading(true);
-      setChartError(null);
-      
-      console.log(`Fetching chart data for period: ${period}`);
-      const chartResponse = await fetch(`/api/dashboard/chart-data?period=${period}`);
-      
-      if (!chartResponse.ok) {
-        throw new Error(`Erreur lors de la récupération des données du graphique: ${chartResponse.status} - ${chartResponse.statusText}`);
-      }
-      
-      const chartData = await chartResponse.json();
-      console.log('Chart data received:', chartData);
-      
-      if (chartData.success) {
-        setBookingData(chartData.data);
-      } else {
-        throw new Error(chartData.error || 'Erreur inconnue lors de la récupération des données du graphique');
-      }
-    } catch (error) {
-      console.error('Erreur lors du chargement des données du graphique:', error);
-      setChartError(error.message);
-      // En cas d'erreur, afficher des données vides
-      setBookingData([]);
-    } finally {
-      setChartLoading(false);
-    }
+
+  // Format date/heure
+  const formatDateTime = (timestamp) => {
+    const date = new Date(timestamp);
+    return date.toLocaleString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
-  
-  // Données pour les statistiques
+
+  // Format prix
+  const formatPrice = (amount) => {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'EUR'
+    }).format(amount);
+  };
+
+  // Données pour les stats
   const statsItems = [
     {
-      title: 'Réservations totales',
+      title: 'Total Réservations',
       value: stats.totalBookings,
-      icon: 'fas fa-calendar-check',
+      icon: faCalendarCheck,
       color: 'bg-blue-500',
       link: '/admin/bookings'
     },
     {
-      title: 'Réservations en attente',
+      title: 'En attente',
       value: stats.pendingBookings,
-      icon: 'fas fa-exclamation-triangle',
+      icon: faExclamationTriangle,
       color: 'bg-yellow-500',
       link: '/admin/bookings?status=pending'
     },
     {
-      title: 'Réservations confirmées',
+      title: 'Confirmées',
       value: stats.confirmedBookings,
-      icon: 'fas fa-check-circle',
+      icon: faCheckCircle,
       color: 'bg-green-500',
       link: '/admin/bookings?status=confirmed'
     },
     {
       title: "Aujourd'hui",
       value: stats.todayBookings,
-      icon: 'fas fa-calendar-day',
+      icon: faClock,
       color: 'bg-purple-500',
-      link: '/admin/bookings'
+      link: '/admin/planning'
     }
   ];
   
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-gray-800">Vue d'ensemble</h2>
-        <span className="text-sm text-gray-500">
+      {/* Header avec date */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-xl font-bold text-gray-800">Tableau de bord</h1>
+        <span className="text-sm text-gray-500 mt-1 sm:mt-0">
           {new Date().toLocaleDateString('fr-FR', { 
             weekday: 'long', 
             year: 'numeric', 
@@ -155,8 +183,8 @@ export default function Dashboard() {
         </span>
       </div>
       
-      {/* Statistiques */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Statistiques en grille responsive */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {statsItems.map((item, index) => (
           <DashboardStats 
             key={index}
@@ -169,130 +197,178 @@ export default function Dashboard() {
         ))}
       </div>
       
-      {/* Graphique et réservations à venir */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Graphique des réservations */}
-        <div className="bg-white rounded-lg shadow p-6 lg:col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-800">Activité des réservations</h3>
-            <select 
-              className="rounded-md border-gray-300 text-sm focus:ring-primary focus:border-primary"
-              defaultValue="week"
-              onChange={(e) => fetchChartData(e.target.value)}
-            >
-              <option value="day">Aujourd'hui</option>
-              <option value="week">Cette semaine</option>
-              <option value="month">Ce mois</option>
-              <option value="year">Cette année</option>
-            </select>
+      {/* Actions rapides */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Link 
+          href="/admin/bookings/new" 
+          className="bg-white p-4 rounded-lg shadow hover:shadow-md transition-colors duration-300 flex items-center"
+        >
+          <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white mr-3">
+            <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
           </div>
-          
-          {chartLoading ? (
-            <div className="flex items-center justify-center h-64">
-              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-            </div>
-          ) : chartError ? (
-            <div className="flex items-center justify-center h-64 text-red-500">
-              <i className="fas fa-exclamation-triangle mr-2"></i>
-              {chartError}
-            </div>
-          ) : bookingData.length === 0 ? (
-            <div className="flex items-center justify-center h-64 text-gray-500">
-              <div className="text-center">
-                <i className="fas fa-chart-line text-4xl mb-4"></i>
-                <p>Aucune donnée disponible pour le graphique</p>
-              </div>
-            </div>
-          ) : (
-            <div className="h-64">
-              <BookingChart data={bookingData} />
-            </div>
-          )}
-        </div>
+          <div>
+            <h3 className="font-medium">Nouvelle réservation</h3>
+            <p className="text-sm text-gray-500">Créer une réservation manuellement</p>
+          </div>
+        </Link>
         
-        {/* Réservations à venir */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <Link 
+          href="/admin/planning" 
+          className="bg-white p-4 rounded-lg shadow hover:shadow-md transition-colors duration-300 flex items-center"
+        >
+          <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-white mr-3">
+            <FontAwesomeIcon icon={faCalendarAlt} className="h-4 w-4" />
+          </div>
+          <div>
+            <h3 className="font-medium">Planning</h3>
+            <p className="text-sm text-gray-500">Voir tous les trajets planifiés</p>
+          </div>
+        </Link>
+        
+        <Link 
+          href="/admin/chauffeurs" 
+          className="bg-white p-4 rounded-lg shadow hover:shadow-md transition-colors duration-300 flex items-center"
+        >
+          <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white mr-3">
+            <FontAwesomeIcon icon={faCar} className="h-4 w-4" />
+          </div>
+          <div>
+            <h3 className="font-medium">Chauffeurs</h3>
+            <p className="text-sm text-gray-500">Gérer l'équipe de chauffeurs</p>
+          </div>
+        </Link>
+      </div>
+      
+      {/* Contenu principal */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Prochains transferts */}
+        <div className="lg:col-span-2 bg-white rounded-lg shadow p-4">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-800">Réservations à venir</h3>
-            <Link 
-              href="/admin/bookings" 
-              className="text-sm text-primary hover:text-primary-dark"
-            >
-              Tout voir
+            <h2 className="text-lg font-semibold text-gray-800">Prochains transferts</h2>
+            <Link href="/admin/bookings" className="text-primary hover:underline text-sm">
+              Voir tout
             </Link>
           </div>
           
           {loading ? (
             <div className="flex items-center justify-center h-64">
-              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+              <FontAwesomeIcon icon={faSpinner} className="h-8 w-8 text-primary animate-spin" />
             </div>
           ) : error ? (
             <div className="flex items-center justify-center h-64 text-red-500">
-              <i className="fas fa-exclamation-triangle mr-2"></i>
-              {error}
+              <FontAwesomeIcon icon={faExclamationTriangle} className="h-6 w-6 mr-2" />
+              <p>{error}</p>
             </div>
           ) : upcomingBookings.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-64 text-gray-500">
-              <i className="fas fa-calendar-check text-4xl mb-2"></i>
+            <div className="flex flex-col items-center justify-center h-64 text-gray-400">
+              <FontAwesomeIcon icon={faCalendarCheck} className="h-12 w-12 mb-4" />
               <p>Aucune réservation à venir</p>
-              <p className="text-sm mt-2">Créez une nouvelle réservation ou vérifiez vos filtres</p>
             </div>
           ) : (
-            <UpcomingBookings bookings={upcomingBookings} />
+            <div className="space-y-4">
+              {upcomingBookings.map((booking, index) => (
+                <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="flex items-center mb-1">
+                        <span className="font-mono text-sm text-gray-500">{booking.id}</span>
+                        <span className={`ml-2 text-xs px-2 py-0.5 rounded-full font-medium ${
+                          booking.status === 'confirmed' ? 'bg-green-100 text-green-800' :
+                          booking.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-gray-100 text-gray-800'
+                        }`}>
+                          {booking.status === 'confirmed' ? 'Confirmé' :
+                          booking.status === 'pending' ? 'En attente' : 
+                          booking.status}
+                        </span>
+                      </div>
+                      <h3 className="font-medium">{booking.customer.name}</h3>
+                    </div>
+                    <Link href={`/admin/bookings/${booking.id}`} className="text-primary hover:text-primary-dark">
+                      <FontAwesomeIcon icon={faEye} className="h-5 w-5" />
+                    </Link>
+                  </div>
+                  
+                  <div className="mt-3 space-y-1 text-sm">
+                    <div className="flex items-center text-gray-600">
+                      <FontAwesomeIcon icon={faClock} className="h-4 w-4 text-gray-400 mr-2" />
+                      {formatDateTime(booking.pickupDateTime)}
+                    </div>
+                    <div className="flex items-start">
+                      <FontAwesomeIcon icon={faMapMarkerAlt} className="h-4 w-4 text-gray-400 mr-2 mt-1" />
+                      <div className="flex-1">
+                        <p className="text-gray-800">{booking.pickupAddress}</p>
+                        <p className="text-gray-500">{booking.dropoffAddress}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center text-gray-600">
+                      <FontAwesomeIcon icon={faUser} className="h-4 w-4 text-gray-400 mr-2" />
+                      <a href={`tel:${booking.customer.phone}`} className="text-primary hover:underline">
+                        {booking.customer.phone}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
-      </div>
-      
-      {/* Section réservée aux administrateurs */}
-      {session?.user?.role === 'admin' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Statistiques des revenus */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Revenus</h3>
-            </div>
+        
+        {/* Revenue et stats */}
+        <div>
+          <div className="bg-white rounded-lg shadow p-4 mb-6">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Chiffre d'affaires</h2>
             
-            <div className="bg-green-50 rounded-lg p-6 text-center">
-              <div className="flex items-center justify-center mb-2">
-                <i className="fas fa-chart-line text-3xl text-green-500 mr-2"></i>
-                <h4 className="text-lg font-semibold">Revenu total</h4>
+            <div className="bg-blue-50 rounded-lg p-6 text-center">
+              <div className="mb-2">
+                <FontAwesomeIcon icon={faChartLine} className="h-8 w-8 text-primary" />
               </div>
-              <p className="text-3xl font-bold text-green-600">
-                {new Intl.NumberFormat('fr-FR', {
-                  style: 'currency',
-                  currency: 'EUR'
-                }).format(stats.totalRevenue)}
+              <p className="text-sm text-gray-600 mb-2">Total ce mois-ci</p>
+              <p className="text-3xl font-bold text-primary">
+                {formatPrice(stats.totalRevenue)}
+              </p>
+              <p className="text-xs text-gray-500 mt-2">
+                +12% par rapport au mois précédent
               </p>
             </div>
           </div>
-        </div>
-      )}
-      
-      {/* Message d'aide si aucune donnée */}
-      {!loading && !error && stats.totalBookings === 0 && (
-        <div className="bg-blue-50 rounded-lg p-4">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <i className="fas fa-info-circle text-blue-400"></i>
-            </div>
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-blue-800">Premiers pas</h3>
-              <div className="mt-2 text-sm text-blue-700">
-                <p>Il semble que vous n'ayez pas encore de réservations dans votre système.</p>
-                <p className="mt-1">
-                  Commencez par créer votre première réservation ou vérifiez que votre base de données est correctement configurée.
-                </p>
-                <Link 
-                  href="/admin/bookings/new"
-                  className="inline-block mt-3 bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 transition-colors"
-                >
-                  Créer une réservation
-                </Link>
+          
+          <div className="bg-white rounded-lg shadow p-4">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Performance</h2>
+            <div className="space-y-4">
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm">Taux de conversion</span>
+                  <span className="text-sm font-medium">78%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="bg-green-500 h-2 rounded-full" style={{ width: '78%' }}></div>
+                </div>
+              </div>
+              
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm">Satisfaction client</span>
+                  <span className="text-sm font-medium">94%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="bg-primary h-2 rounded-full" style={{ width: '94%' }}></div>
+                </div>
+              </div>
+              
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm">Taux d'occupation</span>
+                  <span className="text-sm font-medium">65%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="bg-yellow-500 h-2 rounded-full" style={{ width: '65%' }}></div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
