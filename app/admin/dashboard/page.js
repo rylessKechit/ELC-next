@@ -46,7 +46,8 @@ export default function Dashboard() {
     confirmedBookings: 0,
     cancelledBookings: 0,
     todayBookings: 0,
-    totalRevenue: 0
+    totalRevenue: 0,
+    completedRevenue: 0
   });
   const [upcomingBookings, setUpcomingBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -107,13 +108,13 @@ export default function Dashboard() {
 
   // Format prix
   const formatPrice = (amount) => {
-  return new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(amount);
-};
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'EUR',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(amount);
+  };
 
   // Données pour les stats
   const statsItems = [
@@ -250,7 +251,7 @@ export default function Dashboard() {
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center mb-1">
-                        <span className="font-mono text-sm text-gray-500">{booking.id}</span>
+                        <span className="font-mono text-sm text-gray-500">{booking.bookingId || booking._id}</span>
                         <span className={`ml-2 text-xs px-2 py-0.5 rounded-full font-medium ${
                           booking.status === 'confirmed' ? 'bg-green-100 text-green-800' :
                           booking.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
@@ -261,9 +262,14 @@ export default function Dashboard() {
                           booking.status}
                         </span>
                       </div>
-                      <h3 className="font-medium">{booking.customer.name}</h3>
+                      <h3 className="font-medium">
+                        {booking.customerInfo?.name || 'Client non spécifié'}
+                      </h3>
                     </div>
-                    <Link href={`/admin/bookings/${booking.id}`} className="text-primary hover:text-primary-dark">
+                    <Link 
+                      href={`/admin/bookings/${booking.bookingId || booking._id}`} 
+                      className="text-primary hover:text-primary-dark"
+                    >
                       <FontAwesomeIcon icon={faEye} className="h-5 w-5" />
                     </Link>
                   </div>
@@ -282,8 +288,11 @@ export default function Dashboard() {
                     </div>
                     <div className="flex items-center text-gray-600">
                       <FontAwesomeIcon icon={faUser} className="h-4 w-4 text-gray-400 mr-2" />
-                      <a href={`tel:${booking.customer.phone}`} className="text-primary hover:underline">
-                        {booking.customer.phone}
+                      <a 
+                        href={`tel:${booking.customerInfo?.phone || ''}`} 
+                        className="text-primary hover:underline"
+                      >
+                        {booking.customerInfo?.phone || 'Téléphone non spécifié'}
                       </a>
                     </div>
                   </div>
@@ -299,9 +308,9 @@ export default function Dashboard() {
             <div className="mb-2">
               <FontAwesomeIcon icon={faChartLine} className="h-8 w-8 text-primary" />
             </div>
-            <p className="text-sm text-gray-600 mb-2">Total ce mois-ci</p>
+            <p className="text-sm text-gray-600 mb-2">Revenus des courses terminées</p>
             <p className="text-3xl font-bold text-primary">
-              {formatPrice(stats.totalRevenue)}
+              {formatPrice(stats.completedRevenue || 0)}
             </p>
             {stats.revenueChange && (
               <p className="text-xs text-gray-500 mt-2">
