@@ -25,14 +25,6 @@ const BookingStatusBadge = ({ status }) => {
   
   // Configurer en fonction du statut
   switch (status) {
-    case 'pending':
-      config = {
-        label: 'En attente',
-        bgColor: 'bg-yellow-100',
-        textColor: 'text-yellow-800',
-        icon: faExclamationCircle
-      };
-      break;
     case 'confirmed':
       config = {
         label: 'Confirmée',
@@ -52,8 +44,8 @@ const BookingStatusBadge = ({ status }) => {
     case 'completed':
       config = {
         label: 'Terminée',
-        bgColor: 'bg-blue-100',
-        textColor: 'text-blue-800',
+        bgColor: 'bg-indigo-100',
+        textColor: 'text-indigo-800',
         icon: faCheck
       };
       break;

@@ -57,59 +57,36 @@ export default function Dashboard() {
       try {
         setLoading(true);
         
-        // Simulation de données de statistiques - À remplacer par votre API
-        const statsData = {
-          totalBookings: 128,
-          pendingBookings: 12,
-          confirmedBookings: 89,
-          cancelledBookings: 5,
-          todayBookings: 8,
-          totalRevenue: 12450
-        };
+        // Récupération des données réelles depuis l'API
+        const response = await fetch('/api/dashboard/stats');
+        if (!response.ok) {
+          throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+        const data = await response.json();
         
-        // Simulation des réservations à venir - À remplacer par votre API
-        const upcomingData = [
-          {
-            id: 'ELC-20250518-001',
-            customer: {
-              name: 'Jean Dupont',
-              phone: '+33612345678'
-            },
-            pickupDateTime: new Date().setHours(new Date().getHours() + 3),
-            pickupAddress: 'Aéroport Charles de Gaulle, Terminal 2E',
-            dropoffAddress: 'Hôtel Plaza Athénée, 25 Avenue Montaigne, Paris',
-            status: 'confirmed'
-          },
-          {
-            id: 'ELC-20250518-002',
-            customer: {
-              name: 'Marie Lefebvre',
-              phone: '+33698765432'
-            },
-            pickupDateTime: new Date().setHours(new Date().getHours() + 5),
-            pickupAddress: 'Gare de Lyon, Paris',
-            dropoffAddress: 'Château de Versailles',
-            status: 'pending'
-          },
-          {
-            id: 'ELC-20250519-003',
-            customer: {
-              name: 'Paul Martin',
-              phone: '+33634567890'
-            },
-            pickupDateTime: new Date().setDate(new Date().getDate() + 1),
-            pickupAddress: 'Hôtel Ritz Paris, 15 Place Vendôme',
-            dropoffAddress: 'Aéroport d\'Orly, Terminal Sud',
-            status: 'confirmed'
-          }
-        ];
+        if (data.success) {
+          setStats(data.data);
+        } else {
+          throw new Error(data.error || "Échec de récupération des données");
+        }
         
-        setStats(statsData);
-        setUpcomingBookings(upcomingData);
+        // Récupération des prochaines réservations
+        const bookingsResponse = await fetch('/api/bookings/upcoming?limit=5');
+        if (!bookingsResponse.ok) {
+          throw new Error(`Erreur HTTP: ${bookingsResponse.status}`);
+        }
+        const bookingsData = await bookingsResponse.json();
+        
+        if (bookingsData.success) {
+          setUpcomingBookings(bookingsData.data || []);
+        } else {
+          throw new Error(bookingsData.error || "Échec de récupération des réservations");
+        }
+        
         setLoading(false);
       } catch (err) {
         console.error("Erreur lors du chargement des données:", err);
-        setError("Impossible de charger les données du tableau de bord");
+        setError("Impossible de charger les données du tableau de bord: " + err.message);
         setLoading(false);
       }
     }
@@ -130,11 +107,13 @@ export default function Dashboard() {
 
   // Format prix
   const formatPrice = (amount) => {
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'EUR'
-    }).format(amount);
-  };
+  return new Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: 'EUR',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(amount);
+};
 
   // Données pour les stats
   const statsItems = [
@@ -144,13 +123,6 @@ export default function Dashboard() {
       icon: faCalendarCheck,
       color: 'bg-blue-500',
       link: '/admin/bookings'
-    },
-    {
-      title: 'En attente',
-      value: stats.pendingBookings,
-      icon: faExclamationTriangle,
-      color: 'bg-yellow-500',
-      link: '/admin/bookings?status=pending'
     },
     {
       title: 'Confirmées',
@@ -165,6 +137,13 @@ export default function Dashboard() {
       icon: faClock,
       color: 'bg-purple-500',
       link: '/admin/planning'
+    },
+    {
+      title: 'Annulées',
+      value: stats.cancelledBookings,
+      icon: faExclamationTriangle,
+      color: 'bg-red-500',
+      link: '/admin/bookings?status=cancelled'
     }
   ];
   
@@ -316,21 +295,19 @@ export default function Dashboard() {
         
         {/* Revenue et stats */}
         <div>
-          <div className="bg-white rounded-lg shadow p-4 mb-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Chiffre d'affaires</h2>
-            
-            <div className="bg-blue-50 rounded-lg p-6 text-center">
-              <div className="mb-2">
-                <FontAwesomeIcon icon={faChartLine} className="h-8 w-8 text-primary" />
-              </div>
-              <p className="text-sm text-gray-600 mb-2">Total ce mois-ci</p>
-              <p className="text-3xl font-bold text-primary">
-                {formatPrice(stats.totalRevenue)}
-              </p>
-              <p className="text-xs text-gray-500 mt-2">
-                +12% par rapport au mois précédent
-              </p>
+          <div className="bg-blue-50 rounded-lg p-6 text-center">
+            <div className="mb-2">
+              <FontAwesomeIcon icon={faChartLine} className="h-8 w-8 text-primary" />
             </div>
+            <p className="text-sm text-gray-600 mb-2">Total ce mois-ci</p>
+            <p className="text-3xl font-bold text-primary">
+              {formatPrice(stats.totalRevenue)}
+            </p>
+            {stats.revenueChange && (
+              <p className="text-xs text-gray-500 mt-2">
+                {stats.revenueChange > 0 ? '+' : ''}{stats.revenueChange}% par rapport au mois précédent
+              </p>
+            )}
           </div>
           
           <div className="bg-white rounded-lg shadow p-4">

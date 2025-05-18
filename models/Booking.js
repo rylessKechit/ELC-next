@@ -10,7 +10,7 @@ const BookingSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: ['confirmed', 'in_progress', 'completed', 'cancelled'],
-    default: 'confirmed', // Statut par défaut "confirmed" - plus de pending
+    default: 'confirmed', // Statut par défaut "confirmed"
     index: true
   },
   pickupAddress: {

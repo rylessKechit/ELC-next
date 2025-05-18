@@ -16,18 +16,16 @@ const UpcomingBookings = ({ bookings }) => {
     switch (status) {
       case 'confirmed':
         return { color: 'text-green-500', icon: 'fas fa-check-circle', label: 'Confirmée' };
-      case 'pending':
-        return { color: 'text-yellow-500', icon: 'fas fa-exclamation-circle', label: 'En attente' };
-      case 'cancelled':
-        return { color: 'text-red-500', icon: 'fas fa-times-circle', label: 'Annulée' };
-      case 'completed':
-        return { color: 'text-blue-500', icon: 'fas fa-check-circle', label: 'Terminée' };
       case 'in_progress':
         return { color: 'text-blue-500', icon: 'fas fa-circle', label: 'En cours' };
+      case 'completed':
+        return { color: 'text-blue-500', icon: 'fas fa-check-circle', label: 'Terminée' };
+      case 'cancelled':
+        return { color: 'text-red-500', icon: 'fas fa-times-circle', label: 'Annulée' };
       default:
         return { color: 'text-gray-500', icon: 'fas fa-circle', label: status };
     }
-  };
+  }
   
   // Fonction pour formater la date et heure
   const formatDateTime = (dateString) => {

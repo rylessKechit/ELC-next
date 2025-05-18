@@ -103,12 +103,12 @@ const AdminSidebar = ({ sidebarOpen, closeSidebar }) => {
     <>
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 flex flex-col z-40 w-64 max-w-full bg-primary-900 text-white transform ease-in-out duration-300 ${
+        className={`fixed inset-y-0 left-0 flex flex-col z-40 w-64 max-w-full bg-gray-800 text-white transform ease-in-out duration-300 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:translate-x-0 lg:static lg:inset-auto lg:min-h-screen`}
       >
         {/* En-tête avec logo */}
-        <div className="flex items-center justify-between px-6 py-4 h-16 border-b border-primary-700">
+        <div className="flex items-center justify-between px-6 py-4 h-16 border-b border-gray-700">
           <Link href="/admin/dashboard" className="flex items-center">
             <span className="text-lg font-semibold text-white">Elysian Luxury</span>
           </Link>
@@ -133,8 +133,8 @@ const AdminSidebar = ({ sidebarOpen, closeSidebar }) => {
                         onClick={() => toggleExpand(index)}
                         className={`flex items-center justify-between w-full px-4 py-3 text-left rounded-md transition-all duration-200 ${
                           isActive(item)
-                            ? 'bg-primary-800 text-white shadow-md'
-                            : 'text-white text-opacity-80 hover:bg-primary-800 hover:text-white'
+                            ? 'bg-gray-700 text-white shadow-md'
+                            : 'text-gray-100 hover:bg-gray-700 hover:text-white'
                         }`}
                         aria-expanded={expandedItem === index}
                       >
@@ -165,8 +165,8 @@ const AdminSidebar = ({ sidebarOpen, closeSidebar }) => {
                               href={subItem.href}
                               className={`flex items-center px-4 py-2.5 text-sm rounded-md transition-all duration-200 ${
                                 pathname === subItem.href || pathname.startsWith(`${subItem.href}/`)
-                                  ? 'bg-primary-700 text-white font-medium'
-                                  : 'text-white text-opacity-70 hover:bg-primary-700 hover:text-white'
+                                  ? 'bg-gray-600 text-white font-medium'
+                                  : 'text-gray-300 hover:bg-gray-600 hover:text-white'
                               }`}
                               onClick={closeSidebar}
                             >
@@ -184,8 +184,8 @@ const AdminSidebar = ({ sidebarOpen, closeSidebar }) => {
                       href={item.href}
                       className={`flex items-center px-4 py-3 rounded-md transition-all duration-200 ${
                         isActive(item)
-                          ? 'bg-primary-800 text-white shadow-md'
-                          : 'text-white text-opacity-80 hover:bg-primary-800 hover:text-white'
+                          ? 'bg-gray-700 text-white shadow-md'
+                          : 'text-gray-100 hover:bg-gray-700 hover:text-white'
                       }`}
                       onClick={closeSidebar}
                     >
@@ -200,8 +200,8 @@ const AdminSidebar = ({ sidebarOpen, closeSidebar }) => {
         </div>
         
         {/* Footer avec utilisateur */}
-        <div className="px-4 py-4 border-t border-primary-700">
-          <div className="p-4 rounded-md bg-primary-800 mb-4">
+        <div className="px-4 py-4 border-t border-gray-700">
+          <div className="p-4 rounded-md bg-gray-700 mb-4">
             <div className="flex items-center">
               <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary font-bold text-lg">
                 {session?.user?.name?.charAt(0).toUpperCase() || 'U'}
@@ -210,7 +210,7 @@ const AdminSidebar = ({ sidebarOpen, closeSidebar }) => {
                 <p className="text-sm font-medium text-white truncate">
                   {session?.user?.name || 'Utilisateur'}
                 </p>
-                <p className="text-xs text-white text-opacity-70">
+                <p className="text-xs text-gray-300">
                   {session?.user?.role === 'admin' ? 'Administrateur' : 'Chauffeur'}
                 </p>
               </div>
@@ -223,7 +223,7 @@ const AdminSidebar = ({ sidebarOpen, closeSidebar }) => {
               // Utiliser router pour la déconnexion
               window.location.href = '/api/auth/signout';
             }}
-            className="flex items-center w-full px-4 py-3 text-sm text-white text-opacity-80 rounded-md hover:bg-primary-800 hover:text-white transition-all duration-200"
+            className="flex items-center w-full px-4 py-3 text-sm text-gray-300 rounded-md hover:bg-gray-700 hover:text-white transition-all duration-200"
           >
             <FontAwesomeIcon icon={faSignOutAlt} className="h-5 w-5 mr-3" />
             <span>Déconnexion</span>
