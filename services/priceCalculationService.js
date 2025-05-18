@@ -1,3 +1,4 @@
+// services/priceCalculationService.js - Version simplifiée
 import { googleMapsService } from './googleMapsService'
 
 // TARIFS SELON VOTRE BARÈME
@@ -21,6 +22,9 @@ const MIN_DISTANCE_KM = {
   'sedan': 10,
   'van': 0
 }
+
+// Prix minimum pour toute course, quelle que soit la distance
+const MINIMUM_FARE = 20
 
 export const priceCalculationService = {
   async calculatePrice(params) {
@@ -79,36 +83,30 @@ export const priceCalculationService = {
       exactPrice *= 2
     }
 
+    // Appliquer le prix minimum de 20€ si le prix calculé est inférieur
+    const calculatedPrice = exactPrice
+    if (exactPrice < MINIMUM_FARE) {
+      exactPrice = MINIMUM_FARE
+    }
+
     // Arrondir à 2 décimales
     exactPrice = Math.round(exactPrice * 100) / 100
     
-    // Prévoir une marge d'erreur de 5% pour le prix min/max
-    const minPrice = Math.round(exactPrice * 0.95 * 100) / 100
-    const maxPrice = Math.round(exactPrice * 1.05 * 100) / 100
-
+    // Version simplifiée de la réponse, sans les détails de calcul
     const result = {
       success: true,
       estimate: {
         exactPrice,
-        minPrice,
-        maxPrice,
         currency: 'EUR',
-        breakdown: {
-          baseFare,
-          distanceCharge,
-          actualDistance: parseFloat(distanceInKm.toFixed(2)),
-          chargeableDistance: parseFloat(chargeableDistanceKm.toFixed(2)),
-          pricePerKm: perKmRate,
-          roundTrip,
-          vehicleType
-        },
+        // Infos minimales uniquement pour le fonctionnement interne
         details: {
           distanceInKm: parseFloat(distanceInKm.toFixed(2)),
-          chargeableDistanceInKm: parseFloat(chargeableDistanceKm.toFixed(2)),
           durationInMinutes: Math.round(durationInMinutes),
           formattedDistance: routeDetails.distance?.text || `${distanceInKm.toFixed(1)} km`,
           formattedDuration: routeDetails.duration?.text || `${Math.round(durationInMinutes)} min`
-        }
+        },
+        // Indicateur simple du tarif minimum appliqué (pour affichage conditionnel)
+        minimumFareApplied: exactPrice === MINIMUM_FARE && calculatedPrice < MINIMUM_FARE
       }
     }
 

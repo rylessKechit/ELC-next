@@ -1,4 +1,4 @@
-// components/booking/VehicleSelector.jsx - Version propre
+// components/booking/VehicleSelector.jsx - Version simplifiée sans détails de calcul
 "use client"
 
 import { useState } from 'react'
@@ -39,14 +39,7 @@ const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, lugg
           return null;
         }
 
-        const breakdown = vehicle.estimate.breakdown || {};
-        const baseFare = breakdown.baseFare || 0;
-        const distanceCharge = breakdown.distanceCharge || 0;
-        const pricePerKm = breakdown.pricePerKm || 0;
-        const chargeableDistance = breakdown.chargeableDistance || breakdown.distanceInKm || 0;
-        const actualDistance = breakdown.actualDistance || breakdown.distanceInKm || chargeableDistance;
         const exactPrice = vehicle.estimate.exactPrice || vehicle.price || 0;
-        const isRoundTrip = breakdown.roundTrip || false;
         
         return (
           <div key={vehicle.id} className="space-y-4">
@@ -106,83 +99,55 @@ const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, lugg
             
             {showDetails === vehicle.id && (
               <div className="bg-gray-50 rounded-lg p-5 border border-gray-200 animate-fadeIn">
-                <h4 className="font-semibold text-gray-800 mb-4">Détails du prix</h4>
+                <h4 className="font-semibold text-gray-800 mb-4">Caractéristiques du véhicule</h4>
                 
-                <div className="space-y-2 mb-6">
-                  <div className="flex justify-between border-b border-dashed border-gray-200 pb-2">
-                    <span>Prise en charge (PEC)</span>
-                    <span>{formatPrice(baseFare)}</span>
-                  </div>
-                  
-                  <div className="flex justify-between border-b border-dashed border-gray-200 pb-2">
-                    <span>
-                      Distance ({chargeableDistance.toFixed(1)} km × {formatPrice(pricePerKm).replace('€', '')}/km)
-                    </span>
-                    <span>{formatPrice(distanceCharge)}</span>
-                  </div>
-                  
-                  {chargeableDistance > actualDistance && (
-                    <div className="bg-blue-50 p-3 rounded text-sm text-blue-700">
-                      <i className="fas fa-info-circle mr-2"></i>
-                      Distance réelle : {actualDistance.toFixed(1)} km - Distance minimale de {chargeableDistance.toFixed(1)} km appliquée pour ce type de véhicule
-                    </div>
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> {vehicle.capacity || 'Capacité non spécifiée'}</li>
+                  <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> {vehicle.luggage || 'Bagages non spécifiés'}</li>
+                  <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Wifi gratuit à bord</li>
+                  <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Bouteille d'eau offerte</li>
+                  <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Sièges en cuir</li>
+                  <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Chargeurs pour téléphone</li>
+                  {vehicle.id === 'green' && (
+                    <>
+                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> 100% électrique (Model 3)</li>
+                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Zéro émission CO2</li>
+                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Écran tactile</li>
+                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Système de divertissement</li>
+                    </>
                   )}
-                  
-                  {isRoundTrip && (
-                    <div className="bg-green-50 p-3 rounded text-sm text-green-700">
-                      <i className="fas fa-info-circle mr-2"></i>
-                      Prix aller-retour : tarif × 2
-                    </div>
+                  {vehicle.id === 'premium' && (
+                    <>
+                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Mercedes Classe E</li>
+                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Intérieur premium</li>
+                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Éclairage d'ambiance</li>
+                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Confort supérieur</li>
+                    </>
                   )}
-                  
-                  <div className="flex justify-between pt-2 font-bold text-lg">
-                    <span>Prix total</span>
-                    <span className="text-primary">{formatPrice(exactPrice)}</span>
-                  </div>
-                </div>
+                  {vehicle.id === 'sedan' && (
+                    <>
+                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Mercedes Classe S</li>
+                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Finitions luxueuses</li>
+                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Sièges massants</li>
+                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Système audio premium</li>
+                    </>
+                  )}
+                  {vehicle.id === 'van' && (
+                    <>
+                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Mercedes Classe V</li>
+                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Espace intérieur spacieux</li>
+                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Configuration salon privé</li>
+                      <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Séparation chauffeur</li>
+                    </>
+                  )}
+                </ul>
                 
-                <div>
-                  <h4 className="font-semibold text-gray-800 mb-3">Caractéristiques du véhicule</h4>
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> {vehicle.capacity || 'Capacité non spécifiée'}</li>
-                    <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> {vehicle.luggage || 'Bagages non spécifiés'}</li>
-                    <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Wifi gratuit à bord</li>
-                    <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Bouteille d'eau offerte</li>
-                    <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Sièges en cuir</li>
-                    <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Chargeurs pour téléphone</li>
-                    {vehicle.id === 'green' && (
-                      <>
-                        <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> 100% électrique (Model 3)</li>
-                        <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Zéro émission CO2</li>
-                        <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Écran tactile</li>
-                        <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Système de divertissement</li>
-                      </>
-                    )}
-                    {vehicle.id === 'premium' && (
-                      <>
-                        <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Mercedes Classe E</li>
-                        <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Intérieur premium</li>
-                        <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Éclairage d'ambiance</li>
-                        <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Confort supérieur</li>
-                      </>
-                    )}
-                    {vehicle.id === 'sedan' && (
-                      <>
-                        <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Mercedes Classe S</li>
-                        <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Finitions luxueuses</li>
-                        <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Sièges massants</li>
-                        <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Système audio premium</li>
-                      </>
-                    )}
-                    {vehicle.id === 'van' && (
-                      <>
-                        <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Mercedes Classe V</li>
-                        <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Espace intérieur spacieux</li>
-                        <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Configuration salon privé</li>
-                        <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i> Séparation chauffeur</li>
-                      </>
-                    )}
-                  </ul>
+                {/* Section prix (simplifiée) */}
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="font-semibold text-lg">Prix total</span>
+                    <span className="text-xl font-bold text-primary">{formatPrice(exactPrice)}</span>
+                  </div>
                 </div>
                 
                 {formValues && formValues.vehicleType === vehicle.id && (

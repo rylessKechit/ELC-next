@@ -1,114 +1,76 @@
+// components/booking/BookingVehicleDetails.jsx - Version simplifiée
 import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faCar,
-  faUsers,
-  faSuitcase,
-  faEuroSign,
-  faPlane,
-  faTrain,
-  faFileText
-} from '@fortawesome/free-solid-svg-icons';
 
-/**
- * Section détails du service
- */
-const BookingServiceDetails = ({ booking }) => {
-  // Fonction pour formater le prix
+const BookingVehicleDetails = ({ vehicleType, priceEstimate, availableVehicles }) => {
+  // Trouver les informations du véhicule sélectionné
+  const vehicle = availableVehicles.find(v => v.id === vehicleType) || {};
+  
+  // Formater le prix pour l'affichage
   const formatPrice = (price) => {
-    if (typeof price === 'object' && price.amount) {
-      return new Intl.NumberFormat('fr-FR', {
-        style: 'currency',
-        currency: price.currency || 'EUR'
-      }).format(price.amount);
-    }
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
       currency: 'EUR'
     }).format(price);
   };
 
-  // Fonction pour obtenir le nom du véhicule
-  const getVehicleTypeName = (type) => {
-    const vehicleTypes = {
-      'green': 'Green - Tesla Model 3',
-      'premium': 'Berline Premium',
-      'sedan': 'Berline de Luxe',
-      'van': 'Van VIP'
-    };
-    return vehicleTypes[type] || type;
+  // Fonction pour obtenir l'icône du véhicule
+  const getVehicleIcon = (type) => {
+    switch (type) {
+      case 'green':
+        return <i className="fas fa-leaf text-green-500 text-xl"></i>;
+      case 'premium':
+        return <i className="fas fa-car text-primary text-xl"></i>;
+      case 'sedan':
+        return <i className="fas fa-car-side text-primary text-xl"></i>;
+      case 'van':
+        return <i className="fas fa-shuttle-van text-primary text-xl"></i>;
+      default:
+        return <i className="fas fa-car text-gray-500 text-xl"></i>;
+    }
   };
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-lg font-semibold text-gray-800 mb-4">
-        <FontAwesomeIcon icon={faCar} className="mr-2 text-primary" />
-        Détails du service
-      </h2>
-      
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="text-center p-4 bg-gray-50 rounded-lg">
-          <FontAwesomeIcon icon={faCar} className="text-2xl text-blue-500 mb-2" />
-          <p className="text-sm text-gray-500">Véhicule</p>
-          <p className="font-semibold">{getVehicleTypeName(booking.vehicleType)}</p>
+    <div className="bg-white rounded-lg p-4 border border-gray-200">
+      <div className="flex items-center mb-4">
+        <div className="mr-3">
+          {getVehicleIcon(vehicleType)}
         </div>
-        
-        <div className="text-center p-4 bg-gray-50 rounded-lg">
-          <FontAwesomeIcon icon={faUsers} className="text-2xl text-green-500 mb-2" />
-          <p className="text-sm text-gray-500">Passagers</p>
-          <p className="font-semibold">{booking.passengers}</p>
+        <div>
+          <h3 className="font-bold text-lg">{vehicle.name || 'Véhicule'}</h3>
+          <p className="text-sm text-gray-600">{vehicle.desc || 'Description non disponible'}</p>
         </div>
-        
-        <div className="text-center p-4 bg-gray-50 rounded-lg">
-          <FontAwesomeIcon icon={faSuitcase} className="text-2xl text-orange-500 mb-2" />
-          <p className="text-sm text-gray-500">Bagages</p>
-          <p className="font-semibold">{booking.luggage}</p>
-        </div>
-        
-        <div className="text-center p-4 bg-gray-50 rounded-lg">
-          <FontAwesomeIcon icon={faEuroSign} className="text-2xl text-green-600 mb-2" />
-          <p className="text-sm text-gray-500">Prix</p>
-          <p className="font-semibold">{formatPrice(booking.price)}</p>
+        <div className="ml-auto">
+          <span className="text-xl font-semibold text-primary">
+            {formatPrice(priceEstimate?.exactPrice || 0)}
+          </span>
         </div>
       </div>
       
-      {(booking.flightNumber || booking.trainNumber) && (
-        <div className="mt-4 pt-4 border-t grid grid-cols-1 md:grid-cols-2 gap-4">
-          {booking.flightNumber && (
-            <div className="flex items-center space-x-3">
-              <FontAwesomeIcon icon={faPlane} className="text-blue-500" />
-              <div>
-                <p className="text-sm text-gray-500">Numéro de vol</p>
-                <p className="font-medium">{booking.flightNumber}</p>
-              </div>
-            </div>
-          )}
-          
-          {booking.trainNumber && (
-            <div className="flex items-center space-x-3">
-              <FontAwesomeIcon icon={faTrain} className="text-green-500" />
-              <div>
-                <p className="text-sm text-gray-500">Numéro de train</p>
-                <p className="font-medium">{booking.trainNumber}</p>
-              </div>
-            </div>
-          )}
+      <div className="grid grid-cols-2 gap-3 mb-4">
+        <div className="flex items-center">
+          <i className="fas fa-users text-gray-500 mr-2"></i>
+          <span>{vehicle.capacity}</span>
         </div>
-      )}
+        <div className="flex items-center">
+          <i className="fas fa-suitcase text-gray-500 mr-2"></i>
+          <span>{vehicle.luggage}</span>
+        </div>
+      </div>
       
-      {booking.specialRequests && (
-        <div className="mt-4 pt-4 border-t">
-          <div className="flex items-start space-x-3">
-            <FontAwesomeIcon icon={faFileText} className="text-yellow-500 mt-1" />
-            <div>
-              <p className="text-sm text-gray-500">Demandes spéciales</p>
-              <p className="font-medium">{booking.specialRequests}</p>
-            </div>
+      {priceEstimate?.minimumFareApplied && (
+        <div className="bg-yellow-50 p-3 rounded-md mb-4">
+          <div className="flex items-center text-sm text-yellow-700">
+            <i className="fas fa-info-circle mr-2"></i>
+            <span>Tarif minimum de 20€ appliqué</span>
           </div>
         </div>
       )}
+      
+      <div className="text-sm text-gray-600">
+        <p>Le prix inclut la prise en charge, le service professionnel, et toutes les options de confort.</p>
+      </div>
     </div>
   );
 };
 
-export default BookingServiceDetails;
+export default BookingVehicleDetails;

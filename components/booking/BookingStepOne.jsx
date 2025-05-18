@@ -1,3 +1,4 @@
+// Exemple de mise à jour dans BookingStepOne.jsx
 "use client";
 
 import AddressInput from './AddressInput';
@@ -14,6 +15,27 @@ const BookingStepOne = ({
   isCalculating,
   handleAddressSelect
 }) => {
+  // Amélioration: Fonction individuelle pour chaque champ d'adresse
+  const handlePickupAddressChange = (value) => {
+    console.log("Changement adresse départ:", value);
+    setValue('pickupAddress', value);
+  };
+
+  const handleDropoffAddressChange = (value) => {
+    console.log("Changement adresse arrivée:", value);
+    setValue('dropoffAddress', value);
+  };
+
+  const handlePickupAddressSelect = (address, placeId) => {
+    console.log("Sélection adresse départ:", address, placeId);
+    handleAddressSelect('pickupAddress', address, placeId);
+  };
+
+  const handleDropoffAddressSelect = (address, placeId) => {
+    console.log("Sélection adresse arrivée:", address, placeId);
+    handleAddressSelect('dropoffAddress', address, placeId);
+  };
+
   return (
     <div className="p-6 md:p-8">
       <div className="space-y-6">
@@ -24,8 +46,8 @@ const BookingStepOne = ({
           <AddressInput
             id="pickupAddress"
             value={formValues.pickupAddress}
-            onChange={(value) => setValue('pickupAddress', value)}
-            onSelect={(address, placeId) => handleAddressSelect('pickupAddress', address, placeId)}
+            onChange={handlePickupAddressChange}
+            onSelect={handlePickupAddressSelect}
             placeholder="Entrez l'adresse de départ"
           />
           {errors.pickupAddress && (
@@ -40,8 +62,8 @@ const BookingStepOne = ({
           <AddressInput
             id="dropoffAddress"
             value={formValues.dropoffAddress}
-            onChange={(value) => setValue('dropoffAddress', value)}
-            onSelect={(address, placeId) => handleAddressSelect('dropoffAddress', address, placeId)}
+            onChange={handleDropoffAddressChange}
+            onSelect={handleDropoffAddressSelect}
             placeholder="Entrez l'adresse d'arrivée"
           />
           {errors.dropoffAddress && (

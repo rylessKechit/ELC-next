@@ -1,69 +1,56 @@
-// components/booking/AddressInput.jsx - Version propre
+// components/booking/AddressInput.jsx - Version corrigée
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
 
+// Variable globale pour suivre si le script est chargé
+let googleMapsLoaded = false;
+let googleMapsLoading = false;
+
 const AddressInput = ({ id, value, onChange, onSelect, placeholder }) => {
-  const [isLoaded, setIsLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef(null);
   const autocompleteRef = useRef(null);
-  
+
+  // Charger le script Google Maps au montage du composant, pas au focus
   useEffect(() => {
-    const handleFocus = () => {
-      if (!isLoaded && !isLoading) {
-        loadGoogleMapsScript();
-      }
-    };
-    
-    if (inputRef.current) {
-      inputRef.current.addEventListener('focus', handleFocus);
-    }
-    
-    return () => {
-      if (inputRef.current) {
-        inputRef.current.removeEventListener('focus', handleFocus);
-      }
-    };
-  }, [isLoaded, isLoading]);
-  
-  const loadGoogleMapsScript = () => {
-    let isMounted = true;
-    
-    if (window.google && window.google.maps && window.google.maps.places) {
-      if (isMounted) {
-        setIsLoaded(true);
-      }
+    // Si le script est déjà chargé
+    if (googleMapsLoaded) {
+      initializeAutocomplete();
       return;
     }
-    
-    if (window.googleMapsScriptLoading) {
-      const checkLoaded = setInterval(() => {
-        if (window.google && window.google.maps && window.google.maps.places) {
-          clearInterval(checkLoaded);
-          if (isMounted) {
-            setIsLoaded(true);
-          }
+
+    // Si le script est en cours de chargement
+    if (googleMapsLoading) {
+      const checkInterval = setInterval(() => {
+        if (googleMapsLoaded) {
+          clearInterval(checkInterval);
+          initializeAutocomplete();
         }
       }, 100);
-      return;
+      
+      return () => clearInterval(checkInterval);
     }
+
+    // Sinon, charger le script
+    googleMapsLoading = true;
+    setIsLoading(true);
     
-    window.googleMapsScriptLoading = true;
-    
+    // Fonction de callback pour l'API Google Maps
     window.initGoogleMapsAutocomplete = () => {
-      window.googleMapsScriptLoading = false;
-      if (isMounted) {
-        setIsLoaded(true);
-      }
+      googleMapsLoading = false;
+      googleMapsLoaded = true;
+      setIsLoading(false);
+      initializeAutocomplete();
     };
     
-    setIsLoading(true);
     const script = document.createElement('script');
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
     
     if (!apiKey) {
+      console.error('API key for Google Maps is missing');
       setIsLoading(false);
+      googleMapsLoading = false;
       return;
     }
     
@@ -72,47 +59,69 @@ const AddressInput = ({ id, value, onChange, onSelect, placeholder }) => {
     script.defer = true;
     
     script.onerror = () => {
-      if (isMounted) {
-        setIsLoading(false);
-      }
-      window.googleMapsScriptLoading = false;
+      console.error('Failed to load Google Maps script');
+      setIsLoading(false);
+      googleMapsLoading = false;
     };
     
     document.head.appendChild(script);
+    
+    // Nettoyage
+    return () => {
+      if (autocompleteRef.current && google && google.maps && google.maps.event) {
+        google.maps.event.clearInstanceListeners(autocompleteRef.current);
+      }
+    };
+  }, []);
+
+  // Initialiser l'autocomplete
+  const initializeAutocomplete = () => {
+    if (!inputRef.current || !window.google || !window.google.maps || !window.google.maps.places) {
+      return;
+    }
+
+    try {
+      // Nettoyer l'ancienne instance si elle existe
+      if (autocompleteRef.current && google.maps.event) {
+        google.maps.event.clearInstanceListeners(autocompleteRef.current);
+      }
+      
+      // Créer une nouvelle instance pour ce champ
+      autocompleteRef.current = new window.google.maps.places.Autocomplete(inputRef.current, {
+        componentRestrictions: { country: 'fr' },
+        fields: ['address_components', 'formatted_address', 'place_id', 'geometry']
+      });
+      
+      // Ajouter l'écouteur d'événements
+      autocompleteRef.current.addListener('place_changed', () => {
+        const place = autocompleteRef.current.getPlace();
+        
+        if (place && place.place_id && place.formatted_address) {
+          onChange(place.formatted_address);
+          onSelect(place.formatted_address, place.place_id);
+        }
+      });
+    } catch (error) {
+      console.error('Error initializing Google Maps Autocomplete:', error);
+    }
   };
-  
+
+  // Synchroniser l'input avec la valeur React
   useEffect(() => {
-    if (isLoaded && inputRef.current && !autocompleteRef.current) {
-      try {
-        autocompleteRef.current = new window.google.maps.places.Autocomplete(inputRef.current, {
-          componentRestrictions: { country: 'fr' },
-          fields: ['address_components', 'formatted_address', 'place_id', 'geometry']
-        });
-        
-        autocompleteRef.current.addListener('place_changed', () => {
-          const place = autocompleteRef.current.getPlace();
-          
-          if (place && place.place_id && place.formatted_address) {
-            onChange(place.formatted_address);
-            onSelect(place.formatted_address, place.place_id);
-          }
-        });
-        
-        setIsLoading(false);
-      } catch (error) {
-        setIsLoading(false);
-      }
+    // Si inputRef existe mais n'a pas le focus, synchroniser sa valeur
+    if (inputRef.current && document.activeElement !== inputRef.current) {
+      inputRef.current.value = value || '';
     }
-  }, [isLoaded, onChange, onSelect, id]);
-  
-  useEffect(() => {
-    if (value === '' && inputRef.current) {
-      inputRef.current.value = '';
-      if (onSelect) {
-        onSelect('', '');
-      }
+  }, [value]);
+
+  // Gérer le changement de valeur
+  const handleChange = (e) => {
+    const newValue = e.target.value;
+    onChange(newValue);
+    if (onSelect) {
+      onSelect(newValue, '');
     }
-  }, [value, onSelect]);
+  };
 
   return (
     <div className="relative">
@@ -124,17 +133,11 @@ const AddressInput = ({ id, value, onChange, onSelect, placeholder }) => {
           id={id}
           ref={inputRef}
           type="text"
-          value={value}
-          onChange={(e) => {
-            const newValue = e.target.value;
-            onChange(newValue);
-            if (newValue !== value && onSelect) {
-              onSelect(newValue, '');
-            }
-          }}
+          defaultValue={value} // Utilisation de defaultValue au lieu de value
+          onChange={handleChange}
           placeholder={placeholder}
           className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
-          autoComplete="address-line1"
+          autoComplete="off" // Désactiver l'autocomplétion native du navigateur
         />
         {isLoading && (
           <div className="absolute inset-y-0 right-3 flex items-center">
