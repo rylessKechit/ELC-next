@@ -7,17 +7,16 @@ import { useSession } from 'next-auth/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faCalendarCheck, 
-  faTachometerAlt, 
+  faCalendarAlt, 
   faUsers, 
   faUserCog, 
   faCog, 
   faSignOutAlt, 
   faTimes,
-  faCalendarAlt,
   faChevronDown,
   faPlus,
   faList,
-  faClipboardList
+  faTachometerAlt
 } from '@fortawesome/free-solid-svg-icons';
 
 const AdminSidebar = ({ sidebarOpen, closeSidebar }) => {
@@ -28,13 +27,31 @@ const AdminSidebar = ({ sidebarOpen, closeSidebar }) => {
   // Vérifier si l'utilisateur est admin
   const isAdmin = session?.user?.role === 'admin';
   
-  // Fermer la sidebar sur changement de page en mobile
+  // Logging pour déboguer
   useEffect(() => {
-    if (sidebarOpen) {
-      closeSidebar();
-    }
-  }, [pathname, sidebarOpen, closeSidebar]);
+    console.log("Sidebar state changed:", sidebarOpen);
+  }, [sidebarOpen]);
   
+  // Toggle pour les menus déroulants
+  const toggleExpand = (index) => {
+    setExpandedItem(expandedItem === index ? null : index);
+  };
+  
+  // Vérifier si un lien est actif
+  const isActive = (item) => {
+    if (item.href && (pathname === item.href || pathname.startsWith(`${item.href}/`))) {
+      return true;
+    }
+    
+    if (item.items && item.items.length > 0) {
+      return item.items.some(subItem => 
+        pathname === subItem.href || pathname.startsWith(`${subItem.href}/`)
+      );
+    }
+    
+    return false;
+  };
+
   // Navigation Items avec une structure optimisée pour mobile
   const navItems = [
     { 
@@ -79,24 +96,12 @@ const AdminSidebar = ({ sidebarOpen, closeSidebar }) => {
     item.roles.includes(session?.user?.role || 'visitor')
   );
   
-  // Toggle pour les menus déroulants
-  const toggleExpand = (index) => {
-    setExpandedItem(expandedItem === index ? null : index);
-  };
-  
-  // Vérifier si un lien est actif
-  const isActive = (item) => {
-    if (item.href && (pathname === item.href || pathname.startsWith(`${item.href}/`))) {
-      return true;
+  // Gestionnaire de fermeture explicite
+  const handleCloseSidebar = () => {
+    console.log("Closing sidebar from component");
+    if (typeof closeSidebar === 'function') {
+      closeSidebar();
     }
-    
-    if (item.items && item.items.length > 0) {
-      return item.items.some(subItem => 
-        pathname === subItem.href || pathname.startsWith(`${subItem.href}/`)
-      );
-    }
-    
-    return false;
   };
   
   return (
@@ -114,8 +119,9 @@ const AdminSidebar = ({ sidebarOpen, closeSidebar }) => {
           </Link>
           <button
             className="lg:hidden text-white hover:text-gray-300 p-2 -mr-2 rounded-md"
-            onClick={closeSidebar}
+            onClick={handleCloseSidebar}
             aria-label="Fermer le menu"
+            type="button"
           >
             <FontAwesomeIcon icon={faTimes} className="h-6 w-6" />
           </button>
@@ -168,7 +174,7 @@ const AdminSidebar = ({ sidebarOpen, closeSidebar }) => {
                                   ? 'bg-gray-600 text-white font-medium'
                                   : 'text-gray-300 hover:bg-gray-600 hover:text-white'
                               }`}
-                              onClick={closeSidebar}
+                              onClick={handleCloseSidebar}
                             >
                               {subItem.icon && (
                                 <FontAwesomeIcon icon={subItem.icon} className="h-4 w-4 mr-3 flex-shrink-0" />
@@ -187,7 +193,7 @@ const AdminSidebar = ({ sidebarOpen, closeSidebar }) => {
                           ? 'bg-gray-700 text-white shadow-md'
                           : 'text-gray-100 hover:bg-gray-700 hover:text-white'
                       }`}
-                      onClick={closeSidebar}
+                      onClick={handleCloseSidebar}
                     >
                       <FontAwesomeIcon icon={item.icon} className="h-5 w-5 mr-3 flex-shrink-0" />
                       <span className="font-medium">{item.name}</span>
@@ -219,8 +225,7 @@ const AdminSidebar = ({ sidebarOpen, closeSidebar }) => {
           
           <button
             onClick={() => {
-              closeSidebar();
-              // Utiliser router pour la déconnexion
+              handleCloseSidebar();
               window.location.href = '/api/auth/signout';
             }}
             className="flex items-center w-full px-4 py-3 text-sm text-gray-300 rounded-md hover:bg-gray-700 hover:text-white transition-all duration-200"

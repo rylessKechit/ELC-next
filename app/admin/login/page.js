@@ -194,19 +194,6 @@ export default function AdminLoginPage() {
               </Link>
             </div>
           </div>
-
-          {/* Informations de connexion par défaut (à supprimer en production) */}
-          {process.env.NODE_ENV === 'development' && (
-            <div className="mt-6 p-4 bg-blue-50 rounded-md">
-              <h3 className="text-sm font-medium text-blue-800 mb-2">
-                Connexion de développement
-              </h3>
-              <p className="text-xs text-blue-600">
-                Email: admin@elysian-luxury-chauffeurs.com<br />
-                Mot de passe: ElysianAdmin123!
-              </p>
-            </div>
-          )}
         </div>
       </div>
     </div>

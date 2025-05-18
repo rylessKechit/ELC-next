@@ -20,6 +20,9 @@ import {
   faCar
 } from '@fortawesome/free-solid-svg-icons';
 
+// Importer le nouveau composant de filtre
+import RevenueTimeFilter from '@/components/admin/RevenueTimeFilter';
+
 const DashboardStats = ({ title, value, icon, color, link }) => {
   const content = (
     <div className="bg-white p-4 rounded-lg shadow hover:shadow-md transition-all duration-300">
@@ -47,19 +50,26 @@ export default function Dashboard() {
     cancelledBookings: 0,
     todayBookings: 0,
     totalRevenue: 0,
-    completedRevenue: 0
+    completedRevenue: 0,
+    timeFilterDetails: {
+      filter: 'all',
+      label: 'Toutes périodes',
+      dateRange: 'Toutes les dates'
+    }
   });
   const [upcomingBookings, setUpcomingBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [timeFilter, setTimeFilter] = useState('all');
   
+  // Utiliser le filtre temporel pour récupérer les statistiques
   useEffect(() => {
     async function fetchDashboardData() {
       try {
         setLoading(true);
         
-        // Récupération des données réelles depuis l'API
-        const response = await fetch('/api/dashboard/stats');
+        // Récupération des données avec le filtre temporel
+        const response = await fetch(`/api/dashboard/stats?timeFilter=${timeFilter}`);
         if (!response.ok) {
           throw new Error(`Erreur HTTP: ${response.status}`);
         }
@@ -93,7 +103,12 @@ export default function Dashboard() {
     }
     
     fetchDashboardData();
-  }, []);
+  }, [timeFilter]); // Ajouter timeFilter comme dépendance pour recharger les données lors du changement
+
+  // Gérer le changement de filtre temporel
+  const handleTimeFilterChange = (filter) => {
+    setTimeFilter(filter);
+  };
 
   // Format date/heure
   const formatDateTime = (timestamp) => {
@@ -175,48 +190,6 @@ export default function Dashboard() {
             link={item.link}
           />
         ))}
-      </div>
-      
-      {/* Actions rapides */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <Link 
-          href="/admin/bookings/new" 
-          className="bg-white p-4 rounded-lg shadow hover:shadow-md transition-colors duration-300 flex items-center"
-        >
-          <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white mr-3">
-            <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
-          </div>
-          <div>
-            <h3 className="font-medium">Nouvelle réservation</h3>
-            <p className="text-sm text-gray-500">Créer une réservation manuellement</p>
-          </div>
-        </Link>
-        
-        <Link 
-          href="/admin/planning" 
-          className="bg-white p-4 rounded-lg shadow hover:shadow-md transition-colors duration-300 flex items-center"
-        >
-          <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-white mr-3">
-            <FontAwesomeIcon icon={faCalendarAlt} className="h-4 w-4" />
-          </div>
-          <div>
-            <h3 className="font-medium">Planning</h3>
-            <p className="text-sm text-gray-500">Voir tous les trajets planifiés</p>
-          </div>
-        </Link>
-        
-        <Link 
-          href="/admin/chauffeurs" 
-          className="bg-white p-4 rounded-lg shadow hover:shadow-md transition-colors duration-300 flex items-center"
-        >
-          <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white mr-3">
-            <FontAwesomeIcon icon={faCar} className="h-4 w-4" />
-          </div>
-          <div>
-            <h3 className="font-medium">Chauffeurs</h3>
-            <p className="text-sm text-gray-500">Gérer l'équipe de chauffeurs</p>
-          </div>
-        </Link>
       </div>
       
       {/* Contenu principal */}
@@ -304,19 +277,27 @@ export default function Dashboard() {
         
         {/* Revenue et stats */}
         <div>
-          <div className="bg-blue-50 rounded-lg p-6 text-center">
+          {/* Ajouter le filtre temporel */}
+          <RevenueTimeFilter 
+            activeFilter={timeFilter} 
+            onFilterChange={handleTimeFilterChange} 
+          />
+          
+          <div className="bg-blue-50 rounded-lg p-6 text-center mb-4">
             <div className="mb-2">
               <FontAwesomeIcon icon={faChartLine} className="h-8 w-8 text-primary" />
             </div>
-            <p className="text-sm text-gray-600 mb-2">Revenus des courses terminées</p>
+            <div className="space-y-1 mb-3">
+              <p className="text-sm text-gray-600">Revenus des courses terminées</p>
+              {stats.timeFilterDetails && (
+                <p className="text-xs font-medium text-gray-500">
+                  {stats.timeFilterDetails.label} ({stats.timeFilterDetails.dateRange})
+                </p>
+              )}
+            </div>
             <p className="text-3xl font-bold text-primary">
               {formatPrice(stats.completedRevenue || 0)}
             </p>
-            {stats.revenueChange && (
-              <p className="text-xs text-gray-500 mt-2">
-                {stats.revenueChange > 0 ? '+' : ''}{stats.revenueChange}% par rapport au mois précédent
-              </p>
-            )}
           </div>
           
           <div className="bg-white rounded-lg shadow p-4">
