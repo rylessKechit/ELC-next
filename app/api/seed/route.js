@@ -17,8 +17,6 @@ export async function GET(request) {
       }
     }
     
-    // Initialiser la base de données
-    console.log('Démarrage de l\'initialisation de la base de données...');
     const result = await seedDatabase();
     
     if (result.success) {

@@ -24,8 +24,6 @@ export async function GET(request) {
     const collections = await db.listCollections().toArray();
     const collectionNames = collections.map(col => col.name);
     
-    console.log('Collections disponibles:', collectionNames);
-    
     // Initialiser les statistiques
     let stats = {
       totalBookings: 0,
@@ -44,7 +42,6 @@ export async function GET(request) {
     
     // Statistiques des réservations si la collection existe
     if (collectionNames.includes('bookings')) {
-      console.log('Récupération des stats de réservations...');
       
       // Statistiques générales
       stats.totalBookings = await db.collection('bookings').countDocuments();
@@ -64,31 +61,18 @@ export async function GET(request) {
       stats.todayBookings = await db.collection('bookings').countDocuments({
         pickupDateTime: { $gte: startOfDay, $lte: endOfDay }
       });
-      
-      console.log('Stats de réservations récupérées:', {
-        total: stats.totalBookings,
-        pending: stats.pendingBookings,
-        today: stats.todayBookings
-      });
     }
     
     // Statistiques supplémentaires pour les administrateurs
     if (session.user.role === 'admin') {
       // Statistiques des utilisateurs si la collection existe
       if (collectionNames.includes('users')) {
-        console.log('Récupération des stats utilisateurs...');
         stats.totalUsers = await db.collection('users').countDocuments();
         stats.totalDrivers = await db.collection('users').countDocuments({ role: 'driver' });
-        
-        console.log('Stats utilisateurs récupérées:', {
-          total: stats.totalUsers,
-          drivers: stats.totalDrivers
-        });
       }
       
       // Calculer le revenu total et des courses terminées si la collection bookings existe
       if (collectionNames.includes('bookings')) {
-        console.log('Calcul des revenus avec filtre: ' + timeFilter);
         try {
           // Définir les dates de filtre en fonction du timeFilter
           let dateFilter = {};
@@ -183,7 +167,6 @@ export async function GET(request) {
           ]).toArray();
           
           stats.totalRevenue = revenueAggregation.length > 0 ? revenueAggregation[0].total : 0;
-          console.log('Revenu total calculé:', stats.totalRevenue);
           
           // Revenu des courses terminées uniquement
           const completedRevenueAggregation = await db.collection('bookings').aggregate([
@@ -210,7 +193,6 @@ export async function GET(request) {
           ]).toArray();
           
           stats.completedRevenue = completedRevenueAggregation.length > 0 ? completedRevenueAggregation[0].total : 0;
-          console.log('Revenu des courses terminées calculé:', stats.completedRevenue);
           
           // Ajouter des métadonnées temporelles pour l'UI
           stats.timeFilterDetails = {
@@ -226,8 +208,6 @@ export async function GET(request) {
         }
       }
     }
-    
-    console.log('Stats finales:', stats);
     
     return NextResponse.json({
       success: true,

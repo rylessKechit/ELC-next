@@ -17,22 +17,18 @@ const BookingStepOne = ({
 }) => {
   // Amélioration: Fonction individuelle pour chaque champ d'adresse
   const handlePickupAddressChange = (value) => {
-    console.log("Changement adresse départ:", value);
     setValue('pickupAddress', value);
   };
 
   const handleDropoffAddressChange = (value) => {
-    console.log("Changement adresse arrivée:", value);
     setValue('dropoffAddress', value);
   };
 
   const handlePickupAddressSelect = (address, placeId) => {
-    console.log("Sélection adresse départ:", address, placeId);
     handleAddressSelect('pickupAddress', address, placeId);
   };
 
   const handleDropoffAddressSelect = (address, placeId) => {
-    console.log("Sélection adresse arrivée:", address, placeId);
     handleAddressSelect('dropoffAddress', address, placeId);
   };
 

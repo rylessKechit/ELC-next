@@ -147,24 +147,12 @@ const BookingForm = () => {
   
   // Gestion des adresses et places IDs
 const handleAddressSelect = (name, address, placeId) => {
-  console.log('📍 [BookingForm] Adresse sélectionnée:', {
-    field: name,
-    address,
-    placeId: placeId ? placeId.substring(0, 20) + '...' : 'VIDE',
-    hasPlaceId: !!placeId
-  });
-  
   // Mettre à jour l'adresse
   setValue(name, address);
   
   // Mettre à jour le place_id correspondant
   const placeIdField = `${name}PlaceId`;
   setValue(placeIdField, placeId || '');
-  
-  console.log('💾 [BookingForm] Valeurs mises à jour:', {
-    [name]: address,
-    [placeIdField]: placeId || 'VIDE'
-  });
   
   // Réinitialiser l'estimation de prix quand les adresses changent
   setPriceEstimate(null);
@@ -222,21 +210,12 @@ const handleAddressSelect = (name, address, placeId) => {
   setIsCalculating(true)
   
   try {
-    console.log('🚗 [BookingForm] Début du calcul avec:', {
-      pickup: formValues.pickupAddress,
-      dropoff: formValues.dropoffAddress,
-      pickupPlaceId: formValues.pickupAddressPlaceId.substring(0, 20) + '...',
-      dropoffPlaceId: formValues.dropoffAddressPlaceId.substring(0, 20) + '...'
-    })
-    
     // Calculer pour tous les types de véhicules
     const vehicleTypes = ['green', 'premium', 'sedan', 'van']
     const vehicleEstimates = []
     
     for (const vehicleType of vehicleTypes) {
       try {
-        console.log(`🚙 [BookingForm] Calcul pour ${vehicleType}...`)
-        
         const response = await api.post('/price/estimate', {
           pickupPlaceId: formValues.pickupAddressPlaceId,
           dropoffPlaceId: formValues.dropoffAddressPlaceId,
@@ -246,13 +225,6 @@ const handleAddressSelect = (name, address, placeId) => {
           roundTrip: formValues.roundTrip,
           returnDateTime: formValues.roundTrip && formValues.returnDate ? `${formValues.returnDate}T${formValues.returnTime}` : null,
           vehicleType: vehicleType
-        })
-        
-        console.log(`📊 [BookingForm] Réponse pour ${vehicleType}:`, {
-          success: response.data?.success,
-          hasEstimate: !!response.data?.data?.estimate,
-          distance: response.data?.data?.estimate?.details?.formattedDistance,
-          price: response.data?.data?.estimate?.exactPrice
         })
         
         if (response.data && response.data.success && response.data.data && response.data.data.estimate) {
@@ -273,8 +245,6 @@ const handleAddressSelect = (name, address, placeId) => {
     if (vehicleEstimates.length === 0) {
       throw new Error('Impossible de calculer le prix pour aucun véhicule. Veuillez vérifier vos adresses.')
     }
-    
-    console.log(`✅ [BookingForm] ${vehicleEstimates.length} véhicules calculés avec succès`)
     
     // Créer les options de véhicules avec les prix réels
     const vehicleOptions = [
@@ -318,8 +288,6 @@ const handleAddressSelect = (name, address, placeId) => {
     
     // Filtrer les véhicules qui ont pu être calculés
     const validVehicles = vehicleOptions.filter(v => v.estimate !== null)
-    
-    console.log(`🚗 [BookingForm] ${validVehicles.length} véhicules valides après filtrage`)
     
     if (validVehicles.length === 0) {
       throw new Error('Aucun véhicule n\'a pu être calculé correctement.')

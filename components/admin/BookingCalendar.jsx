@@ -237,7 +237,6 @@ const BookingCalendar = ({ statusFilter = 'all' }) => {
           url += `&status=${statusFilter}`;
         }
         
-        console.log('Fetching calendar bookings from:', url);
         const response = await fetch(url);
         
         if (!response.ok) {
@@ -250,7 +249,6 @@ const BookingCalendar = ({ statusFilter = 'all' }) => {
           throw new Error(data.error || "Erreur inconnue");
         }
         
-        console.log('Received calendar bookings:', data);
         setBookings(data.data || []);
         setLoading(false);
       } catch (error) {

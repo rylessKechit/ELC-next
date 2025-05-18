@@ -33,7 +33,6 @@ export const useGoogleMapsScript = () => {
     // Définir la fonction de callback globale
     window.googleMapsCallback = () => {
       setIsLoaded(true)
-      console.log('Google Maps API chargée avec succès')
     }
 
     // Créer et ajouter le script avec chargement optimisé

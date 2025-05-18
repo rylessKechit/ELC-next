@@ -50,7 +50,6 @@ const BookingStepThree = ({
       const response = await api.post('/booking', bookingData);
       
       if (response.data && response.data.success) {
-        console.log('Réservation créée avec succès:', response.data);
         handleBookingSuccess(response.data.booking);
       } else {
         setError(response.data?.error || "Erreur lors de la confirmation de la réservation.");

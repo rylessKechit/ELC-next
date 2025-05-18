@@ -70,13 +70,6 @@ const AdminBookingForm = () => {
   
   // Gestionnaire de sélection d'adresse
   const handleAddressSelect = (name, address, placeId) => {
-    console.log('📍 [AdminBookingForm] Adresse sélectionnée:', {
-      field: name,
-      address,
-      placeId: placeId ? placeId.substring(0, 20) + '...' : 'VIDE',
-      hasPlaceId: !!placeId
-    });
-    
     // Mettre à jour l'adresse
     updateFormValue(name, address);
     

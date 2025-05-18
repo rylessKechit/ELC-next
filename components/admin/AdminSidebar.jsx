@@ -27,11 +27,6 @@ const AdminSidebar = ({ sidebarOpen, closeSidebar }) => {
   // Vérifier si l'utilisateur est admin
   const isAdmin = session?.user?.role === 'admin';
   
-  // Logging pour déboguer
-  useEffect(() => {
-    console.log("Sidebar state changed:", sidebarOpen);
-  }, [sidebarOpen]);
-  
   // Toggle pour les menus déroulants
   const toggleExpand = (index) => {
     setExpandedItem(expandedItem === index ? null : index);
@@ -98,7 +93,6 @@ const AdminSidebar = ({ sidebarOpen, closeSidebar }) => {
   
   // Gestionnaire de fermeture explicite
   const handleCloseSidebar = () => {
-    console.log("Closing sidebar from component");
     if (typeof closeSidebar === 'function') {
       closeSidebar();
     }

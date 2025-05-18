@@ -22,37 +22,24 @@ function generateBookingId() {
  * @returns {Promise<Object>} - Réponse HTTP avec les détails de la réservation
  */
 export async function POST(request) {
-  try {
-    console.log('📥 Début du traitement de la réservation')
-    
-    // Connexion à MongoDB
+  try {// Connexion à MongoDB
     await dbConnect()
-    console.log('✅ Connecté à MongoDB')
     
     // Extraire les données de la requête
     const requestData = await request.json()
-    console.log('📄 Données reçues:', {
-      pickupAddress: requestData.pickupAddress,
-      dropoffAddress: requestData.dropoffAddress,
-      customerInfo: requestData.customerInfo
-    })
     
     // Valider les données entrantes
     const { valid, errors } = validateBookingRequest(requestData)
     
     if (!valid) {
-      console.log('❌ Validation échouée:', errors)
       return NextResponse.json(
         { success: false, error: 'Données invalides', details: errors },
         { status: 400 }
       )
     }
     
-    console.log('✅ Validation réussie')
-    
     // Générer un ID unique pour cette réservation
     const bookingId = generateBookingId()
-    console.log('🆔 ID de réservation généré:', bookingId)
     
     // Extraire les données principales
     const {
@@ -76,11 +63,6 @@ export async function POST(request) {
     // Combiner date et heure pour les champs DateTime
     const pickupDateTime = new Date(`${pickupDate}T${pickupTime}`)
     const returnDateTime = roundTrip && returnDate && returnTime ? new Date(`${returnDate}T${returnTime}`) : null
-    
-    console.log('🕐 Date/heure formatées:', {
-      pickupDateTime: pickupDateTime.toISOString(),
-      returnDateTime: returnDateTime ? returnDateTime.toISOString() : null
-    })
     
     // Créer l'objet réservation pour MongoDB avec Mongoose
     const bookingData = {
@@ -108,13 +90,9 @@ export async function POST(request) {
       status: 'confirmed' // CHANGEMENT: Direct en "confirmed" au lieu de "pending"
     }
     
-    console.log('💾 Création de la réservation dans la base de données...')
-    
     // Sauvegarder en base de données avec Mongoose
     const booking = new Booking(bookingData)
     const savedBooking = await booking.save()
-    
-    console.log('✅ Réservation sauvegardée:', savedBooking._id)
     
     // Préparer les données pour l'email
     const emailBookingData = {
@@ -141,16 +119,12 @@ export async function POST(request) {
     let emailError = null
     
     try {
-      console.log('📧 Envoi de l\'email de confirmation...')
       await emailService.sendBookingConfirmation(emailBookingData)
       emailSent = true
-      console.log('✅ Email de confirmation envoyé')
       
       // Envoyer également une notification à l'administrateur
       try {
-        console.log('📧 Envoi de la notification admin...')
         await emailService.sendBookingNotification(emailBookingData)
-        console.log('✅ Notification admin envoyée')
       } catch (adminEmailError) {
         console.error('❌ Erreur notification admin:', adminEmailError.message)
         // Ne pas échouer la réservation si l'email admin échoue
@@ -186,8 +160,6 @@ export async function POST(request) {
       emailStatus: emailSent ? 'sent' : 'failed',
       emailError: emailError
     }
-    
-    console.log('✅ Réservation traitée avec succès')
     
     return NextResponse.json(responseData, { status: 200 })
   } catch (error) {

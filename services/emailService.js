@@ -11,14 +11,6 @@ const createTransporter = () => {
   const user = process.env.EMAIL_USER
   const pass = process.env.EMAIL_PASSWORD
   
-  console.log('Configuration email:', {
-    host,
-    port,
-    secure,
-    user: user ? user : 'Non configuré',
-    pass: pass ? '***configuré***' : 'Non configuré'
-  })
-  
   if (!user || !pass) {
     console.warn('⚠️ EMAIL_USER ou EMAIL_PASSWORD non configurés')
     return null
@@ -49,8 +41,6 @@ export const emailService = {
       const transporter = createTransporter()
       
       if (!transporter) {
-        console.log('⚠️ Transporteur email non configuré. Simulation d\'envoi d\'email:')
-        console.log(options)
         return { 
           messageId: `dev-${Date.now()}`,
           simulated: true,
@@ -80,9 +70,7 @@ export const emailService = {
       }
       
       // Envoyer l'email
-      console.log(`📧 Envoi d'email à ${options.to}`)
       const info = await transporter.sendMail(mailOptions)
-      console.log(`📧 Email envoyé: ${info.messageId}`)
       return info
     } catch (error) {
       console.error('Erreur lors de l\'envoi de l\'email:', error)

@@ -52,16 +52,12 @@ export async function GET(request) {
       }
     }
     
-    console.log('Query for upcoming bookings:', JSON.stringify(baseQuery, null, 2));
-    
     // Récupérer les prochaines réservations, triées par date de pickup
     const upcomingBookings = await db.collection('bookings')
       .find(baseQuery)
       .sort({ pickupDateTime: 1 })
       .limit(limit)
       .toArray();
-    
-    console.log('Found upcoming bookings:', upcomingBookings.length);
     
     return NextResponse.json({
       success: true,
