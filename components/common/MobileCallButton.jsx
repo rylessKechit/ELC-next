@@ -51,7 +51,7 @@ const MobileCallButton = () => {
             
             <Link 
               href="/#booking" 
-              className="bg-primary hover:bg-primary-dark text-white py-3 px-4 rounded-full font-medium transition-colors duration-300 w-full flex items-center justify-center"
+              className="bg-primary hover:bg-primary-dark hover:text-white text-white py-3 px-4 rounded-full font-medium transition-colors duration-300 w-full flex items-center justify-center"
               aria-label="Réserver un chauffeur en ligne"
             >
               <i className="fas fa-calendar-alt mr-2"></i>
@@ -62,7 +62,7 @@ const MobileCallButton = () => {
       ) : (
         <button 
           onClick={() => setIsExpanded(true)}
-          className="w-14 h-14 bg-primary hover:bg-primary-dark text-white rounded-full shadow-lg flex items-center justify-center transition-colors duration-300"
+          className="w-14 h-14 bg-primary hover:bg-primary-dark hover:text-white text-white rounded-full shadow-lg flex items-center justify-center transition-colors duration-300"
           aria-label="Afficher les options de contact pour réserver un chauffeur"
           aria-expanded={isExpanded}
         >

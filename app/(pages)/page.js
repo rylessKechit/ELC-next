@@ -235,7 +235,7 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row gap-4 mt-10 justify-center md:justify-start">
             <a 
               href="#booking"
-              className="py-3 px-6 bg-primary text-white font-medium rounded-none uppercase tracking-wider text-sm text-center hover:bg-primary-dark transition-all"
+              className="py-3 px-6 bg-primary text-white font-medium rounded-none uppercase tracking-wider text-sm text-center hover:bg-primary-dark hover:text-white transition-all"
             >
               Réserver maintenant
             </a>
@@ -501,7 +501,7 @@ export default function HomePage() {
             <p className="text-gray-600 mb-6">
               Nos chauffeurs professionnels connaissent parfaitement le département de l'Essonne (91) et sont à votre disposition 24h/24 pour tous vos déplacements à Longjumeau et dans toute la région.
             </p>
-            <a href="#booking" className="inline-block py-3 px-6 bg-primary text-white font-medium rounded-full hover:bg-primary-dark transition-colors duration-300">
+            <a href="#booking" className="inline-block py-3 px-6 bg-primary text-white font-medium rounded-full hover:bg-primary-dark hover:text-white transition-colors duration-300">
               Réserver un chauffeur
             </a>
           </div>

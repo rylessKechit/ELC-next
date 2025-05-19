@@ -63,7 +63,7 @@ const BookingNotesModal = ({
             <button
               onClick={onSave}
               disabled={saving}
-              className="flex-1 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors disabled:opacity-50"
+              className="flex-1 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark hover:text-white transition-colors disabled:opacity-50"
             >
               {saving ? (
                 <>

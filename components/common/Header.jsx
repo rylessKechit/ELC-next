@@ -87,17 +87,17 @@ const Header = () => {
 
           {/* CTA Buttons - Desktop */}
           <div className="flex items-center gap-3">
-            <Link 
-              href="/contact" 
+            <a 
+              href="tel:+33643537653" 
               className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-white hover:bg-white/15 transition-all text-sm"
             >
               <i className="fas fa-phone"></i>
               <span className="font-medium">Réservation téléphonique</span>
-            </Link>
+            </a>
             
             <Link 
               href="/#booking" 
-              className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-white hover:bg-primary-dark transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 text-sm"
+              className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-white hover:bg-primary-dark hover:text-white hover:text-white transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 text-sm"
             >
               <i className="fas fa-calendar-alt"></i>
               <span className="font-medium">Réserver maintenant</span>
@@ -115,7 +115,7 @@ const Header = () => {
               
               <Link 
                 href="/#booking" 
-                className="w-10 h-10 rounded-full bg-primary text-white hover:bg-primary-dark transition-all flex items-center justify-center shadow-md hover:shadow-lg"
+                className="w-10 h-10 rounded-full bg-primary text-white hover:bg-primary-dark hover:text-white transition-all flex items-center justify-center shadow-md hover:shadow-lg"
                 aria-label="Réserver maintenant"
               >
                 <i className="fas fa-calendar-alt text-sm"></i>

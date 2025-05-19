@@ -236,7 +236,7 @@ const BookingStepOne = ({
       
       <button 
         type="submit" 
-        className="w-full py-3 px-6 bg-primary text-white font-medium rounded-full hover:bg-primary-dark transition-colors duration-300 flex items-center justify-center mt-6"
+        className="w-full py-3 px-6 bg-primary text-white font-medium rounded-full hover:bg-primary-dark hover:text-white transition-colors duration-300 flex items-center justify-center mt-6"
         disabled={isCalculating}
       >
         {isCalculating ? (

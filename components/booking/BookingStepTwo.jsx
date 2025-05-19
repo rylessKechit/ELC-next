@@ -53,7 +53,7 @@ const BookingStepTwo = ({
         
         <button 
           type="button" 
-          className="py-3 px-6 bg-primary text-white font-medium rounded-full hover:bg-primary-dark transition-colors duration-300 flex items-center justify-center sm:w-2/3"
+          className="py-3 px-6 bg-primary text-white font-medium rounded-full hover:bg-primary-dark hover:text-white transition-colors duration-300 flex items-center justify-center sm:w-2/3"
           onClick={goToNextStep}
           disabled={!selectedVehicle}
         >

@@ -67,7 +67,7 @@ export default function AdminLayout({ children }) {
                 <button
                   onClick={() => signOut({ callbackUrl: '/admin/login' })}
                   className="flex items-center px-3 py-2 sm:px-4 sm:py-2.5 
-                           bg-primary text-white rounded-md hover:bg-primary-dark 
+                           bg-primary text-white rounded-md hover:bg-primary-dark hover:text-white 
                            transition-colors duration-200 text-sm sm:text-base"
                 >
                   <FontAwesomeIcon icon={faSignOutAlt} className="h-4 w-4 sm:mr-2" />
