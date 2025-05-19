@@ -246,3 +246,49 @@
     color: black;
   }
 }
+
+/* Style personnalisé pour l'autocomplétion Google Maps */
+.pac-container {
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  margin-top: 6px;
+  font-family: Arial, sans-serif; /* Ou votre police personnalisée */
+}
+
+/* Élément survolé */
+.pac-item:hover {
+  background-color: #d4af37; /* Couleur primaire */
+  color: white;
+}
+
+/* Élément actif/sélectionné */
+.pac-item-selected {
+  background-color: #d4af37; /* Couleur primaire */
+  color: white;
+}
+
+/* Style des éléments individuels */
+.pac-item {
+  padding: 10px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #f2f2f2;
+  transition: background-color 0.2s;
+}
+
+/* Couleur du texte correspondant à la recherche */
+.pac-matched {
+  font-weight: bold;
+  color: #1c2938; /* Couleur secondaire */
+}
+
+/* Icône de position */
+.pac-icon {
+  color: #d4af37; /* Couleur primaire */
+}
+
+/* Le footer "powered by Google" */
+.pac-container:after {
+  display: none !important; /* Masquer le "powered by Google" */
+  content: none !important;
+}

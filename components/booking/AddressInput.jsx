@@ -1,4 +1,4 @@
-// components/booking/AddressInput.jsx - Version corrigée
+// components/booking/AddressInput.jsx - Version améliorée
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
@@ -12,7 +12,7 @@ const AddressInput = ({ id, value, onChange, onSelect, placeholder }) => {
   const inputRef = useRef(null);
   const autocompleteRef = useRef(null);
 
-  // Charger le script Google Maps au montage du composant, pas au focus
+  // Charger le script Google Maps au montage du composant
   useEffect(() => {
     // Si le script est déjà chargé
     if (googleMapsLoaded) {
@@ -42,6 +42,11 @@ const AddressInput = ({ id, value, onChange, onSelect, placeholder }) => {
       googleMapsLoaded = true;
       setIsLoading(false);
       initializeAutocomplete();
+      
+      // Ajouter notre style personnalisé après le chargement
+      setTimeout(() => {
+        customizeAutocompleteStyle();
+      }, 300);
     };
     
     const script = document.createElement('script');
@@ -73,6 +78,82 @@ const AddressInput = ({ id, value, onChange, onSelect, placeholder }) => {
       }
     };
   }, []);
+  
+  // Fonction pour personnaliser le style après chargement
+  const customizeAutocompleteStyle = () => {
+    // Ajout d'une feuille de style personnalisée
+    const style = document.createElement('style');
+    style.textContent = `
+      .pac-container {
+        border-radius: 8px;
+        border: 1px solid #e5e5e5;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        margin-top: 6px;
+        font-family: Arial, sans-serif;
+      }
+      
+      .pac-item {
+        padding: 10px 12px;
+        cursor: pointer;
+        border-bottom: 1px solid #f2f2f2;
+        transition: color 0.2s;
+      }
+      
+      /* Style pour l'élément survolé - texte doré sans changer le fond */
+      .pac-item:hover {
+        background-color: transparent;
+        color: #d4af37 !important;
+      }
+      
+      /* S'assurer que tous les éléments à l'intérieur deviennent dorés au survol */
+      .pac-item:hover .pac-matched,
+      .pac-item:hover .pac-item-query,
+      .pac-item:hover .pac-item-query .pac-matched {
+        color: #d4af37 !important;
+      }
+      
+      /* Élément actif/sélectionné - même style que le survol */
+      .pac-item-selected {
+        background-color: transparent;
+        color: #d4af37 !important;
+      }
+      
+      .pac-item-selected .pac-matched,
+      .pac-item-selected .pac-item-query,
+      .pac-item-selected .pac-item-query .pac-matched {
+        color: #d4af37 !important;
+      }
+      
+      /* Texte normal */
+      .pac-matched {
+        font-weight: bold;
+        color: #1c2938;
+      }
+      
+      /* Supprimer powered by Google */
+      .pac-container:after {
+        display: none !important;
+        content: none !important;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    // Observer pour supprimer l'attribution Google
+    const observer = new MutationObserver((mutations) => {
+      const pacContainers = document.querySelectorAll('.pac-container');
+      pacContainers.forEach(container => {
+        const poweredBy = container.querySelector('.pac-logo');
+        if (poweredBy) {
+          poweredBy.classList.remove('pac-logo');
+        }
+      });
+    });
+    
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  };
 
   // Initialiser l'autocomplete
   const initializeAutocomplete = () => {
@@ -89,7 +170,8 @@ const AddressInput = ({ id, value, onChange, onSelect, placeholder }) => {
       // Créer une nouvelle instance pour ce champ
       autocompleteRef.current = new window.google.maps.places.Autocomplete(inputRef.current, {
         componentRestrictions: { country: 'fr' },
-        fields: ['address_components', 'formatted_address', 'place_id', 'geometry']
+        fields: ['address_components', 'formatted_address', 'place_id', 'geometry'],
+        types: ['address']
       });
       
       // Ajouter l'écouteur d'événements
@@ -133,11 +215,11 @@ const AddressInput = ({ id, value, onChange, onSelect, placeholder }) => {
           id={id}
           ref={inputRef}
           type="text"
-          defaultValue={value} // Utilisation de defaultValue au lieu de value
+          defaultValue={value} 
           onChange={handleChange}
           placeholder={placeholder}
           className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
-          autoComplete="off" // Désactiver l'autocomplétion native du navigateur
+          autoComplete="off"
         />
         {isLoading && (
           <div className="absolute inset-y-0 right-3 flex items-center">
