@@ -142,20 +142,17 @@ export default function HomePage() {
     {
       name: 'Marie L.',
       role: 'Cliente régulière',
-      text: 'Un service exceptionnel ! J\'utilise régulièrement ce service de chauffeurs pour mes déplacements professionnels entre Longjumeau et Paris. Toujours ponctuel, véhicule impeccable et chauffeur très professionnel.',
-      image: '/assets/images/testimonial-1.webp'
+      text: 'Un service exceptionnel ! J\'utilise régulièrement ce service de chauffeurs pour mes déplacements professionnels entre Longjumeau et Paris. Toujours ponctuel, véhicule impeccable et chauffeur très professionnel.'
     },
     {
       name: 'Jean-Pierre M.',
       role: 'Dirigeant d\'entreprise',
-      text: 'Je recommande vivement ce service de chauffeurs dans l\'Essonne. Pour mes rendez-vous d\'affaires à Massy et dans le 91, c\'est devenu indispensable. Discrétion et qualité au rendez-vous.',
-      image: '/assets/images/testimonial-2.webp'
+      text: 'Je recommande vivement ce service de chauffeurs dans l\'Essonne. Pour mes rendez-vous d\'affaires à Massy et dans le 91, c\'est devenu indispensable. Discrétion et qualité au rendez-vous.'
     },
     {
       name: 'Sylvie B.',
       role: 'Organisatrice d\'événements',
-      text: 'Parfait pour nos événements à Évry-Courcouronnes ! Le chauffeur connaît parfaitement le département 91, véhicule luxueux et service impeccable. Nos invités sont toujours ravis.',
-      image: '/assets/images/testimonial-3.webp'
+      text: 'Parfait pour nos événements à Évry-Courcouronnes ! Le chauffeur connaît parfaitement le département 91, véhicule luxueux et service impeccable. Nos invités sont toujours ravis.'
     }
   ]
 
@@ -615,15 +612,6 @@ export default function HomePage() {
                   {testimonial.text}
                 </p>
                 <div className="flex items-center">
-                  <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow-md">
-                    <Image 
-                      src={testimonial.image} 
-                      alt={`Avis client sur chauffeurs Essonne - ${testimonial.name}`}
-                      width={64}
-                      height={64}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
                   <div className="ml-4">
                     <h4 className="font-bold text-lg mb-0">{testimonial.name}</h4>
                     <p className="text-primary italic">{testimonial.role}</p>
@@ -637,13 +625,13 @@ export default function HomePage() {
             {testimonials.map((_, index) => (
               <button 
                 key={index} 
-                className={`w-12 h-12 flex items-center justify-center p-2 mx-2 rounded-full transition-all duration-300 touch-manipulation ${
+                className={`w-3 h-3 flex items-center justify-center p-2 mx-2 rounded-full transition-all duration-300 touch-manipulation ${
                   index === currentTestimonial ? 'bg-primary text-white' : 'bg-primary/10 text-primary'
                 }`}
                 onClick={() => setCurrentTestimonial(index)}
                 aria-label={`Témoignage ${index + 1} de ${testimonials[index].name}`}
               >
-                <span className="w-3 h-3 rounded-full block" style={{
+                <span className="w-1.5 h-1.5 rounded-full block" style={{
                   backgroundColor: index === currentTestimonial ? 'white' : '#d4af37'
                 }}></span>
               </button>
