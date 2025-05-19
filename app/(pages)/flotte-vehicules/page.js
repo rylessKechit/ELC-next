@@ -16,7 +16,7 @@ import mercedesVClass from '@/public/assets/images/mercedes-v-class.webp'
 
 export default function FlotteVehiculesPage() {
   // État pour suivre le véhicule sélectionné
-  const [selectedVehicle, setSelectedVehicle] = useState('sedan')
+  const [selectedVehicle, setSelectedVehicle] = useState('green')
   
   // Animation controls
   const headerControls = useAnimation()
@@ -109,7 +109,7 @@ export default function FlotteVehiculesPage() {
     {
       id: 'sedan',
       name: 'Berline de Luxe',
-      model: 'Mercedes-Benz Classe E',
+      model: 'Mercedes-Benz Classe S / BMW Série 7',
       description: 'Alliance parfaite entre élégance et confort pour vos déplacements professionnels et privés. La référence pour tous vos trajets d\'affaires.',
       capacity: 'Jusqu\'à 3 passagers',
       luggage: 'Jusqu\'à 3 bagages',
@@ -121,13 +121,13 @@ export default function FlotteVehiculesPage() {
         'Bouteilles d\'eau offertes',
         'Espace de travail confortable'
       ],
-      image: mercedesClasseE,
+      image: bmwSerie7,
       ideal: 'Idéal pour: Trajets d\'affaires, transferts aéroport, déplacements urbains'
     },
     {
       id: 'premium',
       name: 'Berline Premium',
-      model: 'Mercedes-Benz Classe S / BMW Série 7',
+      model: 'Mercedes-Benz Classe E / BMW Série 5',
       description: 'Le summum du luxe et du confort pour les clients les plus exigeants. Un cocon de sérénité pour vos déplacements de prestige.',
       capacity: 'Jusqu\'à 3 passagers',
       luggage: 'Jusqu\'à 3 bagages',
@@ -140,7 +140,7 @@ export default function FlotteVehiculesPage() {
         'Écrans individuels',
         'Isolation acoustique renforcée'
       ],
-      image: bmwSerie7,
+      image: mercedesClasseE,
       ideal: 'Idéal pour: Événements VIP, délégations importantes, clients exigeants'
     },
     {

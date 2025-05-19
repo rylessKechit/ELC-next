@@ -162,15 +162,15 @@ export default function ServicesLongueDistancePage() {
 
   // Destinations populaires
   const popularDestinations = [
-    { name: 'Lyon', distance: '465 km', time: '4h30', price: 'À partir de 590€' },
-    { name: 'Marseille', distance: '775 km', time: '7h15', price: 'À partir de 890€' },
-    { name: 'Bordeaux', distance: '590 km', time: '5h45', price: 'À partir de 690€' },
-    { name: 'Strasbourg', distance: '490 km', time: '4h45', price: 'À partir de 620€' },
-    { name: 'Lille', distance: '225 km', time: '2h30', price: 'À partir de 380€' },
-    { name: 'Nantes', distance: '385 km', time: '3h45', price: 'À partir de 540€' },
-    { name: 'Nice', distance: '930 km', time: '8h45', price: 'À partir de 980€' },
-    { name: 'Cannes', distance: '890 km', time: '8h15', price: 'À partir de 950€' },
-    { name: 'Deauville', distance: '215 km', time: '2h15', price: 'À partir de 360€' },
+    { name: 'Lyon', distance: '465 km', time: '4h30', price: 'À partir de 1 080€' },
+    { name: 'Marseille', distance: '775 km', time: '7h15', price: 'À partir de 1 780€' },
+    { name: 'Bordeaux', distance: '590 km', time: '5h45', price: 'À partir de 1 340€' },
+    { name: 'Strasbourg', distance: '490 km', time: '4h45', price: 'À partir de 1 120€' },
+    { name: 'Lille', distance: '225 km', time: '2h30', price: 'À partir de 510€' },
+    { name: 'Nantes', distance: '385 km', time: '3h45', price: 'À partir de 880€' },
+    { name: 'Nice', distance: '930 km', time: '8h45', price: 'À partir de 2 130€' },
+    { name: 'Cannes', distance: '890 km', time: '8h15', price: 'À partir de 2 000€' },
+    { name: 'Deauville', distance: '215 km', time: '2h15', price: 'À partir de 500€' },
   ]
 
   // FAQ
