@@ -89,10 +89,10 @@ export default function ContactPage() {
                     </div>
                     <div className="ml-4">
                       <h3 className="text-xl font-semibold text-gray-800 mb-2">WhatsApp</h3>
-                      <p className="text-green-600 font-semibold">+33 6 12 34 56 78</p>
+                      <p className="text-green-600 font-semibold">+33 6 43 53 76 53</p>
                       <p className="text-gray-600 text-sm mt-1">Pour des réponses rapides et des réservations urgentes</p>
                       <a 
-                        href="https://wa.me/33612345678" 
+                        href="https://wa.me/33643537653" 
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center text-green-600 hover:text-green-700 font-medium mt-3 transition-colors"

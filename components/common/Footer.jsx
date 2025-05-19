@@ -49,23 +49,11 @@ const Footer = () => {
         {/* Bottom Footer */}
         <div className="py-6 text-sm text-white/80 flex flex-col md:flex-row justify-between items-center gap-4">
           <div>
-            <Link href="/legals" className="hover:text-primary transition-colors">
-              LÉGISLATION & RGPD
-            </Link>
-          </div>
-          
-          <div>
             &copy; {currentYear} ELYSIAN LUXURY CHAUFFEURS
           </div>
           
           <div>
-            <a href="/admin" className="hover:text-primary transition-colors">
-              METTRE À JOUR MON SITE INTERNET
-            </a>
-          </div>
-          
-          <div>
-            <span>CRÉÉ PAR <a href="https://example.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">VOTRE AGENCE</a></span>
+            <span>Crée par <a href="https://vizionair.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Vizion'air</a></span>
           </div>
         </div>
         
