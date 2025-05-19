@@ -1,9 +1,8 @@
-// components/ContactForm.jsx - Version corrigée
+// components/ContactForm.jsx - Version modifiée
 "use client";
 
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { api } from '@/lib/api';
 
 const ContactForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,17 +20,35 @@ const ContactForm = () => {
     setSubmitStatus(null);
     
     try {
-      const response = await api.post('/contact', data);
+      // Appel direct à l'API Next.js interne au lieu d'utiliser api.post
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
       
-      if (response.data && response.data.success) {
-        setSubmitStatus({ type: 'success', message: 'Message envoyé avec succès !' });
-        reset();
+      const result = await response.json();
+      
+      if (response.ok && result.success) {
+        setSubmitStatus({ 
+          type: 'success', 
+          message: result.message || 'Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.' 
+        });
+        reset(); // Réinitialiser le formulaire
       } else {
-        setSubmitStatus({ type: 'error', message: 'Erreur lors de l\'envoi du message.' });
+        setSubmitStatus({ 
+          type: 'error', 
+          message: result.error || 'Erreur lors de l\'envoi du message. Veuillez réessayer.' 
+        });
       }
     } catch (error) {
-      console.error('Erreur:', error);
-      setSubmitStatus({ type: 'error', message: 'Une erreur est survenue. Veuillez réessayer.' });
+      console.error('Erreur de connexion:', error);
+      setSubmitStatus({ 
+        type: 'error', 
+        message: 'Une erreur de connexion est survenue. Veuillez vérifier votre connexion internet et réessayer.' 
+      });
     } finally {
       setIsSubmitting(false);
     }
