@@ -7,9 +7,9 @@ import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faUserShield, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import BookingStepsHeader from '@/components/booking/BookingStepsHeader';
-import BookingStepOne from '@/components/booking/steps/BookingStepOne';
-import BookingStepTwo from '@/components/booking/steps/BookingStepTwo';
-import BookingStepThree from '@/components/booking/steps/BookingStepThree';
+import BookingStepOne from '@/components/booking/BookingStepOne';
+import BookingStepTwo from '@/components/booking/BookingStepTwo';
+import BookingStepThree from '@/components/booking/BookingStepThree';
 import BookingSuccess from '@/components/booking/BookingSuccess';
 
 const AdminBookingForm = () => {
