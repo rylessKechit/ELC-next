@@ -153,8 +153,7 @@ export const useAddressAutocomplete = (options = {}) => {
       const request = {
         input,
         sessionToken,
-        componentRestrictions: options.country ? { country: options.country } : undefined,
-        types: options.types || ['address']
+        componentRestrictions: options.country ? { country: options.country } : undefined
       }
 
       const response = await placesService.getPlacePredictions(request)

@@ -170,8 +170,7 @@ const AddressInput = ({ id, value, onChange, onSelect, placeholder }) => {
       // Créer une nouvelle instance pour ce champ
       autocompleteRef.current = new window.google.maps.places.Autocomplete(inputRef.current, {
         componentRestrictions: { country: 'fr' },
-        fields: ['address_components', 'formatted_address', 'place_id', 'geometry'],
-        types: ['address']
+        fields: ['address_components', 'formatted_address', 'place_id', 'geometry']
       });
       
       // Ajouter l'écouteur d'événements
