@@ -3,7 +3,6 @@ import '../styles/globals.css';
 import { Inter, Montserrat, Playfair_Display } from 'next/font/google';
 import Header from '@/components/common/Header';
 import Footer from '@/components/common/Footer';
-import MobileCallButton from '@/components/common/MobileCallButton';
 import Breadcrumb from '@/components/common/Breadcrumb';
 import FontLoader from '@/components/common/FontLoader';
 import FontAwesomeLoader from '@/components/common/FontAwesomeLoader';
@@ -103,8 +102,6 @@ export default function RootLayout({ children }) {
         </main>
         
         <Footer />
-        
-        <MobileCallButton />
         
         {/* Analytics avec protection RGPD */}
         {process.env.NEXT_PUBLIC_GA_ID && (

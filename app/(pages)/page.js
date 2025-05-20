@@ -341,14 +341,7 @@ export default function HomePage() {
             <p className="subtitle">Un service de chauffeurs sur-mesure pour répondre à toutes vos exigences dans le 91</p>
           </div>
           
-          <motion.div
-            initial="hidden"
-            animate={bookingControls}
-            variants={fadeInVariant}
-            className="max-w-4xl mx-auto bg-white rounded-xl shadow-xl p-8 lg:p-12"
-          >
-            <BookingForm />
-          </motion.div>
+          <BookingForm />
         </div>
       </section>
       
