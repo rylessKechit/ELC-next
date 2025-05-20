@@ -14,11 +14,10 @@ const DateTimePicker = ({
   timeLabelText = "Heure"
 }) => {
   useEffect(() => {
-    // Set default date to tomorrow if not set
+    // Set default date to today if not set
     if (!dateValue) {
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const formattedDate = formatDate(tomorrow);
+      const today = new Date();
+      const formattedDate = formatDate(today);
       onDateChange(formattedDate);
     }
     
@@ -74,9 +73,6 @@ const DateTimePicker = ({
             aria-describedby={`${dateId}-description`}
           />
         </div>
-        <div id={`${dateId}-description`} className="mt-1 text-xs text-gray-500">
-          Format : année-mois-jour
-        </div>
       </div>
       
       <div className="relative flex-1">
@@ -97,9 +93,6 @@ const DateTimePicker = ({
             required
             aria-describedby={`${timeId}-description`}
           />
-        </div>
-        <div id={`${timeId}-description`} className="mt-1 text-xs text-gray-500">
-          Format : heures:minutes (24h)
         </div>
       </div>
     </div>

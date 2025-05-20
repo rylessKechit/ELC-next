@@ -1,40 +1,26 @@
-// Exemple de mise à jour dans BookingStepOne.jsx
 "use client";
 
+import React from 'react';
 import AddressInput from './AddressInput';
 import DateTimePicker from './DateTimePicker';
 
-const BookingStepOne = ({ 
-  register, 
-  formValues, 
-  setValue, 
-  errors, 
-  isAirport, 
-  isTrainStation,
-  roundTrip,
+const BookingStepOne = ({
+  formValues,
+  handleInputChange,
+  handleAddressSelect,
+  register,
+  errors,
   isCalculating,
-  handleAddressSelect
+  onSubmit,
+  isAdminContext = false
 }) => {
-  // Amélioration: Fonction individuelle pour chaque champ d'adresse
-  const handlePickupAddressChange = (value) => {
-    setValue('pickupAddress', value);
-  };
-
-  const handleDropoffAddressChange = (value) => {
-    setValue('dropoffAddress', value);
-  };
-
-  const handlePickupAddressSelect = (address, placeId) => {
-    handleAddressSelect('pickupAddress', address, placeId);
-  };
-
-  const handleDropoffAddressSelect = (address, placeId) => {
-    handleAddressSelect('dropoffAddress', address, placeId);
-  };
+  // L'erreur semble provenir de l'utilisation de setValue directement
+  // Utilisons handleInputChange correctement pour tous les changements
 
   return (
     <div className="p-6 md:p-8">
       <div className="space-y-6">
+        {/* Adresse de départ */}
         <div>
           <label htmlFor="pickupAddress" className="block text-sm font-medium text-gray-700 mb-2">
             Adresse de départ <span className="text-red-500">*</span>
@@ -42,15 +28,17 @@ const BookingStepOne = ({
           <AddressInput
             id="pickupAddress"
             value={formValues.pickupAddress}
-            onChange={handlePickupAddressChange}
-            onSelect={handlePickupAddressSelect}
+            onChange={(value) => handleInputChange('pickupAddress', value)}
+            onSelect={(address, placeId) => handleAddressSelect('pickupAddress', address, placeId)}
             placeholder="Entrez l'adresse de départ"
+            isAdminContext={isAdminContext}
           />
           {errors.pickupAddress && (
             <p className="mt-1 text-sm text-red-600">{errors.pickupAddress.message}</p>
           )}
         </div>
         
+        {/* Adresse d'arrivée */}
         <div>
           <label htmlFor="dropoffAddress" className="block text-sm font-medium text-gray-700 mb-2">
             Adresse d'arrivée <span className="text-red-500">*</span>
@@ -58,68 +46,121 @@ const BookingStepOne = ({
           <AddressInput
             id="dropoffAddress"
             value={formValues.dropoffAddress}
-            onChange={handleDropoffAddressChange}
-            onSelect={handleDropoffAddressSelect}
+            onChange={(value) => handleInputChange('dropoffAddress', value)}
+            onSelect={(address, placeId) => handleAddressSelect('dropoffAddress', address, placeId)}
             placeholder="Entrez l'adresse d'arrivée"
+            isAdminContext={isAdminContext}
           />
           {errors.dropoffAddress && (
             <p className="mt-1 text-sm text-red-600">{errors.dropoffAddress.message}</p>
           )}
         </div>
         
-        {/* Flight number field */}
-        {isAirport && (
+        {/* Flight number field - Conditionnellement affiché si c'est un aéroport */}
+        {formValues.pickupAddress?.toLowerCase().includes('aéroport') || 
+         formValues.dropoffAddress?.toLowerCase().includes('aéroport') || 
+         formValues.pickupAddress?.toLowerCase().includes('airport') || 
+         formValues.dropoffAddress?.toLowerCase().includes('airport') ? (
           <div>
             <label htmlFor="flightNumber" className="block text-sm font-medium text-gray-700 mb-2">
               Numéro de vol
             </label>
-            <input
-              id="flightNumber"
-              type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
-              placeholder="Ex: AF1234"
-              {...register('flightNumber')}
-            />
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                <i className="fas fa-plane text-gray-400"></i>
+              </span>
+              <input
+                id="flightNumber"
+                type="text"
+                className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                placeholder="Ex: AF1234"
+                value={formValues.flightNumber || ''}
+                onChange={(e) => handleInputChange('flightNumber', e.target.value)}
+              />
+            </div>
             <p className="mt-1 text-xs text-gray-500">
               Ce numéro nous permettra de suivre votre vol et d'ajuster notre service en cas de retard
             </p>
           </div>
-        )}
+        ) : null}
         
-        {/* Train number field */}
-        {isTrainStation && (
+        {/* Train number field - Conditionnellement affiché si c'est une gare */}
+        {formValues.pickupAddress?.toLowerCase().includes('gare') || 
+         formValues.dropoffAddress?.toLowerCase().includes('gare') || 
+         formValues.pickupAddress?.toLowerCase().includes('station') || 
+         formValues.dropoffAddress?.toLowerCase().includes('station') ? (
           <div>
             <label htmlFor="trainNumber" className="block text-sm font-medium text-gray-700 mb-2">
               Numéro de train
             </label>
-            <input
-              id="trainNumber"
-              type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
-              placeholder="Ex: TGV6214"
-              {...register('trainNumber')}
-            />
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                <i className="fas fa-train text-gray-400"></i>
+              </span>
+              <input
+                id="trainNumber"
+                type="text"
+                className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                placeholder="Ex: TGV6214"
+                value={formValues.trainNumber || ''}
+                onChange={(e) => handleInputChange('trainNumber', e.target.value)}
+              />
+            </div>
             <p className="mt-1 text-xs text-gray-500">
               Ce numéro nous permettra de suivre votre train et d'ajuster notre service en cas de retard
             </p>
           </div>
-        )}
+        ) : null}
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Date et heure de départ */}
           <div>
             <label htmlFor="pickupDate" className="block text-sm font-medium text-gray-700 mb-2">
               Date et heure de départ <span className="text-red-500">*</span>
             </label>
-            <DateTimePicker
-              dateId="pickupDate"
-              timeId="pickupTime"
-              dateValue={formValues.pickupDate}
-              timeValue={formValues.pickupTime}
-              onDateChange={(val) => setValue('pickupDate', val)}
-              onTimeChange={(val) => setValue('pickupTime', val)}
-            />
+            {/* Utiliser DateTimePicker qui gère correctement les événements */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="relative flex-1">
+                <label htmlFor="pickupDate" className="block text-sm font-medium text-gray-700 mb-2">
+                  Date <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                    <i className="fas fa-calendar-alt text-gray-400"></i>
+                  </span>
+                  <input
+                    type="date"
+                    id="pickupDate"
+                    value={formValues.pickupDate}
+                    onChange={(e) => handleInputChange('pickupDate', e.target.value)}
+                    className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                    required
+                  />
+                </div>
+              </div>
+              
+              <div className="relative flex-1">
+                <label htmlFor="pickupTime" className="block text-sm font-medium text-gray-700 mb-2">
+                  Heure <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                    <i className="fas fa-clock text-gray-400"></i>
+                  </span>
+                  <input
+                    type="time"
+                    id="pickupTime"
+                    value={formValues.pickupTime}
+                    onChange={(e) => handleInputChange('pickupTime', e.target.value)}
+                    className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
           </div>
           
+          {/* Option aller-retour */}
           <div>
             <div className="flex items-center h-10 mb-3">
               <label className="relative inline-flex items-center cursor-pointer">
@@ -127,32 +168,65 @@ const BookingStepOne = ({
                   type="checkbox" 
                   className="sr-only peer"
                   checked={formValues.roundTrip}
-                  onChange={(e) => setValue('roundTrip', e.target.checked)}
+                  onChange={(e) => handleInputChange('roundTrip', e.target.checked)}
                 />
                 <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/30 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                 <span className="ms-3 text-sm font-medium text-gray-700">Aller-retour</span>
               </label>
             </div>
             
-            {roundTrip && (
+            {/* Afficher la date/heure de retour si aller-retour est coché */}
+            {formValues.roundTrip && (
               <div className="bg-gray-50 p-4 rounded-md border-l-4 border-primary">
                 <label htmlFor="returnDate" className="block text-sm font-medium text-gray-700 mb-2">
                   Date et heure de retour <span className="text-red-500">*</span>
                 </label>
-                <DateTimePicker
-                  dateId="returnDate"
-                  timeId="returnTime"
-                  dateValue={formValues.returnDate}
-                  timeValue={formValues.returnTime}
-                  onDateChange={(val) => setValue('returnDate', val)}
-                  onTimeChange={(val) => setValue('returnTime', val)}
-                  minDate={formValues.pickupDate}
-                />
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="relative flex-1">
+                    <label htmlFor="returnDate" className="block text-sm font-medium text-gray-700 mb-2">
+                      Date <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                        <i className="fas fa-calendar-alt text-gray-400"></i>
+                      </span>
+                      <input
+                        type="date"
+                        id="returnDate"
+                        value={formValues.returnDate}
+                        onChange={(e) => handleInputChange('returnDate', e.target.value)}
+                        className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                        required={formValues.roundTrip}
+                        min={formValues.pickupDate}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="relative flex-1">
+                    <label htmlFor="returnTime" className="block text-sm font-medium text-gray-700 mb-2">
+                      Heure <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                        <i className="fas fa-clock text-gray-400"></i>
+                      </span>
+                      <input
+                        type="time"
+                        id="returnTime"
+                        value={formValues.returnTime}
+                        onChange={(e) => handleInputChange('returnTime', e.target.value)}
+                        className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                        required={formValues.roundTrip}
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
         </div>
         
+        {/* Nombre de passagers et de bagages */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label htmlFor="passengers" className="block text-sm font-medium text-gray-700 mb-2">
@@ -163,8 +237,9 @@ const BookingStepOne = ({
                 type="button" 
                 className="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm text-gray-600 hover:bg-gray-50 transition-colors duration-150"
                 onClick={() => {
-                  const current = parseInt(formValues.passengers);
-                  if (current > 1) setValue('passengers', current - 1);
+                  if (formValues.passengers > 1) {
+                    handleInputChange('passengers', parseInt(formValues.passengers) - 1);
+                  }
                 }}
                 aria-label="Diminuer le nombre de passagers"
               >
@@ -175,8 +250,7 @@ const BookingStepOne = ({
                 type="button" 
                 className="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm text-gray-600 hover:bg-gray-50 transition-colors duration-150"
                 onClick={() => {
-                  const current = parseInt(formValues.passengers);
-                  if (current < 7) setValue('passengers', current + 1);
+                  handleInputChange('passengers', parseInt(formValues.passengers) + 1);
                 }}
                 aria-label="Augmenter le nombre de passagers"
               >
@@ -197,8 +271,9 @@ const BookingStepOne = ({
                 type="button" 
                 className="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm text-gray-600 hover:bg-gray-50 transition-colors duration-150"
                 onClick={() => {
-                  const current = parseInt(formValues.luggage);
-                  if (current > 0) setValue('luggage', current - 1);
+                  if (formValues.luggage > 0) {
+                    handleInputChange('luggage', parseInt(formValues.luggage) - 1);
+                  }
                 }}
                 aria-label="Diminuer le nombre de bagages"
               >
@@ -209,8 +284,7 @@ const BookingStepOne = ({
                 type="button" 
                 className="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm text-gray-600 hover:bg-gray-50 transition-colors duration-150"
                 onClick={() => {
-                  const current = parseInt(formValues.luggage);
-                  setValue('luggage', current + 1);
+                  handleInputChange('luggage', parseInt(formValues.luggage) + 1);
                 }}
                 aria-label="Augmenter le nombre de bagages"
               >
@@ -220,6 +294,7 @@ const BookingStepOne = ({
           </div>
         </div>
         
+        {/* Demandes spéciales */}
         <div>
           <label htmlFor="specialRequests" className="block text-sm font-medium text-gray-700 mb-2">
             Demandes spéciales
@@ -229,13 +304,15 @@ const BookingStepOne = ({
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
             rows="3"
             placeholder="Indiquez-nous toute demande particulière pour votre trajet"
-            {...register('specialRequests')}
+            value={formValues.specialRequests || ''}
+            onChange={(e) => handleInputChange('specialRequests', e.target.value)}
           ></textarea>
         </div>
       </div>
       
       <button 
-        type="submit" 
+        type="button"
+        onClick={onSubmit}
         className="w-full py-3 px-6 bg-primary text-white font-medium rounded-full hover:bg-primary-dark hover:text-white transition-colors duration-300 flex items-center justify-center mt-6"
         disabled={isCalculating}
       >
