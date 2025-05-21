@@ -2,7 +2,6 @@
 
 import React from 'react';
 import AddressInput from './AddressInput';
-import DateTimePicker from './DateTimePicker';
 
 const BookingStepOne = ({
   formValues,
