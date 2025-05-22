@@ -1,4 +1,4 @@
-// services/priceCalculationService.js - Version simplifiée
+// services/priceCalculationService.js - Version corrigée finale
 import { googleMapsService } from './googleMapsService'
 
 // TARIFS SELON VOTRE BARÈME
@@ -64,52 +64,98 @@ export const priceCalculationService = {
     const distanceInKm = distanceInMeters / 1000
     const durationInMinutes = (routeDetails.duration?.value || 2400) / 60
 
-    // Calculer le prix de base (PEC)
-    const baseFare = BASE_FARES[vehicleType] || BASE_FARES.premium
+    // Calculer prix pour chaque type de véhicule
+    const vehiclePrices = {}
     
-    // Calculer la distance à facturer (minimum pour Classe S)
-    const minDistanceKm = MIN_DISTANCE_KM[vehicleType] || 0
-    const chargeableDistanceKm = Math.max(distanceInKm, minDistanceKm)
-    
-    // Calculer le coût basé sur la distance
-    const perKmRate = PER_KM_RATES[vehicleType] || PER_KM_RATES.premium
-    const distanceCharge = chargeableDistanceKm * perKmRate
-    
-    // Prix total = PEC + (Distance × Prix par km)
-    let exactPrice = baseFare + distanceCharge
-    
-    // Si aller-retour, multiplier par 2
-    if (roundTrip) {
-      exactPrice *= 2
-    }
+    // Calculer prix pour chaque type de véhicule
+    Object.keys(BASE_FARES).forEach(vType => {
+      // Calculer le prix de base (PEC)
+      const baseFare = BASE_FARES[vType]
+      
+      // Calculer la distance à facturer (minimum pour Classe S)
+      const minDistanceKm = MIN_DISTANCE_KM[vType] || 0
+      const chargeableDistanceKm = Math.max(distanceInKm, minDistanceKm)
+      
+      // Calculer le coût basé sur la distance
+      const perKmRate = PER_KM_RATES[vType]
+      const distanceCharge = chargeableDistanceKm * perKmRate
+      
+      // Prix total = PEC + (Distance × Prix par km)
+      let price = baseFare + distanceCharge
+      
+      // Si aller-retour, multiplier par 2
+      if (roundTrip) {
+        price *= 2
+      }
 
-    // Appliquer le prix minimum de 20€ si le prix calculé est inférieur
-    const calculatedPrice = exactPrice
-    if (exactPrice < MINIMUM_FARE) {
-      exactPrice = MINIMUM_FARE
-    }
+      // Vérifier si le prix minimum doit être appliqué
+      const minimumFareApplied = price < MINIMUM_FARE
+      
+      // Appliquer le prix minimum si nécessaire
+      if (minimumFareApplied) {
+        price = MINIMUM_FARE
+      }
+      
+      // Arrondir à 2 décimales
+      price = Math.round(price * 100) / 100
+      
+      // Stocker le prix pour ce type de véhicule
+      vehiclePrices[vType] = {
+        exactPrice: price,
+        minimumFareApplied: minimumFareApplied,
+        baseFare: baseFare,
+        distanceCharge: distanceCharge,
+        perKmRate: perKmRate
+      }
+    })
 
-    // Arrondir à 2 décimales
-    exactPrice = Math.round(exactPrice * 100) / 100
-    
-    // Version simplifiée de la réponse, sans les détails de calcul
-    const result = {
-      success: true,
-      estimate: {
-        exactPrice,
-        currency: 'EUR',
-        // Infos minimales uniquement pour le fonctionnement interne
-        details: {
-          distanceInKm: parseFloat(distanceInKm.toFixed(2)),
-          durationInMinutes: Math.round(durationInMinutes),
-          formattedDistance: routeDetails.distance?.text || `${distanceInKm.toFixed(1)} km`,
-          formattedDuration: routeDetails.duration?.text || `${Math.round(durationInMinutes)} min`
-        },
-        // Indicateur simple du tarif minimum appliqué (pour affichage conditionnel)
-        minimumFareApplied: exactPrice === MINIMUM_FARE && calculatedPrice < MINIMUM_FARE
+    // Générer les prix par catégorie de véhicule
+    const priceRanges = {
+      standard: {
+        min: Math.ceil(vehiclePrices.sedan.exactPrice * 0.95),
+        max: Math.ceil(vehiclePrices.sedan.exactPrice)
+      },
+      premium: {
+        min: Math.ceil(vehiclePrices.premium.exactPrice * 0.95),
+        max: Math.ceil(vehiclePrices.premium.exactPrice)
+      },
+      van: {
+        min: Math.ceil(vehiclePrices.van.exactPrice * 0.95),
+        max: Math.ceil(vehiclePrices.van.exactPrice)
       }
     }
-
+    
+    // Structure complète de la réponse - CETTE STRUCTURE EST CRUCIALE
+    const result = {
+      success: true,
+      data: {
+        estimate: {
+          exactPrice: vehiclePrices[vehicleType].exactPrice,
+          currency: 'EUR',
+          basePrice: vehiclePrices[vehicleType].baseFare,
+          priceRanges: priceRanges,
+          vehiclePrices: vehiclePrices,  // CETTE PROPRIÉTÉ EST NÉCESSAIRE
+          details: {
+            distanceInKm: parseFloat(distanceInKm.toFixed(2)),
+            durationInMinutes: Math.round(durationInMinutes),
+            formattedDistance: routeDetails.distance?.text || `${distanceInKm.toFixed(1)} km`,
+            formattedDuration: routeDetails.duration?.text || `${Math.round(durationInMinutes)} min`,
+            polyline: null
+          },
+          minimumFareApplied: vehiclePrices[vehicleType].minimumFareApplied,
+          breakdown: {
+            baseFare: vehiclePrices[vehicleType].baseFare,
+            distanceCharge: vehiclePrices[vehicleType].distanceCharge,
+            pricePerKm: vehiclePrices[vehicleType].perKmRate,
+            actualDistance: distanceInKm,
+            minimumCourse: MINIMUM_FARE,
+            currency: 'EUR'
+          },
+          selectedRate: 'A'
+        }
+      }
+    }
+    
     return result
   }
 }

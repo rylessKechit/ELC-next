@@ -5,12 +5,12 @@ const BookingSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    index: true // Index pour les recherches rapides
+    index: true
   },
   status: {
     type: String,
     enum: ['confirmed', 'in_progress', 'completed', 'cancelled'],
-    default: 'confirmed', // Statut par défaut "confirmed"
+    default: 'confirmed', // Par défaut "confirmed"
     index: true
   },
   pickupAddress: {
@@ -41,7 +41,7 @@ const BookingSchema = new mongoose.Schema({
   vehicleType: {
     type: String,
     required: true,
-    enum: ['green', 'premium', 'sedan', 'van']
+    enum: ['green', 'premium', 'sedan', 'van'] // Assurer la cohérence avec vos types
   },
   roundTrip: {
     type: Boolean,
@@ -51,7 +51,6 @@ const BookingSchema = new mongoose.Schema({
     type: Date,
     validate: {
       validator: function(v) {
-        // Si roundTrip est true, returnDateTime doit être défini
         return !this.roundTrip || v != null;
       },
       message: 'Return date/time is required for round trips'
@@ -131,80 +130,15 @@ BookingSchema.index({ assignedDriver: 1, pickupDateTime: -1 });
 BookingSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
   
-  // Si le statut change vers "in_progress", mettre à jour startedAt
   if (this.isModified('status') && this.status === 'in_progress' && !this.startedAt) {
     this.startedAt = Date.now();
   }
   
-  // Si le statut change vers "completed", mettre à jour completedAt
   if (this.isModified('status') && this.status === 'completed' && !this.completedAt) {
     this.completedAt = Date.now();
   }
   
   next();
 });
-
-// Méthode pour formatter la réservation pour l'affichage
-BookingSchema.methods.toDisplayFormat = function() {
-  return {
-    id: this.bookingId,
-    _id: this._id,
-    status: this.status,
-    pickupAddress: this.pickupAddress,
-    dropoffAddress: this.dropoffAddress,
-    pickupDateTime: this.pickupDateTime,
-    returnDateTime: this.returnDateTime,
-    passengers: this.passengers,
-    luggage: this.luggage,
-    vehicleType: this.vehicleType,
-    roundTrip: this.roundTrip,
-    price: this.price,
-    customerInfo: this.customerInfo,
-    createdAt: this.createdAt,
-    flightNumber: this.flightNumber,
-    trainNumber: this.trainNumber,
-    specialRequests: this.specialRequests,
-    notes: this.notes,
-    adminNotes: this.adminNotes,
-    assignedDriver: this.assignedDriver
-  };
-};
-
-// Méthode statique pour obtenir les statistiques
-BookingSchema.statics.getStats = async function(filters = {}) {
-  const pipeline = [
-    { $match: filters },
-    {
-      $group: {
-        _id: '$status',
-        count: { $sum: 1 },
-        totalRevenue: { $sum: '$price.amount' }
-      }
-    }
-  ];
-  
-  return this.aggregate(pipeline);
-};
-
-// Méthode statique pour rechercher des réservations
-BookingSchema.statics.search = function(searchTerm, filters = {}) {
-  const searchRegex = new RegExp(searchTerm, 'i');
-  
-  const searchQuery = {
-    ...filters,
-    $or: [
-      { bookingId: searchRegex },
-      { 'customerInfo.name': searchRegex },
-      { 'customerInfo.email': searchRegex },
-      { 'customerInfo.phone': searchRegex },
-      { pickupAddress: searchRegex },
-      { dropoffAddress: searchRegex },
-      { flightNumber: searchRegex },
-      { trainNumber: searchRegex }
-    ]
-  };
-  
-  return this.find(searchQuery);
-};
 
 export default mongoose.models.Booking || mongoose.model('Booking', BookingSchema);

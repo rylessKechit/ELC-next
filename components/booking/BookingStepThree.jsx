@@ -2,7 +2,6 @@
 
 import RouteMap from './RouteMap';
 import { useState } from 'react';
-import { api } from '@/lib/api';
 
 const BookingStepThree = ({
   register,
@@ -14,19 +13,35 @@ const BookingStepThree = ({
   mapReady,
   goBack,
   setError,
-  handleBookingSuccess,
-  formatPrice
+  handleBookingSuccess
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fonction pour gérer la soumission du formulaire
+  const formatPrice = (price) => {
+    if (typeof price !== 'number') {
+      return '0,00 €';
+    }
+    
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'EUR'
+    }).format(price);
+  };
+
   const handleSubmitBooking = async () => {
     if (!document.getElementById('terms').checked) {
       setError('Veuillez accepter les conditions générales pour continuer');
       return;
     }
 
+    if (!formValues.vehicleType) {
+      setError('Veuillez sélectionner un véhicule');
+      return;
+    }
+
     setIsSubmitting(true);
+    setError('');
+    
     try {
       const bookingData = {
         pickupAddress: formValues.pickupAddress,
@@ -46,16 +61,36 @@ const BookingStepThree = ({
         priceEstimate: priceEstimate
       };
       
-      // Appel à l'API pour créer la réservation
-      const response = await api.post('/booking', bookingData);
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookingData)
+      });
       
-      if (response.data && response.data.success) {
-        handleBookingSuccess(response.data.booking);
+      if (response.ok) {
+        const result = await response.json();
+        
+        if (result.success && result.booking) {
+          setIsSubmitting(false);
+          
+          setTimeout(() => {
+            handleBookingSuccess(result.booking);
+          }, 100);
+          
+          return;
+        } else {
+          console.error('❌ Structure de réponse invalide:', result);
+          setError(result.message || result.error || "Erreur lors de la confirmation de la réservation.");
+        }
       } else {
-        setError(response.data?.error || "Erreur lors de la confirmation de la réservation.");
+        const errorData = await response.json();
+        console.error('❌ Erreur HTTP:', response.status, errorData);
+        setError(errorData.error || "Erreur lors de la confirmation de la réservation.");
       }
     } catch (error) {
-      console.error('Erreur lors de la confirmation de la réservation:', error);
+      console.error('❌ Erreur de requête:', error);
       setError("Une erreur est survenue lors de la communication avec le serveur.");
     } finally {
       setIsSubmitting(false);
@@ -67,6 +102,12 @@ const BookingStepThree = ({
       <h3 className="text-xl font-medium text-gray-800 text-center mb-6">Vos informations</h3>
       
       <div className="mb-6">
+        <input
+          type="hidden"
+          {...register('vehicleType', { required: 'Le type de véhicule est obligatoire' })}
+          value={formValues.vehicleType || ''}
+        />
+        
         <label htmlFor="customerName" className="block text-sm font-medium text-gray-700 mb-2">
           Nom complet <span className="text-red-500">*</span>
         </label>
@@ -116,27 +157,20 @@ const BookingStepThree = ({
         </div>
       </div>
       
-      {/* Route Map if we have addresses */}
+      {/* Route Map - RESTAURÉE */}
       {formValues.pickupAddress && formValues.dropoffAddress && (
         <div className="mb-6">
           <h4 className="text-lg font-semibold mb-4">Itinéraire</h4>
-          <div className={mapReady ? 'block' : 'hidden'}>
-            <RouteMap 
-              pickupAddress={formValues.pickupAddress}
-              dropoffAddress={formValues.dropoffAddress}
-              pickupPlaceId={formValues.pickupAddressPlaceId}
-              dropoffPlaceId={formValues.dropoffAddressPlaceId}
-            />
-          </div>
-          {!mapReady && (
-            <div className="relative w-full h-64 md:h-80 rounded-lg overflow-hidden shadow-md flex items-center justify-center bg-gray-100">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-            </div>
-          )}
+          <RouteMap 
+            pickupAddress={formValues.pickupAddress}
+            dropoffAddress={formValues.dropoffAddress}
+            pickupPlaceId={formValues.pickupAddressPlaceId}
+            dropoffPlaceId={formValues.dropoffAddressPlaceId}
+          />
         </div>
       )}
       
-      {/* Booking Summary */}
+      {/* Résumé de réservation complet */}
       <div className="bg-gray-50 rounded-lg p-6 mt-8 mb-6">
         <h4 className="text-lg font-medium text-center text-gray-800 mb-6 relative pb-3 after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-12 after:h-0.5 after:bg-primary">
           Résumé de votre réservation
@@ -214,7 +248,9 @@ const BookingStepThree = ({
           
           <div className="space-y-1 col-span-full flex justify-between items-center pt-4 border-t border-gray-200 mt-2">
             <span className="text-sm font-semibold text-gray-700">Prix total:</span>
-            <span className="text-xl font-bold text-primary">{formatPrice(priceEstimate?.exactPrice || 0)}</span>
+            <span className="text-xl font-bold text-primary">
+              {formatPrice(priceEstimate?.exactPrice || 0)}
+            </span>
           </div>
         </div>
       </div>
@@ -255,7 +291,11 @@ const BookingStepThree = ({
         
         <button 
           type="button" 
-          className="py-3 px-6 bg-primary text-white font-medium rounded-full hover:bg-primary-dark hover:text-white transition-colors duration-300 flex items-center justify-center sm:w-2/3"
+          className={`py-3 px-6 font-medium rounded-full transition-colors duration-300 flex items-center justify-center sm:w-2/3 ${
+            isSubmitting 
+              ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
+              : 'bg-primary text-white hover:bg-primary-dark'
+          }`}
           onClick={handleSubmitBooking}
           disabled={isSubmitting}
         >

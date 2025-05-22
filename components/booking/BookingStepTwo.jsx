@@ -3,7 +3,7 @@
 import VehicleSelector from './VehicleSelector';
 
 const BookingStepTwo = ({ 
-  filteredVehicles, 
+  vehicles, 
   selectedVehicle, 
   onSelect, 
   passengers, 
@@ -11,6 +11,23 @@ const BookingStepTwo = ({
   goBack, 
   goToNextStep 
 }) => {
+  // Vérifier que vehicles est toujours un tableau
+  const safeVehicles = Array.isArray(vehicles) ? vehicles : [];
+
+  // Fonction pour gérer la sélection d'un véhicule
+  const handleVehicleSelect = (vehicleId, estimate) => {
+    onSelect(vehicleId, estimate);
+  };
+
+  // Fonction pour passer à l'étape suivante
+  const handleNextStep = () => {
+    if (!selectedVehicle) {
+      alert('Veuillez sélectionner un véhicule avant de continuer');
+      return;
+    }
+    goToNextStep();
+  };
+
   return (
     <div className="p-6 md:p-8">
       <div className="mb-6">
@@ -19,11 +36,11 @@ const BookingStepTwo = ({
           Sélectionnez un véhicule adapté à vos besoins. Nous n'affichons que les véhicules compatibles avec votre nombre de passagers ({passengers}) et de bagages ({luggage}).
         </p>
         
-        {filteredVehicles.length > 0 ? (
+        {safeVehicles.length > 0 ? (
           <VehicleSelector 
-            vehicles={filteredVehicles}
+            vehicles={safeVehicles}
             selectedVehicle={selectedVehicle}
-            onSelect={onSelect}
+            onSelect={handleVehicleSelect}
             passengers={passengers}
             luggage={luggage}
           />
@@ -54,7 +71,7 @@ const BookingStepTwo = ({
         <button 
           type="button" 
           className="py-3 px-6 bg-primary text-white font-medium rounded-full hover:bg-primary-dark hover:text-white transition-colors duration-300 flex items-center justify-center sm:w-2/3"
-          onClick={goToNextStep}
+          onClick={handleNextStep}
           disabled={!selectedVehicle}
         >
           Continuer

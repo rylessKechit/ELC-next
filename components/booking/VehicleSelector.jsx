@@ -1,10 +1,11 @@
-// components/booking/VehicleSelector.jsx - Modification pour mettre "Recommandé" sur Green Eco
+// components/booking/VehicleSelector.jsx
 "use client"
 
 import { useState } from 'react'
 
 const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, luggage }) => {
-  const formValues = { vehicleType: selectedVehicle };
+  // Vérifie que vehicles est toujours un tableau
+  const safeVehicles = Array.isArray(vehicles) ? vehicles : [];
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('fr-FR', {
@@ -13,7 +14,7 @@ const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, lugg
     }).format(price)
   }
 
-  if (!vehicles || vehicles.length === 0) {
+  if (safeVehicles.length === 0) {
     return (
       <div className="p-8 text-center bg-gray-50 rounded-lg">
         <p className="text-gray-500">Aucun véhicule disponible pour {passengers} passagers et {luggage} bagages.</p>
@@ -21,17 +22,18 @@ const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, lugg
     )
   }
 
-  // Changement ici - définir la voiture recommandée comme 'green' au lieu de 'premium'
+  // Définir la voiture recommandée comme 'green'
   const recommendedVehicle = 'green';
 
   return (
     <div className="space-y-4">
-      {vehicles.map((vehicle) => {
-        if (!vehicle || !vehicle.estimate) {
+      {safeVehicles.map((vehicle) => {
+        if (!vehicle) {
           return null;
         }
 
-        const exactPrice = vehicle.estimate.exactPrice || vehicle.price || 0;
+        // Utiliser directement le prix spécifique du véhicule
+        const vehiclePrice = vehicle.price || 0;
         
         return (
           <div key={vehicle.id} className="space-y-4">
@@ -73,7 +75,7 @@ const VehicleSelector = ({ vehicles, selectedVehicle, onSelect, passengers, lugg
                 </div>
                 
                 <div className="text-center md:text-right flex flex-col items-center md:items-end">
-                  <span className="font-bold text-xl text-primary">{formatPrice(exactPrice)}</span>
+                  <span className="font-bold text-xl text-primary">{formatPrice(vehiclePrice)}</span>
                 </div>
               </div>
             </div>
