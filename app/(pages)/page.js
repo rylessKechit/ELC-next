@@ -1,4 +1,4 @@
-// app/(pages)/page.js
+// app/(pages)/page.js - Version optimisée pour "vtc ballainvilliers" et "chauffeurs privé essonne"
 "use client"
 
 import { useState, useEffect, useRef } from 'react'
@@ -30,7 +30,7 @@ export default function HomePage() {
   const testimonialsControls = useAnimation()
   const bookingControls = useAnimation()
   const partnersControls = useAnimation()
-  const locationsControls = useAnimation() // Nouveau pour la section zones d'intervention
+  const locationsControls = useAnimation()
 
   // Intersection observers
   const [heroRef, heroInView] = useInView({ threshold: 0.1, triggerOnce: true })
@@ -40,7 +40,7 @@ export default function HomePage() {
   const [testimonialsRef, testimonialsInView] = useInView({ threshold: 0.1, triggerOnce: true })
   const [bookingRef, bookingInView] = useInView({ threshold: 0.1, triggerOnce: true })
   const [partnersRef, partnersInView] = useInView({ threshold: 0.1, triggerOnce: true })
-  const [locationsRef, locationsInView] = useInView({ threshold: 0.1, triggerOnce: true }) // Nouveau
+  const [locationsRef, locationsInView] = useInView({ threshold: 0.1, triggerOnce: true })
 
   // Current testimonial index for carousel
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
@@ -63,7 +63,7 @@ export default function HomePage() {
     if (testimonialsInView) testimonialsControls.start('visible')
     if (bookingInView) bookingControls.start('visible')
     if (partnersInView) partnersControls.start('visible')
-    if (locationsInView) locationsControls.start('visible') // Nouveau
+    if (locationsInView) locationsControls.start('visible')
   }, [
     heroInView, servicesInView, fleetInView, experienceInView, 
     testimonialsInView, bookingInView, partnersInView, locationsInView,
@@ -91,68 +91,69 @@ export default function HomePage() {
     {
       name: 'Tesla Model 3',
       image: TeslaModel3,
-      description: 'Élégance et confort écologique pour vos déplacements.',
+      description: 'VTC écologique à Ballainvilliers avec confort premium.',
       features: ['Jusqu\'à 3 passagers', 'Wi-Fi gratuit', 'Boissons fraîches', 'Sièges en cuir premium']
     },
     {
       name: 'Mercedes-Benz Classe S',
       image: MercedesClassS,
-      description: 'Élégance et confort inégalés pour vos déplacements d\'affaires.',
+      description: 'Chauffeur privé Essonne avec véhicule de prestige.',
       features: ['Jusqu\'à 3 passagers', 'Wi-Fi gratuit', 'Boissons fraîches', 'Sièges en cuir premium']
     },
     {
       name: 'BMW Série 7',
       image: BmwSerie7,
-      description: 'L\'alliance parfaite entre technologie de pointe et luxe raffiné pour vos trajets.',
+      description: 'VTC de luxe à Ballainvilliers pour vos déplacements d\'affaires.',
       features: ['Jusqu\'à 3 passagers', 'Écrans tactiles individuels', 'Système audio haut de gamme', 'Ambiance lumineuse personnalisable']
     },
     {
       name: 'Mercedes-Benz Classe V VIP',
       image: MercedesVClass,
-      description: 'Espace généreux et aménagements luxueux pour vos déplacements en groupe.',
+      description: 'Transport de groupe avec chauffeur privé dans l\'Essonne.',
       features: ['Jusqu\'à 7 passagers', 'Configuration salon privé', 'Bar intégré', 'Isolation acoustique renforcée']
     }
   ]
 
-  // Zone d'intervention - Nouvelle section
+  // Zone d'intervention - Mise à jour pour Ballainvilliers
   const serviceAreas = [
     {
-      title: "ESSONNE (91)",
-      description: "Service de chauffeurs privés premium dans tout le département de l'Essonne",
-      cities: ["Évry-Courcouronnes", "Longjumeau", "Massy", "Palaiseau", "Savigny-sur-Orge", "Athis-Mons", "Viry-Châtillon", "Sainte-Geneviève-des-Bois", "Brétigny-sur-Orge", "Corbeil-Essonnes"],
-      link: "/chauffeurs-essonne-91"
+      title: "VTC BALLAINVILLIERS",
+      description: "Service VTC premium à Ballainvilliers avec chauffeurs expérimentés disponibles 24h/24",
+      cities: ["Ballainvilliers", "Longjumeau", "Massy", "Antony", "Chilly-Mazarin", "Wissous", "Fresnes", "L'Haÿ-les-Roses", "Chevilly-Larue", "Rungis"],
+      specialFeatures: ["VTC aéroport depuis Ballainvilliers", "Chauffeur privé événements", "Transport d'affaires Ballainvilliers", "Service VTC 24/7"],
+      link: "/vtc-ballainvilliers"
     },
     {
-      title: "LONGJUMEAU",
-      description: "Chauffeurs professionnels à Longjumeau pour tous vos déplacements",
-      nearby: ["Massy", "Chilly-Mazarin", "Morangis", "Épinay-sur-Orge", "Saulx-les-Chartreux"],
-      specialFeatures: ["Transferts aéroport", "Transports d'affaires", "Événements à Longjumeau", "Service 24/7"],
-      link: "/chauffeurs-longjumeau"
+      title: "CHAUFFEURS PRIVÉ ESSONNE",
+      description: "Chauffeurs privés professionnels dans tout le département de l'Essonne (91)",
+      cities: ["Évry-Courcouronnes", "Corbeil-Essonnes", "Savigny-sur-Orge", "Palaiseau", "Athis-Mons", "Viry-Châtillon", "Sainte-Geneviève-des-Bois", "Brétigny-sur-Orge", "Yerres", "Montgeron"],
+      specialFeatures: ["Transferts aéroport CDG/Orly", "Chauffeurs d'affaires", "Transport événementiel", "VTC longue distance"],
+      link: "/chauffeurs-prive-essonne"
     },
     {
       title: "PARIS & ÎLE-DE-FRANCE",
-      description: "Transport VTC haut de gamme dans toute la région parisienne",
+      description: "Service VTC et chauffeurs privés dans toute la région parisienne depuis Ballainvilliers",
       highlights: ["Aéroports (CDG, Orly, Beauvais)", "Gares parisiennes", "Sites touristiques", "Centres d'affaires", "Événements spéciaux"],
-      link: "/service-chauffeurs-ile-de-france"
+      link: "/vtc-paris-ile-de-france"
     }
   ]
 
-  // Testimonials data
+  // Testimonials data - Adaptés pour Ballainvilliers
   const testimonials = [
     {
-      name: 'Marie L.',
-      role: 'Cliente régulière',
-      text: 'Un service exceptionnel ! J\'utilise régulièrement ce service de chauffeurs pour mes déplacements professionnels entre Longjumeau et Paris. Toujours ponctuel, véhicule impeccable et chauffeur très professionnel.'
+      name: 'Sophie D.',
+      role: 'Résidente Ballainvilliers',
+      text: 'Excellent service VTC à Ballainvilliers ! Je fais régulièrement appel à leurs chauffeurs privés pour mes déplacements vers Paris. Toujours ponctuel, véhicule impeccable et tarifs transparents.'
     },
     {
-      name: 'Jean-Pierre M.',
-      role: 'Dirigeant d\'entreprise',
-      text: 'Je recommande vivement ce service de chauffeurs dans l\'Essonne. Pour mes rendez-vous d\'affaires à Massy et dans le 91, c\'est devenu indispensable. Discrétion et qualité au rendez-vous.'
+      name: 'Michel R.',
+      role: 'Chef d\'entreprise - Essonne',
+      text: 'Le meilleur service de chauffeurs privés de l\'Essonne ! Leurs VTC sont parfaits pour mes rendez-vous d\'affaires depuis Ballainvilliers. Professionnalisme et discrétion garantis.'
     },
     {
-      name: 'Sylvie B.',
-      role: 'Organisatrice d\'événements',
-      text: 'Parfait pour nos événements à Évry-Courcouronnes ! Le chauffeur connaît parfaitement le département 91, véhicule luxueux et service impeccable. Nos invités sont toujours ravis.'
+      name: 'Caroline M.',
+      role: 'Organisatrice événements',
+      text: 'Parfait pour nos événements ! Les chauffeurs privés Essonne d\'Elysian connaissent parfaitement Ballainvilliers et les environs. Service VTC haut de gamme, nos clients sont toujours ravis.'
     }
   ]
 
@@ -205,7 +206,7 @@ export default function HomePage() {
           className="absolute inset-0 z-0 bg-cover bg-center md:bg-right-top"
           style={{ 
             backgroundImage: 'url(/assets/images/hero.webp)',
-            backgroundPosition: 'center left 35%', // Décalage vers la gauche pour mieux centrer visuellement
+            backgroundPosition: 'center left 35%',
             backgroundSize: 'cover'
           }}
         ></div>
@@ -215,18 +216,18 @@ export default function HomePage() {
         
         <div className="container relative z-20 mx-auto px-6 md:ml-[10%] md:max-w-[650px] text-white">
           <h1 className="text-center md:text-left mb-6">
-            <span className="text-primary block font-bold text-5xl">ELYSIAN</span>
-            <span className="text-white block font-bold text-5xl">CHAUFFEURS</span>
-            <span className="text-white block font-bold text-5xl">ESSONNE (91)</span>
+            <span className="text-primary block font-bold text-5xl">VTC</span>
+            <span className="text-white block font-bold text-5xl">BALLAINVILLIERS</span>
+            <span className="text-white block font-bold text-4xl">CHAUFFEURS PRIVÉ</span>
           </h1>
           
           <p className="text-center md:text-left font-tertiary text-xl italic text-primary mb-6">
-            <span className="px-2 py-1 rounded">Service de chauffeurs privés de luxe à Longjumeau et dans tout le département 91</span>
+            <span className="px-2 py-1 rounded">Service VTC premium à Ballainvilliers et chauffeurs privés dans l'Essonne (91)</span>
           </p>
           
           <p className="text-center md:text-left text-lg mb-8 text-white">
-            Service de chauffeurs privés haut de gamme pour vos déplacements professionnels, 
-            événements prestigieux et voyages d'affaires en Essonne et Île-de-France.
+            VTC Ballainvilliers et chauffeurs privés Essonne : service haut de gamme pour vos déplacements 
+            professionnels, événements prestigieux et voyages d'affaires depuis Ballainvilliers vers Paris et l'Île-de-France.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 mt-10 justify-center md:justify-start">
@@ -234,7 +235,7 @@ export default function HomePage() {
               href="#booking"
               className="py-3 px-6 bg-primary text-white font-medium rounded-none uppercase tracking-wider text-sm text-center hover:bg-primary-dark hover:text-white transition-all"
             >
-              Réserver maintenant
+              Réserver Maintenant
             </a>
           </div>
         </div>
@@ -259,8 +260,8 @@ export default function HomePage() {
       >
         <div className="container-custom">
           <div className="text-center mb-16">
-            <h2>NOS SERVICES DE CHAUFFEURS PRIVÉS</h2>
-            <p className="subtitle">Des chauffeurs expérimentés pour vos exigences les plus élevées dans l'Essonne</p>
+            <h2>VTC BALLAINVILLIERS & CHAUFFEURS PRIVÉ ESSONNE</h2>
+            <p className="subtitle">Service VTC premium à Ballainvilliers avec chauffeurs expérimentés dans l'Essonne</p>
           </div>
           
           <motion.div 
@@ -273,13 +274,13 @@ export default function HomePage() {
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6 mx-auto">
                 <i className="fas fa-crown text-primary text-2xl"></i>
               </div>
-              <h3 className="text-xl mb-4 text-center">TRANSFERT VIP AVEC CHAUFFEUR</h3>
+              <h3 className="text-xl mb-4 text-center">VTC PREMIUM BALLAINVILLIERS</h3>
               <p className="text-gray-600 mb-6 text-center">
-                Une expérience d'exception avec chauffeur privé dédié dans l'Essonne (91), véhicule de luxe et service personnalisé. 
-                Confidentialité, élégance et attention aux moindres détails pour vos déplacements exclusifs à Longjumeau et environs.
+                Service VTC de luxe à Ballainvilliers avec chauffeurs privés expérimentés. 
+                Véhicules haut de gamme et service personnalisé pour tous vos déplacements depuis Ballainvilliers.
               </p>
               <Link href="/experience-vip" className="flex items-center justify-center text-primary font-medium hover:text-primary-dark transition-colors">
-                Découvrir
+                Découvrir VTC Ballainvilliers
                 <i className="fas fa-arrow-right ml-2"></i>
               </Link>
             </motion.div>
@@ -288,12 +289,13 @@ export default function HomePage() {
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6 mx-auto">
                 <i className="fas fa-glass-cheers text-primary text-2xl"></i>
               </div>
-              <h3 className="text-xl mb-4 text-center">CHAUFFEURS POUR ÉVÉNEMENTS</h3>
+              <h3 className="text-xl mb-4 text-center">CHAUFFEURS ÉVÉNEMENTS ESSONNE</h3>
               <p className="text-gray-600 mb-6 text-center">
-                Service de chauffeurs professionnels pour vos événements spéciaux à Longjumeau et dans tout le département 91, soirées de gala et premières. Arrivez avec style et distinction.
+                Chauffeurs privés Essonne pour vos événements spéciaux depuis Ballainvilliers. 
+                Service VTC professionnel pour mariages, galas et soirées prestigieuses.
               </p>
               <Link href="/services-evenements" className="flex items-center justify-center text-primary font-medium hover:text-primary-dark transition-colors">
-                Découvrir
+                Chauffeurs événements
                 <i className="fas fa-arrow-right ml-2"></i>
               </Link>
             </motion.div>
@@ -302,12 +304,13 @@ export default function HomePage() {
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6 mx-auto">
                 <i className="fas fa-route text-primary text-2xl"></i>
               </div>
-              <h3 className="text-xl mb-4 text-center">CHAUFFEURS LONGUE DISTANCE</h3>
+              <h3 className="text-xl mb-4 text-center">VTC LONGUE DISTANCE</h3>
               <p className="text-gray-600 mb-6 text-center">
-                Confort et luxe avec nos chauffeurs pour vos déplacements entre l'Essonne et les autres villes françaises. Service sur-mesure sans limite de kilométrage au départ du 91.
+                Service VTC longue distance depuis Ballainvilliers avec chauffeurs privés Essonne. 
+                Confort et luxe pour vos déplacements vers toute la France.
               </p>
               <Link href="/services-longue-distance" className="flex items-center justify-center text-primary font-medium hover:text-primary-dark transition-colors">
-                Découvrir
+                VTC longue distance
                 <i className="fas fa-arrow-right ml-2"></i>
               </Link>
             </motion.div>
@@ -316,12 +319,13 @@ export default function HomePage() {
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6 mx-auto">
                 <i className="fas fa-briefcase text-primary text-2xl"></i>
               </div>
-              <h3 className="text-xl mb-4 text-center">CHAUFFEURS PROFESSIONNELS</h3>
+              <h3 className="text-xl mb-4 text-center">CHAUFFEURS AFFAIRES BALLAINVILLIERS</h3>
               <p className="text-gray-600 mb-6 text-center">
-                Chauffeurs dédiés aux entreprises et dirigeants exigeants de Longjumeau et de l'Essonne. Confidentialité, ponctualité et excellence pour vos rendez-vous professionnels.
+                Chauffeurs privés dédiés aux professionnels de Ballainvilliers et de l'Essonne. 
+                Service VTC d'affaires avec confidentialité et ponctualité garanties.
               </p>
               <Link href="/services-affaires" className="flex items-center justify-center text-primary font-medium hover:text-primary-dark transition-colors">
-                Découvrir
+                Chauffeurs d'affaires
                 <i className="fas fa-arrow-right ml-2"></i>
               </Link>
             </motion.div>
@@ -337,8 +341,8 @@ export default function HomePage() {
       >
         <div className="container-custom">
           <div className="text-center mb-16">
-            <h2>RÉSERVEZ VOTRE CHAUFFEUR PRIVÉ EN ESSONNE</h2>
-            <p className="subtitle">Un service de chauffeurs sur-mesure pour répondre à toutes vos exigences dans le 91</p>
+            <h2>RÉSERVER VTC BALLAINVILLIERS</h2>
+            <p className="subtitle">Service VTC et chauffeurs privés à Ballainvilliers et dans l'Essonne</p>
           </div>
           
           <BookingForm />
@@ -353,8 +357,8 @@ export default function HomePage() {
       >
         <div className="container-custom">
           <div className="text-center mb-16">
-            <h2>NOTRE FLOTTE DE VÉHICULES AVEC CHAUFFEUR</h2>
-            <p className="subtitle">Des véhicules d'exception avec chauffeur pour une expérience inoubliable en Essonne</p>
+            <h2>FLOTTE VTC BALLAINVILLIERS</h2>
+            <p className="subtitle">Véhicules premium avec chauffeurs privés pour vos déplacements dans l'Essonne</p>
           </div>
           
           <div className="space-y-16">
@@ -371,7 +375,7 @@ export default function HomePage() {
                 <div className="w-full md:w-2/5 relative h-[300px] md:h-auto overflow-hidden">
                   <Image 
                     src={item.image}
-                    alt={`${item.name} avec chauffeur privé dans l'Essonne`}
+                    alt={`${item.name} VTC Ballainvilliers avec chauffeur privé`}
                     fill
                     className="object-cover transition-transform duration-500 hover:scale-105"
                     priority={index === 0}
@@ -389,7 +393,7 @@ export default function HomePage() {
                     ))}
                   </ul>
                   <Link href="/flotte-vehicules" className="btn btn-primary">
-                    Réserver ce véhicule avec chauffeur
+                    Réserver ce VTC à Ballainvilliers
                   </Link>
                 </div>
               </motion.div>
@@ -398,14 +402,14 @@ export default function HomePage() {
           
           <div className="text-center mt-16">
             <Link href="/flotte-vehicules" className="inline-flex items-center text-primary text-lg font-medium hover:text-primary-dark transition-colors">
-              Découvrir toute notre flotte avec chauffeur
+              Découvrir notre flotte VTC Ballainvilliers
               <i className="fas fa-arrow-right ml-2"></i>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Zones d'intervention - Nouvelle section */}
+      {/* Zones d'intervention - Section Ballainvilliers */}
       <section 
         id="locations" 
         ref={locationsRef} 
@@ -413,8 +417,8 @@ export default function HomePage() {
       >
         <div className="container-custom">
           <div className="text-center mb-16">
-            <h2>NOS CHAUFFEURS DANS L'ESSONNE ET À LONGJUMEAU</h2>
-            <p className="subtitle">Service de transport de qualité dans le département 91 et ses environs</p>
+            <h2>VTC BALLAINVILLIERS & CHAUFFEURS PRIVÉ ESSONNE</h2>
+            <p className="subtitle">Service de transport VTC premium à Ballainvilliers et dans tout le département 91</p>
           </div>
           
           <motion.div 
@@ -437,7 +441,7 @@ export default function HomePage() {
                   
                   {area.cities && (
                     <div className="mb-4">
-                      <h4 className="font-semibold mb-2 text-gray-800">Principales communes desservies:</h4>
+                      <h4 className="font-semibold mb-2 text-gray-800">Villes desservies:</h4>
                       <ul className="grid grid-cols-2 gap-2">
                         {area.cities.slice(0, 8).map((city, cityIndex) => (
                           <li key={cityIndex} className="flex items-center text-sm">
@@ -449,16 +453,9 @@ export default function HomePage() {
                     </div>
                   )}
                   
-                  {area.nearby && (
-                    <div className="mb-4">
-                      <h4 className="font-semibold mb-2 text-gray-800">Villes proches:</h4>
-                      <p className="text-sm text-gray-600">{area.nearby.join(', ')}</p>
-                    </div>
-                  )}
-                  
                   {area.specialFeatures && (
                     <div className="mb-4">
-                      <h4 className="font-semibold mb-2 text-gray-800">Nos services spécifiques:</h4>
+                      <h4 className="font-semibold mb-2 text-gray-800">Nos services VTC:</h4>
                       <ul className="space-y-1">
                         {area.specialFeatures.map((feature, featureIndex) => (
                           <li key={featureIndex} className="flex items-center text-sm">
@@ -472,7 +469,7 @@ export default function HomePage() {
                   
                   {area.highlights && (
                     <div className="mb-4">
-                      <h4 className="font-semibold mb-2 text-gray-800">Destinations prisées:</h4>
+                      <h4 className="font-semibold mb-2 text-gray-800">Destinations:</h4>
                       <p className="text-sm text-gray-600">{area.highlights.join(' • ')}</p>
                     </div>
                   )}
@@ -489,10 +486,11 @@ export default function HomePage() {
           
           <div className="mt-12 text-center">
             <p className="text-gray-600 mb-6">
-              Nos chauffeurs professionnels connaissent parfaitement le département de l'Essonne (91) et sont à votre disposition 24h/24 pour tous vos déplacements à Longjumeau et dans toute la région.
+              Nos chauffeurs privés connaissent parfaitement Ballainvilliers et tout le département de l'Essonne (91). 
+              Service VTC disponible 24h/24 pour tous vos déplacements.
             </p>
             <a href="#booking" className="inline-block py-3 px-6 bg-primary text-white font-medium rounded-full hover:bg-primary-dark hover:text-white transition-colors duration-300">
-              Réserver un chauffeur
+              Réserver VTC Ballainvilliers
             </a>
           </div>
         </div>
@@ -513,42 +511,42 @@ export default function HomePage() {
               className="lg:w-1/2"
             >
               <div className="mb-6">
-                <h2 className="text-left">L'EXPÉRIENCE VIP AVEC NOS CHAUFFEURS</h2>
+                <h2 className="text-left">EXPÉRIENCE VTC BALLAINVILLIERS</h2>
                 <div className="h-0.5 w-12 bg-primary my-6"></div>
-                <p className="text-gray-600">Plus qu'un simple transport, une expérience unique avec des chauffeurs professionnels</p>
+                <p className="text-gray-600">Service VTC premium avec chauffeurs privés Essonne</p>
               </div>
               <p className="text-gray-600 mb-8">
-                Chaque voyage avec notre service de chauffeurs privés dans l'Essonne (91) est une expérience raffinée, 
-                où chaque détail est pensé pour répondre à vos attentes les plus exigeantes.
+                Chaque trajet VTC depuis Ballainvilliers est une expérience raffinée avec nos chauffeurs privés 
+                de l'Essonne, où chaque détail est pensé pour répondre à vos attentes les plus exigeantes.
               </p>
               <ul className="space-y-6 mb-10">
                 <li className="flex items-center">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                     <i className="fas fa-gem text-primary"></i>
                   </div>
-                  <span className="ml-4">Chauffeurs d'élite formés au protocole et à l'étiquette</span>
+                  <span className="ml-4">Chauffeurs privés d'élite formés à Ballainvilliers</span>
                 </li>
                 <li className="flex items-center">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                     <i className="fas fa-glass-martini-alt text-primary"></i>
                   </div>
-                  <span className="ml-4">Sélection de boissons et rafraîchissements premium</span>
+                  <span className="ml-4">Boissons premium dans tous nos VTC</span>
                 </li>
                 <li className="flex items-center">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                     <i className="fas fa-wifi text-primary"></i>
                   </div>
-                  <span className="ml-4">Connectivité haut débit et équipements high-tech</span>
+                  <span className="ml-4">WiFi haut débit dans nos VTC Ballainvilliers</span>
                 </li>
                 <li className="flex items-center">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                     <i className="fas fa-shield-alt text-primary"></i>
                   </div>
-                  <span className="ml-4">Discrétion absolue et confidentialité garantie</span>
+                  <span className="ml-4">Confidentialité garantie avec nos chauffeurs Essonne</span>
                 </li>
               </ul>
               <Link href="/experience-vip" className="btn btn-primary">
-                Découvrir l'expérience VIP avec nos chauffeurs
+                Découvrir VTC Premium Ballainvilliers
               </Link>
             </motion.div>
             
@@ -561,7 +559,7 @@ export default function HomePage() {
               <div className="rounded-lg overflow-hidden shadow-xl relative">
                 <Image 
                   src={ExperienceVip}
-                  alt="Expérience chauffeur VIP en Essonne (91)"
+                  alt="VTC Ballainvilliers et chauffeurs privés Essonne"
                   width={600}
                   height={500}
                   className="object-cover w-full h-[500px]"
@@ -581,8 +579,8 @@ export default function HomePage() {
       >
         <div className="container-custom">
           <div className="text-center mb-16">
-            <h2>AVIS SUR NOS CHAUFFEURS</h2>
-            <p className="subtitle">Ce que disent nos clients sur notre service de chauffeurs en Essonne</p>
+            <h2>AVIS VTC BALLAINVILLIERS</h2>
+            <p className="subtitle">Ce que disent nos clients sur notre service VTC à Ballainvilliers et nos chauffeurs privés Essonne</p>
           </div>
           
           <div className="max-w-3xl mx-auto relative">
@@ -641,8 +639,8 @@ export default function HomePage() {
       >
         <div className="container-custom">
           <div className="text-center mb-16">
-            <h2>NOS PARTENAIRES EN ESSONNE ET ÎLE-DE-FRANCE</h2>
-            <p className="subtitle">Ils font confiance à nos chauffeurs professionnels au quotidien</p>
+            <h2>PARTENAIRES VTC BALLAINVILLIERS</h2>
+            <p className="subtitle">Ils font confiance à notre service VTC à Ballainvilliers et nos chauffeurs privés Essonne</p>
           </div>
           
           <motion.div
@@ -652,66 +650,76 @@ export default function HomePage() {
             className="flex flex-wrap justify-center items-center gap-12 lg:gap-16"
           >
             <div className="partner-logo h-20 flex items-center opacity-60 hover:opacity-100 transition-opacity">
-              <Image src={logoCannesFestival} alt="Festival de Cannes - partenaire chauffeurs VIP" height={80} className="max-h-full w-auto filter grayscale hover:grayscale-0 transition-all" />
+              <Image src={logoCannesFestival} alt="Festival de Cannes - VTC Ballainvilliers partenaire" height={80} className="max-h-full w-auto filter grayscale hover:grayscale-0 transition-all" />
             </div>
             <div className="partner-logo h-20 flex items-center opacity-60 hover:opacity-100 transition-opacity">
-              <Image src={logoRitzParis} alt="Ritz Paris - service de chauffeurs de luxe" height={80} className="max-h-full w-auto filter grayscale hover:grayscale-0 transition-all" />
+              <Image src={logoRitzParis} alt="Ritz Paris - chauffeurs privés Essonne" height={80} className="max-h-full w-auto filter grayscale hover:grayscale-0 transition-all" />
             </div>
             <div className="partner-logo h-20 flex items-center opacity-60 hover:opacity-100 transition-opacity">
-              <Image src={logoLouisVuitton} alt="Louis Vuitton - transport VIP avec chauffeur" height={80} className="max-h-full w-auto filter grayscale hover:grayscale-0 transition-all" />
+              <Image src={logoLouisVuitton} alt="Louis Vuitton - VTC premium Ballainvilliers" height={80} className="max-h-full w-auto filter grayscale hover:grayscale-0 transition-all" />
             </div>
             <div className="partner-logo h-20 flex items-center opacity-60 hover:opacity-100 transition-opacity">
-              <Image src={logoChanel} alt="Chanel - chauffeurs professionnels événementiel" height={80} className="max-h-full w-auto filter grayscale hover:grayscale-0 transition-all" />
+              <Image src={logoChanel} alt="Chanel - service chauffeurs Essonne" height={80} className="max-h-full w-auto filter grayscale hover:grayscale-0 transition-all" />
             </div>
             <div className="partner-logo h-20 flex items-center opacity-60 hover:opacity-100 transition-opacity">
-              <Image src={logoAirFrance} alt="Air France - service chauffeurs aéroport Essonne" height={80} className="max-h-full w-auto filter grayscale hover:grayscale-0 transition-all" />
+              <Image src={logoAirFrance} alt="Air France - VTC aéroport Ballainvilliers" height={80} className="max-h-full w-auto filter grayscale hover:grayscale-0 transition-all" />
             </div>
           </motion.div>
         </div>
       </section>
       
-      {/* FAQ Section - Nouvelle section pour SEO */}
+      {/* FAQ Section - Nouvelle section pour SEO Ballainvilliers */}
       <section className="py-24 bg-gray-50">
         <div className="container-custom">
           <div className="text-center mb-16">
-            <h2>QUESTIONS FRÉQUENTES SUR NOS CHAUFFEURS</h2>
-            <p className="subtitle">Tout ce que vous devez savoir sur notre service de chauffeurs en Essonne</p>
+            <h2>FAQ VTC BALLAINVILLIERS</h2>
+            <p className="subtitle">Questions fréquentes sur notre service VTC à Ballainvilliers et chauffeurs privés Essonne</p>
           </div>
           
           <div className="max-w-3xl mx-auto">
             <div className="space-y-6">
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-xl font-medium mb-3">Comment réserver un chauffeur à Longjumeau et dans l'Essonne ?</h3>
+                <h3 className="text-xl font-medium mb-3">Comment réserver un VTC à Ballainvilliers ?</h3>
                 <p className="text-gray-600">
-                  Vous pouvez réserver un chauffeur pour Longjumeau et toute l'Essonne en quelques clics via notre formulaire en ligne, en appelant notre service client au +33 6 43 53 76 53 ou par email. Nos chauffeurs sont disponibles 24h/24 et 7j/7 dans tout le département 91.
+                  Vous pouvez réserver votre VTC à Ballainvilliers en quelques clics via notre formulaire en ligne, 
+                  en appelant notre service client au +33 6 43 53 76 53 ou par email. Nos chauffeurs privés Essonne 
+                  sont disponibles 24h/24 et 7j/7 à Ballainvilliers et dans tout le département 91.
                 </p>
               </div>
               
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-xl font-medium mb-3">Quels sont les tarifs pour un service de chauffeur dans le 91 ?</h3>
+                <h3 className="text-xl font-medium mb-3">Quels sont les tarifs VTC à Ballainvilliers ?</h3>
                 <p className="text-gray-600">
-                  Nos tarifs de chauffeurs dans l'Essonne débutent à partir de 30€, avec un prix au kilomètre qui varie selon le type de véhicule. Vous pouvez obtenir une estimation précise en utilisant notre calculateur en ligne qui prend en compte votre trajet spécifique dans le 91.
+                  Nos tarifs VTC Ballainvilliers débutent à partir de 25€, avec un prix au kilomètre compétitif. 
+                  Nos chauffeurs privés Essonne proposent des tarifs transparents sans surprise. 
+                  Utilisez notre calculateur en ligne pour une estimation précise de votre trajet depuis Ballainvilliers.
                 </p>
               </div>
               
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-xl font-medium mb-3">Vos chauffeurs connaissent-ils bien Longjumeau et l'Essonne ?</h3>
+                <h3 className="text-xl font-medium mb-3">Vos chauffeurs connaissent-ils bien Ballainvilliers ?</h3>
                 <p className="text-gray-600">
-                  Absolument ! Nos chauffeurs sont des professionnels qui connaissent parfaitement Longjumeau et l'ensemble du département de l'Essonne (91). Leur expertise locale garantit des trajets optimisés et une connaissance précise des meilleurs itinéraires dans la région.
+                  Absolument ! Nos chauffeurs privés sont des experts de Ballainvilliers et de l'ensemble du département 
+                  de l'Essonne (91). Leur connaissance locale garantit des trajets VTC optimisés et une expertise 
+                  des meilleurs itinéraires depuis Ballainvilliers vers Paris et l'Île-de-France.
                 </p>
               </div>
               
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-xl font-medium mb-3">Proposez-vous des transferts aéroport depuis l'Essonne ?</h3>
+                <h3 className="text-xl font-medium mb-3">Proposez-vous des transferts aéroport depuis Ballainvilliers ?</h3>
                 <p className="text-gray-600">
-                  Oui, nous proposons des services de transfert avec chauffeur entre tous les points de l'Essonne (91) et les aéroports parisiens (Orly, Roissy CDG, Le Bourget). Nos chauffeurs assurent des transferts ponctuels et confortables, avec suivi des vols en temps réel.
+                  Oui, nous proposons des services VTC transfert aéroport depuis Ballainvilliers vers tous les aéroports 
+                  parisiens (Orly, Roissy CDG, Le Bourget). Nos chauffeurs privés Essonne assurent des transferts ponctuels 
+                  et confortables, avec suivi des vols en temps réel depuis Ballainvilliers.
                 </p>
               </div>
               
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-xl font-medium mb-3">Peut-on réserver un chauffeur pour toute la journée à Longjumeau ?</h3>
+                <h3 className="text-xl font-medium mb-3">Peut-on réserver un chauffeur privé pour toute la journée à Ballainvilliers ?</h3>
                 <p className="text-gray-600">
-                  Bien sûr, nous proposons des services de mise à disposition avec chauffeur à la journée ou à la demi-journée à Longjumeau et dans toute l'Essonne. Idéal pour vos rendez-vous professionnels multiples ou pour découvrir la région en toute sérénité.
+                  Bien sûr, nous proposons des services VTC mise à disposition avec chauffeur privé à la journée 
+                  ou à la demi-journée à Ballainvilliers. Service idéal pour vos rendez-vous professionnels multiples 
+                  dans l'Essonne ou pour découvrir la région en toute sérénité avec un chauffeur dédié.
                 </p>
               </div>
             </div>
@@ -724,15 +732,18 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-r from-black/90 to-black/80 z-0"></div>
         <div className="container-custom relative z-10">
           <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-white text-3xl md:text-4xl mb-6 after:bg-primary">Réservez votre chauffeur en Essonne dès maintenant</h2>
-            <p className="text-gray-300 text-lg mb-10">Un service de chauffeurs professionnels est à votre disposition dans tout le département 91, y compris à Longjumeau.</p>
+            <h2 className="text-white text-3xl md:text-4xl mb-6 after:bg-primary">Réservez votre VTC à Ballainvilliers maintenant</h2>
+            <p className="text-gray-300 text-lg mb-10">
+              Service VTC premium à Ballainvilliers avec chauffeurs privés professionnels dans l'Essonne. 
+              Réservez en ligne ou contactez-nous directement.
+            </p>
             <div className="flex flex-col sm:flex-row justify-center gap-6">
               <Link href="/contact" className="btn btn-primary">
                 Nous contacter
               </Link>
               <a href="tel:+33643537653" className="btn btn-outline text-white border-white hover:bg-white hover:text-secondary">
                 <i className="fas fa-phone mr-2"></i>
-                Appeler directement
+                Appeler VTC Ballainvilliers
               </a>
             </div>
           </div>

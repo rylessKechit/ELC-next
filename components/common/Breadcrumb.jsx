@@ -1,3 +1,4 @@
+// components/common/Breadcrumb.jsx - Version optimisée SEO
 "use client";
 
 import Link from 'next/link';
@@ -22,10 +23,10 @@ const Breadcrumb = () => {
     // Formater le texte du segment (remplacer les tirets par des espaces et mettre en majuscule la première lettre)
     let label = segment.replace(/-/g, ' ');
     
-    // Traduire les segments courants en français
+    // Traduire les segments courants en français avec optimisation SEO
     switch(segment) {
       case 'services':
-        label = 'Services';
+        label = 'Services VTC';
         break;
       case 'a-propos':
         label = 'À propos';
@@ -34,19 +35,34 @@ const Breadcrumb = () => {
         label = 'Contact';
         break;
       case 'flotte-vehicules':
-        label = 'Notre Flotte';
+        label = 'Notre Flotte VTC';
         break;
       case 'experience-vip':
-        label = 'Transfert VIP';
+        label = 'VTC Premium';
         break;
       case 'services-evenements':
-        label = 'Événements & Soirées';
+        label = 'Chauffeurs Événements';
         break;
       case 'services-longue-distance':
-        label = 'Voyages Longue Distance';
+        label = 'VTC Longue Distance';
         break;
       case 'services-affaires':
-        label = 'Transport d\'Affaires';
+        label = 'Chauffeurs d\'Affaires';
+        break;
+      case 'vtc-ballainvilliers':
+        label = 'VTC Ballainvilliers';
+        break;
+      case 'chauffeurs-prive-essonne':
+        label = 'Chauffeurs Privé Essonne';
+        break;
+      case 'chauffeurs-essonne-91':
+        label = 'Chauffeurs Essonne 91';
+        break;
+      case 'chauffeurs-longjumeau':
+        label = 'Chauffeurs Longjumeau';
+        break;
+      case 'service-chauffeurs-ile-de-france':
+        label = 'Chauffeurs Île-de-France';
         break;
       case 'legals':
         label = 'Mentions Légales';
@@ -71,7 +87,7 @@ const Breadcrumb = () => {
       {
         "@type": "ListItem",
         "position": 1,
-        "name": "Accueil",
+        "name": "VTC Ballainvilliers",
         "item": "https://www.elysian-luxury-chauffeurs.com"
       },
       ...breadcrumbItems.map((item, index) => ({
@@ -99,10 +115,10 @@ const Breadcrumb = () => {
             <Link 
               href="/" 
               className="text-gray-500 hover:text-primary transition-colors duration-300 flex items-center"
-              aria-label="Accueil"
+              aria-label="Accueil VTC Ballainvilliers"
             >
               <i className="fas fa-home mr-1"></i>
-              <span className="hidden sm:inline">Accueil</span>
+              <span className="hidden sm:inline">VTC Ballainvilliers</span>
             </Link>
           </li>
           
