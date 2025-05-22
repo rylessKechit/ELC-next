@@ -37,7 +37,7 @@ const playfairDisplay = Playfair_Display({
 export const metadata = {
   metadataBase: new URL('https://www.elysian-luxury-chauffeurs.com'),
   title: {
-    default: 'VTC Ballainvilliers | Chauffeur Privé Essonne (91) - Service Premium 24h/24',
+    default: 'VTC Ballainvilliers | Chauffeur Privé Essonne (91) - ELC',
     template: '%s | VTC Ballainvilliers - Elysian Luxury Chauffeurs'
   },
   description: 'VTC Ballainvilliers ⭐ Chauffeur privé Essonne (91) ⭐ Service premium 24h/24 ⭐ Véhicules haut de gamme ⭐ Réservation immédiate ☎️ 06 43 53 76 53',
