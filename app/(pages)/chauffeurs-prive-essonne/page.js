@@ -12,11 +12,7 @@ import essonneHero from '@/public/assets/images/essonne-hero.webp'
 import chauffeurEssonne from '@/public/assets/images/chauffeur-essonne.webp'
 import fleetEssonne from '@/public/assets/images/fleet-essonne.webp'
 
-export const metadata = {
-  title: 'Chauffeurs Privé Essonne (91) - Service VTC Haut de Gamme dans le Département',
-  description: 'Chauffeurs privés professionnels dans l\'Essonne (91). Service VTC premium dans tout le département : Évry, Corbeil, Massy, Palaiseau. Réservation 24h/24 avec chauffeurs expérimentés.',
-  keywords: 'chauffeurs privé essonne, chauffeur privé 91, vtc essonne, transport essonne, chauffeur evry, chauffeur corbeil',
-}
+import {metadata} from './metadata'
 
 export default function ChauffeursPriveEssonnePage() {
   // Animation controls

@@ -12,11 +12,7 @@ import ballainvilliersHero from '@/public/assets/images/ballainvilliers-hero.web
 import vtcBallainvilliers from '@/public/assets/images/vtc-ballainvilliers.webp'
 import chauffeurBallainvilliers from '@/public/assets/images/chauffeur-ballainvilliers.webp'
 
-export const metadata = {
-  title: 'VTC Ballainvilliers - Service de Transport Premium avec Chauffeur Privé',
-  description: 'VTC Ballainvilliers : service de transport haut de gamme avec chauffeurs privés expérimentés. Réservation 24h/24 pour tous vos déplacements depuis Ballainvilliers vers Paris et l\'Île-de-France.',
-  keywords: 'vtc ballainvilliers, chauffeur privé ballainvilliers, transport ballainvilliers, taxi ballainvilliers, vtc 91, chauffeur ballainvilliers',
-}
+import {metadata} from './metadata'
 
 export default function VtcBallainvilliersPage() {
   // Animation controls
