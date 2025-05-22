@@ -223,8 +223,6 @@ export default function RootLayout({ children }) {
 
         <Header />
         
-        <Breadcrumb />
-        
         <main id="main-content" className="min-h-screen" role="main">
           {children}
         </main>

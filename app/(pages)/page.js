@@ -17,6 +17,8 @@ const BookingForm = dynamic(() => import('@/components/booking/BookingForm'), {
 import TeslaModel3 from '@/public/assets/images/tesla-model-3.webp'
 import MercedesClassS from '@/public/assets/images/mercedes-classe-s.webp'
 import BmwSerie7 from '@/public/assets/images/bmw-7-series.webp'
+import MercedesClasseE from '@/public/assets/images/mercedes-class-e.webp'
+import MercedesClasseV from '@/public/assets/images/mercedes-v-class.webp'
 
 export default function VTCBallainvilliersPage() {
   // Animation controls simplifiés
@@ -50,22 +52,34 @@ export default function VTCBallainvilliersPage() {
   // Données avec phrases équilibrées (15-20 mots par phrase)
   const fleetItems = [
     {
-      name: 'Tesla Model 3 VTC Ballainvilliers',
+      name: 'Tesla Model 3',
       image: TeslaModel3,
       description: 'Notre VTC Ballainvilliers propose des véhicules Tesla écologiques. Chauffeur privé Essonne expert en transport électrique premium. Service respectueux de l\'environnement avec confort garanti. Réservation VTC Ballainvilliers disponible 24h/24.',
       features: ['VTC Ballainvilliers écologique', 'Chauffeur privé Essonne Tesla', 'Transport premium électrique', 'Service 24h disponible']
     },
     {
-      name: 'Mercedes Classe S VTC Premium',
+      name: 'Mercedes Classe E',
+      image: MercedesClasseE,
+      description: 'VTC Ballainvilliers avec Mercedes Classe E, l\'équilibre parfait entre confort et élégance. Chauffeur privé Essonne pour trajets urbains et transferts aéroport. Berline premium idéale pour déplacements quotidiens avec service personnalisé.',
+      features: ['VTC Ballainvilliers Mercedes E', 'Chauffeur privé Essonne expérimenté', 'Confort optimal garanti', 'Transferts aéroport spécialisés']
+    },
+    {
+      name: 'Mercedes Classe S Limousine',
       image: MercedesClassS,
       description: 'VTC Ballainvilliers avec Mercedes Classe S haut de gamme. Notre chauffeur privé Essonne garantit excellence et confort. Transport luxe pour clientèle exigeante dans l\'Essonne. Service VTC Ballainvilliers d\'exception reconnu.',
       features: ['VTC Ballainvilliers Mercedes premium', 'Chauffeur privé Essonne expert', 'Confort exceptionnel garanti', 'Service personnalisé sur mesure']
     },
     {
-      name: 'BMW Série 7 Chauffeur Affaires',
+      name: 'BMW Série 7',
       image: BmwSerie7,
       description: 'Chauffeur privé Essonne spécialisé transport d\'affaires BMW. VTC Ballainvilliers pour professionnels exigeants uniquement. Véhicules équipés espace travail mobile intégré. Discrétion et ponctualité garanties pour rendez-vous.',
       features: ['Chauffeur privé Essonne affaires', 'VTC Ballainvilliers professionnel', 'Espace travail mobile', 'Confidentialité absolue garantie']
+    },
+    {
+      name: 'Mercedes Classe V VIP',
+      image: MercedesClasseV,
+      description: 'VTC Ballainvilliers Mercedes Classe V pour transport de groupe premium. Chauffeur privé Essonne spécialisé événements et déplacements familiaux. Van de luxe jusqu\'à 7 passagers avec salon privé configuré. Service VTC groupe haut de gamme.',
+      features: ['VTC Ballainvilliers groupe 7 places', 'Chauffeur privé Essonne événements', 'Salon privé mobile luxueux', 'Configuration VIP sur mesure']
     }
   ]
 
@@ -392,7 +406,7 @@ export default function VTCBallainvilliersPage() {
       {/* Call to Action final */}
       <section className="py-20 bg-secondary text-white">
         <div className="container-custom text-center">
-          <h2 className="text-3xl md:text-4xl mb-6">
+          <h2 className="text-3xl md:text-4xl mb-6 text-primary">
             VTC Ballainvilliers & Chauffeur Privé Essonne
           </h2>
           <p className="text-xl mb-10 max-w-4xl mx-auto">
@@ -410,6 +424,122 @@ export default function VTCBallainvilliersPage() {
               <i className="fas fa-phone mr-2" />
               Chauffeur Privé Essonne
             </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Section FAQ */}
+      <section className="py-20 bg-white">
+        <div className="container-custom">
+          <div className="text-center mb-16">
+            <h2>FAQ VTC Ballainvilliers</h2>
+            <p className="subtitle">Questions fréquentes chauffeur privé Essonne service premium</p>
+            
+            <p className="text-gray-600 max-w-3xl mx-auto mt-4">
+              Retrouvez les réponses aux questions les plus posées sur notre VTC Ballainvilliers. 
+              Chauffeur privé Essonne disponible pour informations complémentaires. 
+              Service client réactif pour toute demande spécifique. 
+              Transparence totale sur nos prestations et tarifs.
+            </p>
+          </div>
+          
+          <div className="max-w-4xl mx-auto">
+            <div className="space-y-6">
+              <div className="bg-gray-50 p-6 rounded-lg">
+                <h3 className="text-xl font-semibold mb-3 text-gray-800">
+                  Comment réserver un VTC à Ballainvilliers ?
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Réservez votre VTC Ballainvilliers directement sur notre site internet. 
+                  Chauffeur privé Essonne disponible par téléphone au +33 6 43 53 76 53. 
+                  Réservation possible 24h/24 et confirmation immédiate garantie. 
+                  Paiement sécurisé et modification gratuite jusqu'à 2h avant.
+                </p>
+              </div>
+              
+              <div className="bg-gray-50 p-6 rounded-lg">
+                <h3 className="text-xl font-semibold mb-3 text-gray-800">
+                  Quels sont les tarifs VTC Ballainvilliers ?
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Nos tarifs VTC Ballainvilliers commencent à partir de 25€. 
+                  Chauffeur privé Essonne avec prix transparent sans supplément caché. 
+                  Tarification fixe connue avant réservation et devis gratuit. 
+                  Réductions disponibles pour clients réguliers et entreprises.
+                </p>
+              </div>
+              
+              <div className="bg-gray-50 p-6 rounded-lg">
+                <h3 className="text-xl font-semibold mb-3 text-gray-800">
+                  Vos chauffeurs connaissent-ils bien Ballainvilliers ?
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Chaque chauffeur privé Essonne maîtrise parfaitement Ballainvilliers et environs. 
+                  Formation continue sur évolutions urbanistiques du territoire local. 
+                  Connaissance approfondie des meilleurs itinéraires et zones d'évitement. 
+                  Expertise locale reconnue par nos clients réguliers.
+                </p>
+              </div>
+              
+              <div className="bg-gray-50 p-6 rounded-lg">
+                <h3 className="text-xl font-semibold mb-3 text-gray-800">
+                  Proposez-vous des transferts aéroport depuis Ballainvilliers ?
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Notre VTC Ballainvilliers assure transferts vers tous aéroports parisiens. 
+                  Chauffeur privé Essonne spécialisé Orly (20 min) et CDG (55 min). 
+                  Suivi des vols en temps réel et attente gratuite. 
+                  Service disponible 24h/24 avec réservation anticipée recommandée.
+                </p>
+              </div>
+              
+              <div className="bg-gray-50 p-6 rounded-lg">
+                <h3 className="text-xl font-semibold mb-3 text-gray-800">
+                  Peut-on réserver pour plusieurs personnes ?
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Notre flotte VTC Ballainvilliers accueille jusqu'à 7 passagers. 
+                  Chauffeur privé Essonne avec véhicules adaptés aux groupes. 
+                  Mercedes Classe V disponible pour déplacements familiaux. 
+                  Tarification avantageuse pour transport collectif organisé.
+                </p>
+              </div>
+              
+              <div className="bg-gray-50 p-6 rounded-lg">
+                <h3 className="text-xl font-semibold mb-3 text-gray-800">
+                  Quels moyens de paiement acceptez-vous ?
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Paiement VTC Ballainvilliers par carte bancaire, espèces ou virement. 
+                  Chauffeur privé Essonne équipé terminal de paiement mobile. 
+                  Facturation entreprise avec paiement différé sur demande. 
+                  Reçu fiscal automatique pour tous vos trajets.
+                </p>
+              </div>
+            </div>
+            
+            <div className="text-center mt-12">
+              <p className="text-gray-600 mb-6">
+                Une question spécifique sur notre VTC Ballainvilliers ? 
+                Chauffeur privé Essonne disponible pour vous renseigner.
+              </p>
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
+                <a 
+                  href="tel:+33643537653" 
+                  className="btn btn-primary"
+                >
+                  <i className="fas fa-phone mr-2" />
+                  Appeler Chauffeur Privé
+                </a>
+                <Link 
+                  href="/contact" 
+                  className="btn btn-outline"
+                >
+                  <i className="fas fa-envelope mr-2" />
+                  Contact VTC Ballainvilliers
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>
