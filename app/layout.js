@@ -30,8 +30,8 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata = {
-  title: 'VTC Ballainvilliers | Chauffeurs Privé Essonne (91) - Elysian Luxury Chauffeurs',
-  description: 'VTC Ballainvilliers et chauffeurs privé Essonne : service premium 24h/24 dans le département 91. Véhicules haut de gamme, chauffeurs expérimentés. Réservation en ligne.',
+  title: 'VTC Ballainvilliers | Chauffeurs Privé Essonne (91) - ELC',
+  description: 'VTC Ballainvilliers / Essonne : service premium 24h/24 dans le département 91. Véhicules haut de gamme, chauffeurs expérimentés. Réservation en ligne.',
   keywords: 'vtc ballainvilliers, chauffeurs privé essonne, chauffeur privé 91, transport ballainvilliers, vtc essonne, taxi ballainvilliers, chauffeur ballainvilliers, vtc 91',
   alternates: {
     canonical: 'https://www.elysian-luxury-chauffeurs.com',
