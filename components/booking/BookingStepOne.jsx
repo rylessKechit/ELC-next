@@ -13,8 +13,73 @@ const BookingStepOne = ({
   onSubmit,
   isAdminContext = false
 }) => {
-  // L'erreur semble provenir de l'utilisation de setValue directement
-  // Utilisons handleInputChange correctement pour tous les changements
+
+  // Fonction pour détecter si une adresse est un aéroport
+  const isAirportAddress = (address) => {
+    if (!address || typeof address !== 'string') return false;
+    
+    const addressLower = address.toLowerCase();
+    const airportKeywords = [
+      'aéroport', 'airport', 'aeroport',
+      'cdg', 'charles de gaulle', 'roissy',
+      'orly', 'orly sud', 'orly ouest',
+      'beauvais', 'beauvais-tillé',
+      'le bourget',
+      'terminal', 'aérogare', 'aerogare',
+      // Ajout d'autres aéroports français
+      'lyon saint-exupéry', 'marseille provence',
+      'nice côte d\'azur', 'toulouse blagnac',
+      'bordeaux-mérignac', 'nantes atlantique'
+    ];
+    
+    return airportKeywords.some(keyword => addressLower.includes(keyword));
+  };
+
+  // Fonction pour détecter si une adresse est une gare
+  const isTrainStationAddress = (address) => {
+    if (!address || typeof address !== 'string') return false;
+    
+    const addressLower = address.toLowerCase();
+    const stationKeywords = [
+      'gare', 'station',
+      'sncf', 'tgv', 'train',
+      // Gares parisiennes
+      'montparnasse', 'lyon', 'saint-lazare', 
+      'nord', 'est', 'austerlitz', 'bercy',
+      'châtelet les halles',
+      // Autres gares importantes
+      'part-dieu', 'perrache', // Lyon
+      'saint-charles', // Marseille
+      'matabiau', // Toulouse
+      'saint-jean', // Bordeaux
+      // Termes génériques
+      'gare de', 'station de'
+    ];
+    
+    return stationKeywords.some(keyword => addressLower.includes(keyword));
+  };
+
+  // Fonction pour déterminer le type de transport prioritaire
+  const getTransportType = (address) => {
+    if (!address) return null;
+    
+    // Priorité aux aéroports (plus spécifique)
+    if (isAirportAddress(address)) return 'airport';
+    
+    // Ensuite les gares
+    if (isTrainStationAddress(address)) return 'train';
+    
+    return null;
+  };
+
+  // Déterminer quel type de transport afficher
+  const pickupTransport = getTransportType(formValues.pickupAddress);
+  const dropoffTransport = getTransportType(formValues.dropoffAddress);
+  
+  // Priorité: si un des deux est un aéroport, on affiche vol
+  // Sinon si un des deux est une gare, on affiche train
+  const shouldShowFlightField = pickupTransport === 'airport' || dropoffTransport === 'airport';
+  const shouldShowTrainField = !shouldShowFlightField && (pickupTransport === 'train' || dropoffTransport === 'train');
 
   return (
     <div className="p-6 md:p-8">
@@ -55,61 +120,68 @@ const BookingStepOne = ({
           )}
         </div>
         
-        {/* Flight number field - Conditionnellement affiché si c'est un aéroport */}
-        {formValues.pickupAddress?.toLowerCase().includes('aéroport') || 
-         formValues.dropoffAddress?.toLowerCase().includes('aéroport') || 
-         formValues.pickupAddress?.toLowerCase().includes('airport') || 
-         formValues.dropoffAddress?.toLowerCase().includes('airport') ? (
-          <div>
-            <label htmlFor="flightNumber" className="block text-sm font-medium text-gray-700 mb-2">
-              Numéro de vol
-            </label>
-            <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                <i className="fas fa-plane text-gray-400"></i>
-              </span>
-              <input
-                id="flightNumber"
-                type="text"
-                className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
-                placeholder="Ex: AF1234"
-                value={formValues.flightNumber || ''}
-                onChange={(e) => handleInputChange('flightNumber', e.target.value)}
-              />
+        {/* Champs vol et train avec logique de priorité */}
+        <div className="space-y-4">
+          {/* Champ numéro de vol - Priorité si aéroport détecté */}
+          {shouldShowFlightField && (
+            <div className="animate-slide-in-up bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+              <label htmlFor="flightNumber" className="block text-sm font-medium text-gray-700 mb-2">
+                <i className="fas fa-plane text-blue-500 mr-2"></i>
+                Numéro de vol
+                <span className="ml-2 text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+                  Aéroport détecté
+                </span>
+              </label>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                  <i className="fas fa-plane text-gray-400"></i>
+                </span>
+                <input
+                  id="flightNumber"
+                  type="text"
+                  className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500"
+                  placeholder="Ex: AF1234, EK073, LH441"
+                  value={formValues.flightNumber || ''}
+                  onChange={(e) => handleInputChange('flightNumber', e.target.value)}
+                />
+              </div>
+              <p className="mt-1 text-xs text-gray-600">
+                <i className="fas fa-info-circle mr-1"></i>
+                Ce numéro nous permettra de suivre votre vol et d'ajuster notre service en cas de retard
+              </p>
             </div>
-            <p className="mt-1 text-xs text-gray-500">
-              Ce numéro nous permettra de suivre votre vol et d'ajuster notre service en cas de retard
-            </p>
-          </div>
-        ) : null}
-        
-        {/* Train number field - Conditionnellement affiché si c'est une gare */}
-        {formValues.pickupAddress?.toLowerCase().includes('gare') || 
-         formValues.dropoffAddress?.toLowerCase().includes('gare') || 
-         formValues.pickupAddress?.toLowerCase().includes('station') || 
-         formValues.dropoffAddress?.toLowerCase().includes('station') ? (
-          <div>
-            <label htmlFor="trainNumber" className="block text-sm font-medium text-gray-700 mb-2">
-              Numéro de train
-            </label>
-            <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                <i className="fas fa-train text-gray-400"></i>
-              </span>
-              <input
-                id="trainNumber"
-                type="text"
-                className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
-                placeholder="Ex: TGV6214"
-                value={formValues.trainNumber || ''}
-                onChange={(e) => handleInputChange('trainNumber', e.target.value)}
-              />
+          )}
+          
+          {/* Champ numéro de train - Affiché uniquement si pas d'aéroport ET gare détectée */}
+          {shouldShowTrainField && (
+            <div className="animate-slide-in-up bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+              <label htmlFor="trainNumber" className="block text-sm font-medium text-gray-700 mb-2">
+                <i className="fas fa-train text-green-500 mr-2"></i>
+                Numéro de train
+                <span className="ml-2 text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                  Gare détectée
+                </span>
+              </label>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                  <i className="fas fa-train text-gray-400"></i>
+                </span>
+                <input
+                  id="trainNumber"
+                  type="text"
+                  className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500"
+                  placeholder="Ex: TGV6214, TER4567, ICE123"
+                  value={formValues.trainNumber || ''}
+                  onChange={(e) => handleInputChange('trainNumber', e.target.value)}
+                />
+              </div>
+              <p className="mt-1 text-xs text-gray-600">
+                <i className="fas fa-info-circle mr-1"></i>
+                Ce numéro nous permettra de suivre votre train et d'ajuster notre service en cas de retard
+              </p>
             </div>
-            <p className="mt-1 text-xs text-gray-500">
-              Ce numéro nous permettra de suivre votre train et d'ajuster notre service en cas de retard
-            </p>
-          </div>
-        ) : null}
+          )}
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Date et heure de départ */}
@@ -117,7 +189,6 @@ const BookingStepOne = ({
             <label htmlFor="pickupDate" className="block text-sm font-medium text-gray-700 mb-2">
               Date et heure de départ <span className="text-red-500">*</span>
             </label>
-            {/* Utiliser DateTimePicker qui gère correctement les événements */}
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
                 <label htmlFor="pickupDate" className="block text-sm font-medium text-gray-700 mb-2">
@@ -134,6 +205,7 @@ const BookingStepOne = ({
                     onChange={(e) => handleInputChange('pickupDate', e.target.value)}
                     className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
                     required
+                    min={new Date().toISOString().split('T')[0]} // Empêcher les dates passées
                   />
                 </div>
               </div>
@@ -176,7 +248,7 @@ const BookingStepOne = ({
             
             {/* Afficher la date/heure de retour si aller-retour est coché */}
             {formValues.roundTrip && (
-              <div className="bg-gray-50 p-4 rounded-md border-l-4 border-primary">
+              <div className="bg-gray-50 p-4 rounded-md border-l-4 border-primary animate-slide-in-up">
                 <label htmlFor="returnDate" className="block text-sm font-medium text-gray-700 mb-2">
                   Date et heure de retour <span className="text-red-500">*</span>
                 </label>
@@ -196,7 +268,7 @@ const BookingStepOne = ({
                         onChange={(e) => handleInputChange('returnDate', e.target.value)}
                         className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
                         required={formValues.roundTrip}
-                        min={formValues.pickupDate}
+                        min={formValues.pickupDate || new Date().toISOString().split('T')[0]}
                       />
                     </div>
                   </div>
@@ -234,12 +306,13 @@ const BookingStepOne = ({
             <div className="flex items-center bg-gray-100 rounded-full p-1">
               <button 
                 type="button" 
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm text-gray-600 hover:bg-gray-50 transition-colors duration-150"
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm text-gray-600 hover:bg-gray-50 transition-colors duration-150 disabled:opacity-50"
                 onClick={() => {
                   if (formValues.passengers > 1) {
                     handleInputChange('passengers', parseInt(formValues.passengers) - 1);
                   }
                 }}
+                disabled={formValues.passengers <= 1}
                 aria-label="Diminuer le nombre de passagers"
               >
                 <i className="fas fa-minus text-xs"></i>
@@ -247,10 +320,13 @@ const BookingStepOne = ({
               <span className="flex-1 text-center font-medium">{formValues.passengers}</span>
               <button 
                 type="button" 
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm text-gray-600 hover:bg-gray-50 transition-colors duration-150"
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm text-gray-600 hover:bg-gray-50 transition-colors duration-150 disabled:opacity-50"
                 onClick={() => {
-                  handleInputChange('passengers', parseInt(formValues.passengers) + 1);
+                  if (formValues.passengers < 7) {
+                    handleInputChange('passengers', parseInt(formValues.passengers) + 1);
+                  }
                 }}
+                disabled={formValues.passengers >= 7}
                 aria-label="Augmenter le nombre de passagers"
               >
                 <i className="fas fa-plus text-xs"></i>
@@ -268,12 +344,13 @@ const BookingStepOne = ({
             <div className="flex items-center bg-gray-100 rounded-full p-1">
               <button 
                 type="button" 
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm text-gray-600 hover:bg-gray-50 transition-colors duration-150"
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm text-gray-600 hover:bg-gray-50 transition-colors duration-150 disabled:opacity-50"
                 onClick={() => {
                   if (formValues.luggage > 0) {
                     handleInputChange('luggage', parseInt(formValues.luggage) - 1);
                   }
                 }}
+                disabled={formValues.luggage <= 0}
                 aria-label="Diminuer le nombre de bagages"
               >
                 <i className="fas fa-minus text-xs"></i>
@@ -302,7 +379,7 @@ const BookingStepOne = ({
             id="specialRequests"
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
             rows="3"
-            placeholder="Indiquez-nous toute demande particulière pour votre trajet"
+            placeholder="Indiquez-nous toute demande particulière pour votre trajet (siège bébé, assistance, etc.)"
             value={formValues.specialRequests || ''}
             onChange={(e) => handleInputChange('specialRequests', e.target.value)}
           ></textarea>
@@ -312,7 +389,7 @@ const BookingStepOne = ({
       <button 
         type="button"
         onClick={onSubmit}
-        className="w-full py-3 px-6 bg-primary text-white font-medium rounded-full hover:bg-primary-dark hover:text-white transition-colors duration-300 flex items-center justify-center mt-6"
+        className="w-full py-3 px-6 bg-primary text-white font-medium rounded-full hover:bg-primary-dark hover:text-white transition-colors duration-300 flex items-center justify-center mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
         disabled={isCalculating}
       >
         {isCalculating ? (
