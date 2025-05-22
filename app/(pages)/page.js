@@ -174,11 +174,6 @@ export default function VTCBallainvilliersPage() {
                 Chauffeur privé Essonne formé pour satisfaction client. 
                 Réservation simple et tarifs transparents garantis.
               </p>
-              <p>
-                VTC Ballainvilliers pour tous vos déplacements importants. 
-                Chauffeur privé Essonne professionnel et discret. 
-                Service d\'excellence reconnu dans l\'Essonne.
-              </p>
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -187,7 +182,7 @@ export default function VTCBallainvilliersPage() {
                 className="py-3 px-6 bg-primary text-white font-medium uppercase tracking-wider text-sm hover:bg-primary-dark transition-all"
               >
                 <i className="fas fa-calendar-alt mr-2" />
-                Réserver VTC Ballainvilliers
+                Réserver Votre VTC
               </a>
               <a 
                 href="tel:+33643537653"
